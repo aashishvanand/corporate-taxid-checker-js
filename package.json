@@ -1,0 +1,41 @@
+{
+  "name": "taxid-validator",
+  "version": "1.0.0",
+  "description": "Validate Global Tax IDs: A robust and comprehensive library for validating tax identification numbers (TINs) worldwide. It supports validation against standard regex patterns and offers extended verification through checksum algorithms for countries with such requirements. Ideal for applications dealing with international data, finance, or requiring precise tax ID validation",
+  "main": "index.js",
+  "keywords": [
+    "tax",
+    "tax-id",
+    "validation",
+    "validator",
+    "finance",
+    "accounting",
+    "regex",
+    "checksum",
+    "international",
+    "global",
+    "business",
+    "identification",
+    "compliance",
+    "TIN",
+    "VAT",
+    "EIN",
+    "GST",
+    "fiscal",
+    "audit",
+    "compliance"
+],
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aashishvanand/taxid-validator.git"
+  },
+  "author": "Aashish Vivekanand",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aashishvanand/taxid-validator/issues"
+  },
+  "homepage": "https://github.com/aashishvanand/taxid-validator#readme"
+}
