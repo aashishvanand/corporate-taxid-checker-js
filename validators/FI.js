@@ -1,6 +1,6 @@
 
 
-function validate_fi_alv(fi, debug=false) {
+function validate_fi_alv(input, debug=false) {
 
     // Helper function to calculate weighted sum for checksum
     function weightedSum(number, config) {

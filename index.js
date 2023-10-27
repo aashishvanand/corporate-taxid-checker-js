@@ -18,8 +18,9 @@ async function validateTaxId(countryCode, taxId, onlineCheckRequired = false, de
         return 'Country code not found';
     }
     let regexValid = false;
-    let checkSumRequired = false;
+    let checkSumCheckPresent = false;
     let checkSumValid = false;
+    let onnlineCheckPresent = false;
     let onlineCheckResult = false;
     let countryModule;
 
@@ -35,8 +36,9 @@ async function validateTaxId(countryCode, taxId, onlineCheckRequired = false, de
                 console.log('Checksum Validation Required:', entry.checksum);
             }
             
-            checkSumRequired = entry.checksum;
-            if(checkSumRequired || onlineCheckRequired)
+            checkSumCheckPresent = entry.checksum;
+            onnlineCheckPresent = entry.online;
+            if(checkSumCheckPresent || onlineCheckRequired)
     {
         try {
             if (debug) {
@@ -50,7 +52,7 @@ async function validateTaxId(countryCode, taxId, onlineCheckRequired = false, de
         }
     }
 
-            if (checkSumRequired && countryModule) {
+            if (checkSumCheckPresent && countryModule) {
                 try {
                     const checksumFunctionName = `validate_${entry.type}`;
                     if (typeof countryModule[checksumFunctionName] === "function") {
@@ -88,7 +90,7 @@ async function validateTaxId(countryCode, taxId, onlineCheckRequired = false, de
     let isValid = false;
     if (onlineCheckRequired) {
         isValid = regexValid && checkSumValid && onlineCheckResult;
-    } else if (checkSumRequired) {
+    } else if (checkSumCheckPresent) {
         isValid = regexValid && checkSumValid;
     } else {
         isValid = regexValid;
@@ -97,7 +99,9 @@ async function validateTaxId(countryCode, taxId, onlineCheckRequired = false, de
     return {
         isValid: isValid,
         regexValid: regexValid,
+        checkSumCheckPresent: checkSumCheckPresent,
         checkSum: checkSumValid,
+        onnlineCheckPresent: onnlineCheckPresent,
         onlineCheck: onlineCheckResult
     };
 }

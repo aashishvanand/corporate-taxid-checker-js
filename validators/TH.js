@@ -7,7 +7,7 @@ function weightedSum(input, config) {
     return sum % modulus;
 }
 
-function idnrvalidate(input) {
+function idnrvalidate(input,debug=false) {
     // Assuming clean function removes any hyphens, white spaces and converts letters to uppercase
     const value = input.replace(/[-\s]/g, '').toUpperCase();
 
@@ -64,7 +64,7 @@ function moavalidate(input) {
 }
 
 function validate_th_tin(input, debug=false) {
-    const v1 = idnrvalidate(input);
+    const v1 = idnrvalidate(input,debug);
     if (v1.isValid) {
         return v1;
     }

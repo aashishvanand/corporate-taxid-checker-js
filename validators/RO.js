@@ -92,7 +92,7 @@ function weightedSum(number, weights) {
 }
 
 // validate_ro_cnp function
-export function validate_ro_cnp(input) {
+function validate_ro_cnp(input, debug=false) {
   const value = input.replace(/\s+/g, '');
 
   if (value.length !== 13 || !/^\d+$/.test(value)) {
@@ -132,7 +132,7 @@ export function validate_ro_cnp(input) {
 }
 
 // validate_ro_cui function
-export function validate_ro_cui(input) {
+function validate_ro_cui(input, debug=false) {
   let value = input.replace(/\s+/g, '');
 
   if (value.length < 2 || value.length > 10 || !/^[1-9]\d*$/.test(value)) {
@@ -192,13 +192,13 @@ async function online_check(tin,debug=false) {
   }
 }
 
-function validate_ro_cif(ro, debug=false) {
+function validate_ro_cif(input, debug=false) {
     if (input.length === 13) {
         // apparently a CNP can also be used (however, not all sources agree)
-        return validate_ro_cnp(input);
+        return validate_ro_cnp(input,debug);
     }
     if (input.length >= 2 && input.length <= 10) {
-        return validate_ro_cui(input);
+        return validate_ro_cui(input,debug);
     }
     if (debug) { console.log("Invalid Length"); }
     return false

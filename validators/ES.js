@@ -1,5 +1,5 @@
 
-function validate_es_cif(es, debug=false) {
+function validate_es_cif(cif, debug=false) {
 
     // Entity types and corresponding check digits
     const entityTypes = 'ABCDEFGHJNPQRSUVW';

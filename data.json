@@ -408,19 +408,6 @@
         ]
     },
     {
-        "Country": "Greece",
-        "ISOCountryCode": "EL",
-        "data": [
-            {
-                "label": "Greek VAT number",
-                "type": "el_vat",
-                "regex": "",
-                "checksum": false,
-                "online":true
-            }
-        ]
-    },
-    {
         "Country": "Spain",
         "ISOCountryCode": "ES",
         "data": [
@@ -458,7 +445,7 @@
         "data": [
             {
                 "label": "Finnish VAT number (Arvonlisäveronumero)",
-                "type": "eu_alv",
+                "type": "fi_alv",
                 "regex": "^FI\\d{8}$",
                 "checksum": true,
                 "online": true
@@ -504,13 +491,13 @@
             {
                 "label": "Northern Ireland VAT number",
                 "type": "eu_vat",
-                "regex": "^((XI)?([0-9]{9}([0-9]{3})?)$",
+                "regex": "^(XI)?([0-9]{9}([0-9]{3})?)$",
                 "checksum": false
             },
             {
                 "label": "United Kingdom VAT number",
                 "type": "gb_vat",
-                "regex": "^((GB)?([0-9]{9}([0-9]{3})?)$",
+                "regex": "^(GB)?([0-9]{9}([0-9]{3})?)$",
                 "checksum": true
             }
         ]
@@ -559,7 +546,8 @@
                 "label": "Greek VAT number (Αριθμός Φορολογικού Μητρώου)",
                 "type": "gr_vat",
                 "regex": "^EL\\d{9}$",
-                "checksum": false
+                "checksum": false,
+                "online":true
             }
         ]
     },

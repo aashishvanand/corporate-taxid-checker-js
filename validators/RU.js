@@ -1,5 +1,5 @@
 
-function validate_ru_inn(ru, debug=false) {
+function validate_ru_inn(input, debug=false) {
     // Remove any non-numeric characters
     const value = input.replace(/\D/g, '');
 
