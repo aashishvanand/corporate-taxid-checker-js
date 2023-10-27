@@ -24,7 +24,7 @@
     "fiscal",
     "audit",
     "compliance"
-],
+  ],
   "scripts": {
     "test": "jest"
   },
@@ -37,5 +37,8 @@
   "bugs": {
     "url": "https://github.com/aashishvanand/taxid-validator/issues"
   },
-  "homepage": "https://github.com/aashishvanand/taxid-validator#readme"
+  "homepage": "https://github.com/aashishvanand/taxid-validator#readme",
+  "dependencies": {
+    "axios": "^1.5.1"
+  }
 }

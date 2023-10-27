@@ -1,118 +1,120 @@
-function validate_sg_uen(uen) {
-    var debug = false;
-    const entityTypeIndicator = [
-        'LP', 'LL', 'FC', 'PF', 'RF', 'MQ', 'MM', 'NB', 'CC', 'CS', 'MB', 'FM', 'GS', 'GA',
-        'GB', 'DP', 'CP', 'NR', 'CM', 'CD', 'MD', 'HS', 'VH', 'CH', 'MH', 'CL', 'XL', 'CX',
-        'RP', 'TU', 'TC', 'FB', 'FN', 'PA', 'PB', 'SS', 'MC', 'SM'
-    ];
 
-    if (debug) {
-        console.log('(A) Businesses registered with ACRA');
-        console.log('(B) Local companies registered with ACRA');
-        console.log('(C) All other entities which will be issued new UEN');
+const OTHER_UEN_ENTITY_TYPES = [
+    'CC', 'CD', 'CH', 'CL', 'CM', 'CP', 'CS', 'CX', 'DP', 'FB', 'FC', 'FM', 'FN',
+    'GA', 'GB', 'GS', 'HS', 'LL', 'LP', 'MB', 'MC', 'MD', 'MH', 'MM', 'MQ', 'NB',
+    'NR', 'PA', 'PB', 'PF', 'RF', 'RP', 'SM', 'SS', 'TC', 'TU', 'VH', 'XL',
+];
+
+function weightedSum(input, config) {
+    const { weights, modulus } = config;
+    let sum = 0;
+    for (let i = 0; i < input.length; i++) {
+      sum += parseInt(input[i], 10) * weights[i];
     }
+    return sum % modulus;
+}
 
-    // check that uen is not empty
-    if (!uen || String(uen) === '') {
-        if (debug) { console.log('UEN is empty'); }
+function validate_sg_uen(uen, debug=false) {
+
+    // Clean the input
+    const value = uen.replace(/\s+/g, '');
+
+    if (value.length !== 9 && value.length !== 10) {
+        if (debug) {
+            console.log("Invalid length");
+        }
         return false;
     }
 
-    // check if uen is 9 or 10 digits
-    if (uen.length < 9 || uen.length > 10) {
-        if (debug) { console.log('UEN is not 9 or 10 digits'); }
+    if (value.length === 9) {
+        return validateBusiness(value);
+    }
+    if (/^\d/.test(value)) {
+        return validateLocal(value);
+    }
+
+    return validateOther(value);
+}
+
+function validateLocal(value) {
+    const front = value.substring(0, value.length - 1);
+    const check = value[value.length - 1];
+
+    if (!/^\d+$/.test(front)) {
         return false;
     }
 
-    uen = uen.toUpperCase();
-    var uenStrArray = uen.split('');
+    // Implement the weightedSum and modulus logic here
+    // Assuming you have a weightedSum function available
+    const sum = weightedSum(front, {
+        modulus: 11,
+        weights: [10, 8, 6, 4, 9, 7, 5, 3, 1],
+    });
 
-    // (A) Businesses registered with ACRA
-    if (uenStrArray.length === 9) {
-        // check that last character is a letter
-        if (!isNaN(uenStrArray[uenStrArray.length - 1])) {
-            if (debug) { console.log('(A) last character is not an alphabet'); }
-            return false;
-        }
+    const digit = 'ZKCMDNERGWH'[sum % 11];
 
-        for (var i = 0; i < uenStrArray.length - 1; i++) {
-            // check that first 8 letters are all numbers
-            if (isNaN(uenStrArray[i])) {
-                if (debug) { console.log('(A) there are non-numbers in 1st to 8th letters'); }
-                return false;
-            }
-        }
-
-        // (A) Businesses registered with ACRA (SUCCESS)
-        if (debug) { console.log('valid (A) Businesses registered with ACRA'); }
-        return true;
-    }
-    else if (uenStrArray.length === 10) {
-        // check that last character is a letter
-        if (!isNaN(uenStrArray[uenStrArray.length - 1])) {
-            if (debug) { console.log('(B)(C) last character is not an alphabet'); }
-            return false;
-        }
-
-        // (B) Local companies registered with ACRA
-        if (!isNaN(uenStrArray[0]) && !isNaN(uenStrArray[1]) && !isNaN(uenStrArray[2]) && !isNaN(uenStrArray[3])) {
-            // check that 5th to 9th letters are all numbers
-            if (!isNaN(uenStrArray[4]) && !isNaN(uenStrArray[5]) && !isNaN(uenStrArray[6]) &&
-                !isNaN(uenStrArray[7]) && !isNaN(uenStrArray[8])) {
-                // (B) Local companies registered with ACRA (SUCCESS)
-                if (debug) { console.log('valid (B) Local companies registered with ACRA'); }
-                return true;
-            } else {
-                if (debug) { console.log('(B) there are non-numbers in 5th to 9th letters'); }
-                return false;
-            }
-        }
-        // (C) All other entities which will be issued new UEN
-        else {
-            // check that 1st letter is either T or S or R
-            if (uenStrArray[0] !== 'T' && uenStrArray[0] !== 'S' && uenStrArray[0] !== 'R') {
-                if (debug) { console.log('(C) 1st letter is incorrect'); }
-                return false;
-            }
-
-            // check that 2nd and 3rd letters are numbers only
-            if (isNaN(uenStrArray[1]) || isNaN(uenStrArray[2])) {
-                if (debug) { console.log('(C) 2nd and 3rd letter is incorrect'); }
-                return false;
-            }
-
-            // check that 4th letter is an alphabet
-            if (!isNaN(uenStrArray[3])) {
-                if (debug) { console.log('(C) 4th letter is not an alphabet'); }
-                return false;
-            }
-
-            // check entity-type indicator
-            var entityTypeMatch = false,
-                entityType = String(uenStrArray[3]) + String(uenStrArray[4]);
-            for (var i = 0; i < entityTypeIndicator.length; i++) {
-                if (String(entityTypeIndicator[i]) === String(entityType)) {
-                    entityTypeMatch = true;
-                }
-            }
-            if (!entityTypeMatch) {
-                if (debug) { console.log('(C) entity-type indicator is invalid'); }
-                return false;
-            }
-
-            // check that 6th to 9th letters are numbers only
-            if (isNaN(uenStrArray[5]) || isNaN(uenStrArray[6]) || isNaN(uenStrArray[7]) || isNaN(uenStrArray[8])) {
-                if (debug) { console.log('(C) 2nd and 3rd letter is incorrect'); }
-                return false;
-            }
-
-            // (C) All other entities which will be issued new UEN (SUCCESS)
-            if (debug) { console.log('valid (C) All other entities which will be issued new UEN'); }
-            return true;
-        }
+    if (check !== digit) {
+        return false;
     }
 
-    return false;
+    return true
+    ;
+}
+
+function validateBusiness(value) {
+    const front = value.substring(0, value.length - 1);
+    const check = value[value.length - 1];
+
+    if (!/^\d+$/.test(front)) {
+        return false;
+    }
+
+    const sum = weightedSum(front, {
+        modulus: 11,
+        weights: [10, 4, 9, 3, 8, 2, 7, 1],
+    });
+
+    const digit = 'XMKECAWLJDB'[sum];
+
+    if (check !== digit) {
+        return false;
+    }
+
+    return true
+}
+
+function validateOther(value) {
+    const kind = value[0];
+    const year = value.substr(1, 2);
+    const etype = value.substr(3, 2);
+    const rest = value.substring(5, value.length - 1);
+    const check = value[value.length - 1];
+
+    if (!['R', 'S', 'T'].includes(kind) || 
+        !/^\d+$/.test(year) ||
+        !OTHER_UEN_ENTITY_TYPES.includes(etype) ||
+        !/^\d+$/.test(rest)) {
+        return false;
+    }
+
+    if (kind === 'T' && parseInt(year, 10) > new Date().getFullYear() % 100) {
+        return false;
+    }
+
+    const alphabet = 'ABCDEFGHJKLMNPQRSTUVWX0123456789';
+    const sum = weightedSum(value.substr(0, 9), {
+        weights: [4, 3, 5, 3, 10, 2, 2, 5, 7],
+        modulus: 11,
+        alphabet,
+    });
+
+    const digit = alphabet[(sum + 6) % 11];
+
+    if (check !== digit) {
+        return false;
+    }
+
+    return true
 }
 
 module.exports = { validate_sg_uen };

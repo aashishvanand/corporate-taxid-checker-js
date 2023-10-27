@@ -7,7 +7,7 @@
                 "label": "Andorran NRT number",
                 "type": "ad_nrt",
                 "regex": "^A-\\d{6}-[A-Z]$",
-                "checksum": false
+                "checksum": true
             }
         ]
     },
@@ -29,9 +29,9 @@
         "data": [
             {
                 "label": "VAT",
-                "type": "al_vat",
+                "type": "al_nipt",
                 "regex": "^[A-Z]{1}[0-9A-Z]{8}$",
-                "checksum": false
+                "checksum": true
             }
         ]
     },
@@ -55,7 +55,7 @@
                 "label": "Argentinian tax ID number",
                 "type": "ar_cuit",
                 "regex": "^\\d{2}-\\d{7}-\\d{2}$",
-                "checksum": false
+                "checksum": true
             }
         ]
     },
@@ -64,10 +64,12 @@
         "ISOCountryCode": "AT",
         "data": [
             {
-                "label": "European VAT number",
-                "type": "eu_vat",
-                "regex": "^ATU\\d{8}$",
-                "checksum": false
+                "label": "Austrian tax identification number (Abgabenkontonummer)",
+                "type": "at_abn",
+                "regex": "(AT)?U[0-9]{8}",
+                "checksum": true,
+                "_comment": "Check",
+                "online": true
             }
         ]
     },
@@ -79,13 +81,26 @@
                 "label": "Australian Business Number (AU ABN)",
                 "type": "au_abn",
                 "regex": "^(?:\\d{11})$",
-                "checksum": false
+                "checksum": true
             },
             {
                 "label": "Australian Taxation Office Reference Number",
-                "type": "au_arn",
+                "type": "au_tfn",
                 "regex": "^(?:\\d{12})$",
-                "checksum": false
+                "checksum": true
+            }
+        ]
+    },
+    {
+        "Country": "Azerbaijan",
+        "ISOCountryCode": "AZ",
+        "data": [
+            {
+                "label": "Azerbaijani Tax Identification Number (Vergi identifikasiya nömrəsi (VÖEN))",
+                "type": "az_vat",
+                "regex": "",
+                "checksum": true,
+                "_comment": "Check"
             }
         ]
     },
@@ -106,10 +121,11 @@
         "ISOCountryCode": "BE",
         "data": [
             {
-                "label": "European VAT number",
-                "type": "eu_vat",
+                "label": "Belgian enterprise number",
+                "type": "be_vat",
                 "regex": "^BE0\\d{9}$",
-                "checksum": false
+                "checksum": true,
+                "online": true
             }
         ]
     },
@@ -118,16 +134,11 @@
         "ISOCountryCode": "BG",
         "data": [
             {
-                "label": "Bulgaria Unified Identification Code",
-                "type": "bg_uic",
-                "regex": "^\\d{9}$",
-                "checksum": false
-            },
-            {
-                "label": "European VAT number",
+                "label": "Bulgarian VAT Number",
                 "type": "eu_vat",
                 "regex": "^BG\\d{9}$",
-                "checksum": false
+                "checksum": true,
+                "online": true
             }
         ]
     },
@@ -151,13 +162,26 @@
                 "label": "Brazilian CNPJ number",
                 "type": "br_cnpj",
                 "regex": "^\\d{2}\\.\\d{3}\\.\\d{3}/\\d{4}-\\d{2}$",
-                "checksum": false
+                "checksum": true
             },
             {
                 "label": "Brazilian CPF number",
                 "type": "br_cpf",
                 "regex": "^\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}$",
-                "checksum": false
+                "checksum": true
+            }
+        ]
+    },
+    {
+        "Country": "Belarus",
+        "ISOCountryCode": "BY",
+        "data": [
+            {
+                "label": "Belarus VAT number",
+                "type": "by_vat",
+                "regex": "",
+                "checksum": true,
+                "_comment": "Check"
             }
         ]
     },
@@ -169,7 +193,7 @@
                 "label": "Canadian BN",
                 "type": "ca_bn",
                 "regex": "^\\d{9}$",
-                "checksum": false
+                "checksum": true
             },
             {
                 "label": "Canadian GST/HST number",
@@ -196,10 +220,10 @@
                 "checksum": false
             },
             {
-                "label": "Canadian QST number (Qu\u00e9bec)",
+                "label": "Canadian QST number (Qubec)",
                 "type": "ca_qst",
                 "regex": "^|^(\\d{10}TQ\\d{4})$",
-                "checksum": false
+                "checksum": true
             }
         ]
     },
@@ -211,7 +235,7 @@
                 "label": "Switzerland VAT number",
                 "type": "ch_vat",
                 "regex": "^CHE-\\d{9}(MWST|TVA|IVA)$|^CHE-\\d{3}\\.\\d{3}\\.\\d{3} [A-Z]+$",
-                "checksum": false
+                "checksum": true
             }
         ]
     },
@@ -220,10 +244,10 @@
         "ISOCountryCode": "CL",
         "data": [
             {
-                "label": "Chilean TIN",
-                "type": "cl_tin",
+                "label": "Chilean RUT",
+                "type": "cl_rut",
                 "regex": "^\\d{2}\\.\\d{3}\\.\\d{3}-[K0-9]$",
-                "checksum": false
+                "checksum": true
             }
         ]
     },
@@ -233,9 +257,9 @@
         "data": [
             {
                 "label": "Chinese tax ID",
-                "type": "cn_tin",
+                "type": "cn_uscc",
                 "regex": "^\\d{15}$",
-                "checksum": false
+                "checksum": true
             }
         ]
     },
@@ -247,7 +271,7 @@
                 "label": "Colombian NIT number",
                 "type": "co_nit",
                 "regex": "^\\d{9}[A-Z]?$|^\\d{3}\\.\\d{3}\\.\\d{3}-\\d$",
-                "checksum": false
+                "checksum": true
             }
         ]
     },
@@ -257,9 +281,9 @@
         "data": [
             {
                 "label": "Costa Rican tax ID",
-                "type": "cr_tin",
+                "type": "cr_cpj",
                 "regex": "^1-\\d{3}-\\d{6}$",
-                "checksum": false
+                "checksum": true
             }
         ]
     },
@@ -271,7 +295,8 @@
                 "label": "European VAT number",
                 "type": "eu_vat",
                 "regex": "^CY\\d{8}[A-Z]$",
-                "checksum": false
+                "checksum": true,
+                "online": true
             }
         ]
     },
@@ -280,10 +305,11 @@
         "ISOCountryCode": "CZ",
         "data": [
             {
-                "label": "European VAT number",
-                "type": "eu_vat",
+                "label": "Czech VAT Number",
+                "type": "cz_dic",
                 "regex": "^CZ\\d{8,10}$",
-                "checksum": false
+                "checksum": true,
+                "online": true
             }
         ]
     },
@@ -292,10 +318,18 @@
         "ISOCountryCode": "DE",
         "data": [
             {
-                "label": "European VAT number",
-                "type": "eu_vat",
+                "label": "German tax number",
+                "type": "de_stnr",
+                "regex": "^[1-9][0-9]{10}$",
+                "checksum": true,
+                "online": true
+            },
+            {
+                "label": "German VAT number",
+                "type": "de_vat",
                 "regex": "^DE\\d{9}$",
-                "checksum": false
+                "checksum": true,
+                "online": true
             }
         ]
     },
@@ -304,10 +338,11 @@
         "ISOCountryCode": "DK",
         "data": [
             {
-                "label": "European VAT number",
-                "type": "eu_vat",
+                "label": "Danish VAT number",
+                "type": "dk_cvr",
                 "regex": "^DK\\d{8}$",
-                "checksum": false
+                "checksum": true,
+                "online": true
             }
         ]
     },
@@ -317,8 +352,20 @@
         "data": [
             {
                 "label": "Dominican RCN number",
-                "type": "do_rcn",
+                "type": "do_rnc",
                 "regex": "^\\d{3}-\\d{7}-\\d$",
+                "checksum": false
+            }
+        ]
+    },
+    {
+        "Country": "Algeria",
+        "ISOCountryCode": "DZ",
+        "data": [
+            {
+                "label": "Algeria tax number",
+                "type": "dz_tin",
+                "regex": "^[PCGQV]{1}00[A-Z0-9]{8}$",
                 "checksum": false
             }
         ]
@@ -331,7 +378,7 @@
                 "label": "Ecuadorian RUC number",
                 "type": "ec_ruc",
                 "regex": "^\\d{13}$",
-                "checksum": false
+                "checksum": true
             }
         ]
     },
@@ -340,10 +387,11 @@
         "ISOCountryCode": "EE",
         "data": [
             {
-                "label": "European VAT number",
-                "type": "eu_vat",
+                "label": "Estonian VAT number",
+                "type": "ee_vat",
                 "regex": "^EE\\d{9}$",
-                "checksum": false
+                "checksum": true,
+                "online": true
             }
         ]
     },
@@ -355,7 +403,20 @@
                 "label": "Egyptian Tax Identification Number",
                 "type": "eg_tin",
                 "regex": "^\\d{9}$",
-                "checksum": false
+                "checksum": true
+            }
+        ]
+    },
+    {
+        "Country": "Greece",
+        "ISOCountryCode": "EL",
+        "data": [
+            {
+                "label": "Greek VAT number",
+                "type": "el_vat",
+                "regex": "",
+                "checksum": false,
+                "online":true
             }
         ]
     },
@@ -367,13 +428,15 @@
                 "label": "Spanish NIF number (previously Spanish CIF number)",
                 "type": "es_cif",
                 "regex": "^[A-Z]\\d{8}$",
-                "checksum": false
+                "checksum": true,
+                "online": true
             },
             {
-                "label": "European VAT number",
-                "type": "eu_vat",
+                "label": "Spanish VAT number",
+                "type": "es_vat",
                 "regex": "^ESA\\d{8}$",
-                "checksum": false
+                "checksum": true,
+                "online": true
             }
         ]
     },
@@ -394,10 +457,11 @@
         "ISOCountryCode": "FI",
         "data": [
             {
-                "label": "European VAT number",
-                "type": "eu_vat",
+                "label": "Finnish VAT number (Arvonlisäveronumero)",
+                "type": "eu_alv",
                 "regex": "^FI\\d{8}$",
-                "checksum": false
+                "checksum": true,
+                "online": true
             }
         ]
     },
@@ -406,9 +470,30 @@
         "ISOCountryCode": "FR",
         "data": [
             {
-                "label": "European VAT number",
-                "type": "eu_vat",
+                "label": "French Tax identification number (Numéro d'Immatriculation Fiscale)",
+                "type": "fr_nif",
+                "regex": "",
+                "checksum": true,
+                "online": false,
+                "_comment":"Check"
+            },
+            {
+                "label": "French VAT number",
+                "type": "fr_vat",
                 "regex": "^FR[A-Z0-9]{2}\\d{9}$",
+                "checksum": true,
+                "online": true
+            }
+        ]
+    },
+    {
+        "Country": "Faroe Islands",
+        "ISOCountryCode": "FO",
+        "data": [
+            {
+                "label": "European VAT number",
+                "type": "fo_vat",
+                "regex": "^[PCGQV]{1}00[A-Z0-9]{8}$",
                 "checksum": false
             }
         ]
@@ -427,7 +512,7 @@
                 "label": "United Kingdom VAT number",
                 "type": "gb_vat",
                 "regex": "^((GB)?([0-9]{9}([0-9]{3})?)$",
-                "checksum": false
+                "checksum": true
             }
         ]
     },
@@ -448,10 +533,23 @@
         "ISOCountryCode": "GH",
         "data": [
             {
-                "label": "TIN: Taxpayer Identification Number",
+                "label": "Ghana TIN",
                 "type": "gh_tin",
                 "regex": "^[PC][0-9]{10}$",
-                "checksum": false
+                "checksum": true
+            }
+        ]
+    },
+    {
+        "Country": "Guinea",
+        "ISOCountryCode": "GN",
+        "data": [
+            {
+                "label": "Guinean Tax Number (Placeholder)",
+                "type": "gn_tax",
+                "regex": "",
+                "checksum": true,
+                "_comment":"Check"
             }
         ]
     },
@@ -460,10 +558,22 @@
         "ISOCountryCode": "GR",
         "data": [
             {
-                "label": "European VAT number",
-                "type": "eu_vat",
+                "label": "Greek VAT number (Αριθμός Φορολογικού Μητρώου)",
+                "type": "gr_vat",
                 "regex": "^EL\\d{9}$",
                 "checksum": false
+            }
+        ]
+    },
+    {
+        "Country": "Guatemala",
+        "ISOCountryCode": "GT",
+        "data": [
+            {
+                "label": "Guatemalan VAT number",
+                "type": "gt_nit",
+                "regex": "^(\\d+)\\-?([\\dkK])$",
+                "checksum": true
             }
         ]
     },
@@ -487,7 +597,8 @@
                 "label": "European VAT number",
                 "type": "eu_vat",
                 "regex": "^HR\\d{11}$",
-                "checksum": false
+                "checksum": false,
+                "online": true
             }
         ]
     },
@@ -496,10 +607,11 @@
         "ISOCountryCode": "HU",
         "data": [
             {
-                "label": "European VAT number or Hungary tax number (ad\u00f3sz\u00e1m)",
-                "type": "eu_vat or hu_tin",
+                "label": "Hungary tax number (adószám)",
+                "type": "hu_anum",
                 "regex": "^HU\\d{8}$|^\\d{8}-\\d-\\d{2}$",
-                "checksum": false
+                "checksum": true,
+                "online": true
             }
         ]
     },
@@ -511,7 +623,7 @@
                 "label": "Indonesian NPWP number",
                 "type": "id_npwp",
                 "regex": "^\\d{2}\\.\\d{3}\\.\\d{3}\\.\\d-\\d{3}\\.\\d{3}$",
-                "checksum": false
+                "checksum": true
             }
         ]
     },
@@ -520,10 +632,11 @@
         "ISOCountryCode": "IE",
         "data": [
             {
-                "label": "European VAT number",
-                "type": "eu_vat",
+                "label": "Irish tax reference number",
+                "type": "ie_vat",
                 "regex": "^IE[0-9]{7}[A-Z]{1,2}$",
-                "checksum": false
+                "checksum": true,
+                "online": true
             }
         ]
     },
@@ -532,10 +645,10 @@
         "ISOCountryCode": "IL",
         "data": [
             {
-                "label": "Israel VAT",
-                "type": "il_vat",
+                "label": "Israeli company number",
+                "type": "il_hp",
                 "regex": "^\\d{9}$",
-                "checksum": false
+                "checksum": true
             }
         ]
     },
@@ -574,10 +687,11 @@
         "ISOCountryCode": "IT",
         "data": [
             {
-                "label": "European VAT number",
-                "type": "eu_vat",
+                "label": "Italy VAT number",
+                "type": "it_iva",
                 "regex": "^IT\\d{11}$",
-                "checksum": false
+                "checksum": false,
+                "online": true
             }
         ]
     },
@@ -586,19 +700,19 @@
         "ISOCountryCode": "JP",
         "data": [
             {
-                "label": "Japanese Corporate Number (*H\u014djin Bang\u014d*)",
+                "label": "Japanese Corporate Number (hōjin bangō)",
                 "type": "jp_cn",
                 "regex": "^\\d{13}$",
-                "checksum": false
+                "checksum": true
             },
             {
-                "label": "Japanese Registered Foreign Businesses' Registration Number (*T\u014droku Kokugai Jigy\u014dsha no T\u014droku Bang\u014d*)",
+                "label": "Japanese Registered Foreign Businesses' Registration Number (Tōroku Kokugai Jigyōsha no Tōroku Bangō)",
                 "type": "jp_rn",
                 "regex": "^\\d{5}$",
                 "checksum": false
             },
             {
-                "label": "or Japanese Tax Registration Number (*T\u014droku Bang\u014d*)",
+                "label": "Japanese Tax Registration Number (Tōroku Bangō)",
                 "type": "jp_trn",
                 "regex": "^T\\d{13}$",
                 "checksum": false
@@ -612,7 +726,7 @@
             {
                 "label": "Kenya Revenue Authority Personal Identification Number",
                 "type": "ke_pin",
-                "regex": "^[A-Z]\\d{9}[A-Z]$|^P\\d{9}[A-Z]$",
+                "regex": "^[A|P]{1}[0-9]{9}[A-Z]{1}$",
                 "checksum": false
             }
         ]
@@ -636,7 +750,7 @@
                 "label": "Korean BRN",
                 "type": "kr_brn",
                 "regex": "^\\d{3}-\\d{2}-\\d{5}$",
-                "checksum": false
+                "checksum": true
             }
         ]
     },
@@ -657,10 +771,11 @@
         "ISOCountryCode": "LT",
         "data": [
             {
-                "label": "European VAT number",
-                "type": "eu_vat",
+                "label": "Lithuanian VAT number (Pridėtinės vertės mokestis mokėtojo kodas)",
+                "type": "lt_pvm",
                 "regex": "^LT\\d{9,12}$",
-                "checksum": false
+                "checksum": false,
+                "online": true
             }
         ]
     },
@@ -669,10 +784,11 @@
         "ISOCountryCode": "LU",
         "data": [
             {
-                "label": "European VAT number",
-                "type": "eu_vat",
+                "label": "Luxembourgian VAT number (taxe sur la valeur ajoutée)",
+                "type": "lu_tva",
                 "regex": "^LU\\d{8}$",
-                "checksum": false
+                "checksum": false,
+                "online": true
             }
         ]
     },
@@ -681,13 +797,48 @@
         "ISOCountryCode": "LV",
         "data": [
             {
-                "label": "European VAT number",
-                "type": "eu_vat",
+                "label": "Latvian VAT number",
+                "type": "lv_pvn",
                 "regex": "^LV\\d{11}$",
-                "checksum": false
+                "checksum": false,
+                "online": true
             }
         ]
     },
+    {
+        "Country": "Morocco",
+        "ISOCountryCode": "MA",
+        "data": [
+            {
+                "label": "Moroccan company establishment identification number",
+                "type": "ma_ice",
+                "regex": "",
+                "checksum": true,
+                "_comment":"Check"
+            },
+            {
+                "label": "Moroccan company establishment identification number",
+                "type": "ma_ice9",
+                "regex": "",
+                "checksum": true,
+                "_comment":"Check"
+            }
+        ]
+    },
+    {
+        "Country": "Moldova",
+        "ISOCountryCode": "MD",
+        "data": [
+            {
+                "label": "Moldavian company identification number",
+                "type": "md_idno",
+                "regex": "",
+                "checksum": false,
+                "_comment":"Check"
+
+            }
+        ]
+    },    
     {
         "Country": "Malta",
         "ISOCountryCode": "MT",
@@ -696,7 +847,8 @@
                 "label": "European VAT number",
                 "type": "eu_vat",
                 "regex": "^MT\\d{8}$",
-                "checksum": false
+                "checksum": false,
+                "online": true
             }
         ]
     },
@@ -708,7 +860,7 @@
                 "label": "Mexican RFC number",
                 "type": "mx_rfc",
                 "regex": "^[A-Z]{3,4}\\d{6}[A-Z0-9]{3}$",
-                "checksum": false
+                "checksum": true
             }
         ]
     },
@@ -759,10 +911,11 @@
         "ISOCountryCode": "NL",
         "data": [
             {
-                "label": "European VAT number",
-                "type": "eu_vat",
+                "label": "Dutch VAT number",
+                "type": "nl_btw",
                 "regex": "^NL\\d{9}B\\d{2}$",
-                "checksum": false
+                "checksum": true,
+                "online": true
             }
         ]
     },
@@ -772,9 +925,9 @@
         "data": [
             {
                 "label": "Norwegian VAT number",
-                "type": "no_vat",
+                "type": "no_mva",
                 "regex": "^\\d{9}MVA$",
-                "checksum": false
+                "checksum": true
             }
         ]
     },
@@ -784,9 +937,9 @@
         "data": [
             {
                 "label": "New Zealand GST number",
-                "type": "nz_gst",
+                "type": "nz_ird",
                 "regex": "^\\d{9}$",
-                "checksum": false
+                "checksum": true
             }
         ]
     },
@@ -798,7 +951,7 @@
                 "label": "Peruvian RUC number",
                 "type": "pe_ruc",
                 "regex": "^\\d{11}$",
-                "checksum": false
+                "checksum": true
             }
         ]
     },
@@ -819,10 +972,11 @@
         "ISOCountryCode": "PL",
         "data": [
             {
-                "label": "European VAT number",
-                "type": "eu_vat",
+                "label": "Polish VAT number (Numer Identyfikacji Podatkowej)",
+                "type": "pl_nip",
                 "regex": "^PL\\d{10}$",
-                "checksum": false
+                "checksum": true,
+                "online": true
             }
         ]
     },
@@ -831,28 +985,37 @@
         "ISOCountryCode": "PT",
         "data": [
             {
-                "label": "European VAT number",
-                "type": "eu_vat",
+                "label": "Portuguese VAT number (Número de identificação fiscal)",
+                "type": "pt_nif",
                 "regex": "^PT\\d{9}$",
-                "checksum": false
+                "checksum": true,
+                "online": true
             }
         ]
     },
+    {
+        "Country": "Paraguay",
+        "ISOCountryCode": "PY",
+        "data": [
+            {
+                "label": "Paraguay Tax number (Registro Único del Contribuyentes)",
+                "type": "py_ruc",
+                "regex": "",
+                "checksum": true,
+                "_comment":"Check"
+            }
+        ]
+    },    
     {
         "Country": "Romania",
         "ISOCountryCode": "RO",
         "data": [
             {
-                "label": "European VAT number",
-                "type": "eu_vat",
+                "label": "Romanian VAT number",
+                "type": "ro_cif",
                 "regex": "^RO\\d{2,10}$",
-                "checksum": false
-            },
-            {
-                "label": "Romanian tax ID number",
-                "type": "ro_tin",
-                "regex": "^\\d{13}$",
-                "checksum": false
+                "checksum": true,
+                "online": true
             }
         ]
     },
@@ -864,7 +1027,7 @@
                 "label": "Serbian PIB number",
                 "type": "rs_pib",
                 "regex": "^\\d{9}$",
-                "checksum": false
+                "checksum": true
             }
         ]
     },
@@ -876,7 +1039,7 @@
                 "label": "Russian INN",
                 "type": "ru_inn",
                 "regex": "^\\d{10,12}$",
-                "checksum": false
+                "checksum": true
             },
             {
                 "label": "Russian KPP",
@@ -891,7 +1054,7 @@
         "ISOCountryCode": "RW",
         "data": [
             {
-                "label": "TIN",
+                "label": "Rawanda TIN",
                 "regex": "^\\d{9}$",
                 "checksum": false
             }
@@ -914,10 +1077,11 @@
         "ISOCountryCode": "SE",
         "data": [
             {
-                "label": "European VAT number",
-                "type": "eu_vat",
+                "label": "Swedish VAT number",
+                "type": "se_vat",
                 "regex": "^SE\\d{10}01$",
-                "checksum": false
+                "checksum": true,
+                "online": true
             }
         ]
     },
@@ -944,16 +1108,11 @@
         "ISOCountryCode": "SI",
         "data": [
             {
-                "label": "Slovenia tax number (dav\u010dna \u0161tevilka)",
-                "type": "si_tin",
-                "regex": "^\\d{8}$",
-                "checksum": false
-            },
-            {
-                "label": "European VAT number",
-                "type": "eu_vat",
+                "label": "Slovenian VAT number",
+                "type": "si_ddv",
                 "regex": "^SI\\d{8}$",
-                "checksum": false
+                "checksum": true,
+                "online": true
             }
         ]
     },
@@ -962,10 +1121,11 @@
         "ISOCountryCode": "SK",
         "data": [
             {
-                "label": "European VAT number",
-                "type": "eu_vat",
+                "label": "Slovak VAT number (IČ pre daň z pridanej hodnoty)",
+                "type": "sk_dph",
                 "regex": "^SK\\d{10}$",
-                "checksum": false
+                "checksum": true,
+                "online": true
             }
         ]
     },
@@ -977,7 +1137,7 @@
                 "label": "El Salvadorian NIT number",
                 "type": "sv_nit",
                 "regex": "^\\d{4}-\\d{6}-\\d{3}-\\d$",
-                "checksum": false
+                "checksum": true
             }
         ]
     },
@@ -987,9 +1147,9 @@
         "data": [
             {
                 "label": "Thai VAT",
-                "type": "th_vat",
+                "type": "th_tin",
                 "regex": "^\\d{13}$",
-                "checksum": false
+                "checksum": true
             }
         ]
     },
@@ -999,9 +1159,9 @@
         "data": [
             {
                 "label": "Turkish Tax Identification Number",
-                "type": "tr_tin",
+                "type": "tr_vkn",
                 "regex": "^\\d{10}$",
-                "checksum": false
+                "checksum": true
             }
         ]
     },
@@ -1011,9 +1171,9 @@
         "data": [
             {
                 "label": "Taiwanese VAT",
-                "type": "tw_vat",
+                "type": "tw_ubn",
                 "regex": "^\\d{8}$",
-                "checksum": false
+                "checksum": true
             }
         ]
     },
@@ -1023,9 +1183,9 @@
         "data": [
             {
                 "label": "Ukrainian VAT",
-                "type": "ua_vat",
+                "type": "ua_edrpou",
                 "regex": "^(?:\\d{12}|\\d{8}|\\d{9})$",
-                "checksum": false
+                "checksum": true
             }
         ]
     },
@@ -1038,6 +1198,12 @@
                 "type": "us_ein",
                 "regex": "^\\d{2}-\\d{7}$",
                 "checksum": false
+            },
+            {
+                "label": "United States ITIN",
+                "type": "us_itin",
+                "regex": "(9\\d{2})([ \\-]?)(5\\d|6[0-5]|7\\d|8[0-8]|9[0-2,4-9])([ \\-]?)(\\d{4})",
+                "checksum": false
             }
         ]
     },
@@ -1047,9 +1213,9 @@
         "data": [
             {
                 "label": "Uruguayan RUC number",
-                "type": "uy_ruc",
+                "type": "uy_rut",
                 "regex": "^\\d{12}$",
-                "checksum": false
+                "checksum": true
             }
         ]
     },
@@ -1061,7 +1227,7 @@
                 "label": "Venezuelan RIF number",
                 "type": "ve_rif",
                 "regex": "^[A-Z]-\\d{8}-\\d$",
-                "checksum": false
+                "checksum": true
             }
         ]
     },
@@ -1071,9 +1237,9 @@
         "data": [
             {
                 "label": "Vietnamese tax ID number",
-                "type": "vn_tin",
+                "type": "vn_mst",
                 "regex": "^\\d{10}$|^\\d{13}$",
-                "checksum": false
+                "checksum": true
             }
         ]
     },
@@ -1082,10 +1248,10 @@
         "ISOCountryCode": "ZA",
         "data": [
             {
-                "label": "South African VAT number",
-                "type": "za_vat",
+                "label": "South African Tax Identification Number",
+                "type": "za_tin",
                 "regex": "^4\\d{9}$|^\\d{10}$",
-                "checksum": false
+                "checksum": true
             }
         ]
     }
