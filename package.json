@@ -39,6 +39,7 @@
   },
   "homepage": "https://github.com/aashishvanand/taxid-validator#readme",
   "dependencies": {
-    "axios": "^1.5.1"
+    "axios": "^1.5.1",
+    "cheerio": "^1.0.0-rc.12"
   }
 }

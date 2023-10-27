@@ -27,6 +27,8 @@ async function testValidation(countryCode, taxId, onlineCheck = false) {
 // testValidation('IE', 'IE6388047V', true); //pass
 // testValidation('NL', 'NL817894352B01'); //checksum fail
 // testValidation('PE', '20100146115'); //checksum fail
+testValidation('AU', '33102417032',true);
+
 // testValidation('PH', '000-629-598');
 // testValidation('PL', '5262922449');
 // testValidation('PT', '504 709 686');

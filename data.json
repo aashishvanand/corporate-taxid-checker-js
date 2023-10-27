@@ -68,7 +68,6 @@
                 "type": "at_abn",
                 "regex": "(AT)?U[0-9]{8}",
                 "checksum": true,
-                "_comment": "Check",
                 "online": true
             }
         ]
@@ -81,7 +80,8 @@
                 "label": "Australian Business Number (AU ABN)",
                 "type": "au_abn",
                 "regex": "^(?:\\d{11})$",
-                "checksum": true
+                "checksum": true,
+                "online": true
             },
             {
                 "label": "Australian Taxation Office Reference Number",
@@ -472,10 +472,9 @@
             {
                 "label": "French Tax identification number (Numéro d'Immatriculation Fiscale)",
                 "type": "fr_nif",
-                "regex": "",
+                "regex": "^[0-3]\\d{1} \\d{2} \\d{3} \\d{3} \\d{3}$",
                 "checksum": true,
-                "online": false,
-                "_comment":"Check"
+                "online": false
             },
             {
                 "label": "French VAT number",
@@ -545,11 +544,10 @@
         "ISOCountryCode": "GN",
         "data": [
             {
-                "label": "Guinean Tax Number (Placeholder)",
-                "type": "gn_tax",
-                "regex": "",
-                "checksum": true,
-                "_comment":"Check"
+                "label": "Guinean Tax Number",
+                "type": "gn_nifp",
+                "regex": "^\\d{3}-\\d{3}-\\d{3}$",
+                "checksum": true
             }
         ]
     },
@@ -812,16 +810,14 @@
             {
                 "label": "Moroccan company establishment identification number",
                 "type": "ma_ice",
-                "regex": "",
-                "checksum": true,
-                "_comment":"Check"
+                "regex": "^\\d{15}$",
+                "checksum": true
             },
             {
                 "label": "Moroccan company establishment identification number",
                 "type": "ma_ice9",
-                "regex": "",
-                "checksum": true,
-                "_comment":"Check"
+                "regex": "^\\d{9}$",
+                "checksum": true
             }
         ]
     },
@@ -832,9 +828,8 @@
             {
                 "label": "Moldavian company identification number",
                 "type": "md_idno",
-                "regex": "",
-                "checksum": false,
-                "_comment":"Check"
+                "regex": "^\\d{13}$",
+                "checksum": false
 
             }
         ]
@@ -1000,9 +995,8 @@
             {
                 "label": "Paraguay Tax number (Registro Único del Contribuyentes)",
                 "type": "py_ruc",
-                "regex": "",
-                "checksum": true,
-                "_comment":"Check"
+                "regex": "^[0-9]+[A-Z]?(-[0-9])?$",
+                "checksum": true
             }
         ]
     },    

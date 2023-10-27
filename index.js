@@ -71,7 +71,7 @@ async function validateTaxId(countryCode, taxId, onlineCheckRequired = false, de
             }
             if (onlineCheckRequired && countryModule) {
                 try {
-                    onlineCheckResult = await countryModule['online_check'](taxId);
+                    onlineCheckResult = await countryModule['online_check'](taxId,true);
                     if (debug) {
                         console.log('Online Check Result:', onlineCheckResult);
                     }
