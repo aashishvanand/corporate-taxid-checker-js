@@ -97,4 +97,9 @@ async function online_check(tin,debug=false) {
   }
 }
 
-module.exports = { validate_ie_vat, online_check };
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {validate_ie_vat, online_check};
+} else {
+  window.validate_ie_vat = validate_ie_vat;
+  window.online_check = online_check;
+}

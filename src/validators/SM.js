@@ -27,4 +27,8 @@ function validate_sm_coe(input, debug=false) {
     return true;
 }
 
-module.exports = { validate_sm_coe };
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {validate_sm_coe};
+} else {
+  window.validate_sm_coe = validate_sm_coe;
+}

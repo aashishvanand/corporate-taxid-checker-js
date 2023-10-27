@@ -75,4 +75,9 @@ async function online_check(tin,debug=false) {
   }
 }
 
-module.exports = { validate_hu_anum, online_check };
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {validate_hu_anum, online_check};
+} else {
+  window.validate_hu_anum = validate_hu_anum;
+  window.online_check = online_check;
+}

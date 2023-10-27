@@ -45,4 +45,9 @@ function weightedSum(number, weights, modulus) {
     return sum % modulus;
 }
 
-module.exports = { validate_ua_edrpou };
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {validate_ua_edrpou};
+  } else {
+    window.validate_ua_edrpou = validate_ua_edrpou;
+  }
+  

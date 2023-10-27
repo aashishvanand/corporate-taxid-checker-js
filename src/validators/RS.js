@@ -38,4 +38,8 @@ function validate_rs_pib(rs, debug=false) {
 }
 
 
-module.exports = { validate_rs_pib };
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {validate_rs_pib};
+  } else {
+    window.validate_rs_pib = validate_rs_pib;
+  }

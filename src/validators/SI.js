@@ -76,4 +76,9 @@ async function online_check(tin,debug=false) {
     }
 }
 
-module.exports = { validate_si_ddv, online_check };
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {validate_si_ddv, online_check};
+  } else {
+    window.validate_si_ddv = validate_si_ddv;
+    window.online_check = online_check;
+  }

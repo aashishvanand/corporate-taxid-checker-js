@@ -54,5 +54,8 @@ function validate_no_mva(mva, debug=false) {
   return true;
 }
 
-
-module.exports = { validate_no_mva };
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {validate_no_mva};
+} else {
+  window.validate_no_mva = validate_no_mva;
+}

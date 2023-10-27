@@ -117,4 +117,9 @@ async function online_check(tin,debug=false) {
   }
 }
 
-module.exports = { validate_lt_pvm, online_check };
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {validate_lt_pvm, online_check};
+} else {
+  window.validate_lt_pvm = validate_lt_pvm;
+  window.online_check = online_check;
+}

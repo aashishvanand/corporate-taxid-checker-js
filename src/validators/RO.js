@@ -205,4 +205,9 @@ function validate_ro_cif(input, debug=false) {
 }
 
 
-module.exports = { validate_ro_cif, online_check };
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {validate_ro_cif, online_check};
+} else {
+  window.validate_ro_cif = validate_ro_cif;
+  window.online_check = online_check;
+}

@@ -39,4 +39,8 @@ function validate_ru_inn(input, debug=false) {
 }
 
 // Export the function for use in other files
-module.exports = { validate_ru_inn };
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {validate_ru_inn};
+  } else {
+    window.validate_ru_inn = validate_ru_inn;
+  }

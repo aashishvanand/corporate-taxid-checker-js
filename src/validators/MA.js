@@ -65,4 +65,9 @@ function validate_ma_ice9(input, debug=false) {
   return true;
 }
 
-module.exports = { validate_ma_ice, validate_ma_ice9 };
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {validate_ma_ice, validate_ma_ice9};
+} else {
+  window.validate_ma_ice = validate_ma_ice;
+  window.validate_ma_ice9 = validate_ma_ice9;
+}

@@ -37,5 +37,9 @@
     return true;
   }
   
-  module.exports = { validate_gt_nit };
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {validate_gt_nit};
+  } else {
+    window.validate_gt_nit = validate_gt_nit;
+  }
   

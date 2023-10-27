@@ -32,4 +32,8 @@ function validate_tw_ubn(input, debug=false) {
 }
 
 
-module.exports = { validate_tw_ubn };
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {validate_tw_ubn};
+} else {
+  window.validate_tw_ubn = validate_tw_ubn;
+}

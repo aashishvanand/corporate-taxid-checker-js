@@ -51,4 +51,9 @@ function validate_tn_mf(input, debug=false) {
 
     return true;
 }
-module.exports = { validate_tn_mf };
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {validate_tn_mf};
+} else {
+  window.validate_tn_mf = validate_tn_mf;
+}
+

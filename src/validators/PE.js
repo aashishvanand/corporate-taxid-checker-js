@@ -58,4 +58,8 @@ function validate_pe_ruc(ruc, debug=false) {
   return true;
 }
 
-module.exports = { validate_pe_ruc };
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {validate_pe_ruc};
+} else {
+  window.validate_pe_ruc = validate_pe_ruc;
+}

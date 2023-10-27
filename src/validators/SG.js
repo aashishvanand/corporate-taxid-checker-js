@@ -117,4 +117,8 @@ function validateOther(value) {
     return true
 }
 
-module.exports = { validate_sg_uen };
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {validate_sg_uen};
+  } else {
+    window.validate_sg_uen = validate_sg_uen;
+  }

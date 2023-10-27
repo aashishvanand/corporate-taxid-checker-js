@@ -36,4 +36,8 @@ function validate_tr_vkn(input, debug=false) {
   return true;
 }
 
-module.exports = { validate_tr_vkn };
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {validate_tr_vkn};
+} else {
+  window.validate_tr_vkn = validate_tr_vkn;
+}

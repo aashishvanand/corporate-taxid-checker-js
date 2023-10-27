@@ -26,4 +26,9 @@ function validate_in_pan(pan, debug=false) {
   return validTypes.includes(typeChar);
 }
 
-module.exports = { validate_in_gst, validate_in_pan };
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {validate_in_gst, validate_in_pan};
+} else {
+  window.validate_in_gst = validate_in_gst;
+  window.validate_in_pan = validate_in_pan;
+}

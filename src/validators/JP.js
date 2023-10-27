@@ -56,4 +56,8 @@ function validate_jp_cn(input, debug=false) {
   return true;
 }
 
-module.exports = { validate_jp_cn };
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {validate_jp_cn};
+} else {
+  window.validate_jp_cn = validate_jp_cn;
+}

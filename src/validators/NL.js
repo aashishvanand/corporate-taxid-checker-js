@@ -101,4 +101,9 @@ async function online_check(tin,debug=false) {
   }
 }
 
-module.exports = { validate_nl_btw, online_check };
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {validate_nl_btw, online_check};
+} else {
+  window.validate_nl_btw = validate_nl_btw;
+  window.online_check = online_check;
+}

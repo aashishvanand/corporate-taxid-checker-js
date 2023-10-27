@@ -149,4 +149,10 @@ function validate_mx_rfc(rfc, debug=false) {
   return true;
 }
 
-module.exports = { validate_mx_rfc };
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {validate_mx_rfc};
+} else {
+  window.validate_mx_rfc = validate_mx_rfc;
+}
+

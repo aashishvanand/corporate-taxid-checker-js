@@ -55,4 +55,9 @@ function weightedSum(number, weights, modulus) {
     return sum % modulus;
 }
 
-module.exports = { validate_ve_rif };
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {validate_ve_rif};
+} else {
+  window.validate_ve_rif = validate_ve_rif;
+}
+

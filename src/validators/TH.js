@@ -72,5 +72,8 @@ function validate_th_tin(input, debug=false) {
     return moavalidate(input);
 }
 
-
-module.exports = { validate_th_tin };
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {validate_th_tin};
+  } else {
+    window.validate_th_tin = validate_th_tin;
+  }

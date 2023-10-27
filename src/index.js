@@ -1,9 +1,9 @@
-// import jsonpack from 'jsonpack';
+import jsonpack from 'jsonpack';
 
-// import compressedData from './data.compressed';
-// const data = jsonpack.unpack(compressedData);
+import compressedData from './data.compressed';
+const data = jsonpack.unpack(compressedData);
 
-const data = require('./minify.data.json');
+// const data = require('./minify.data.json');
 
 async function validateTaxId(countryCode, taxId, onlineCheckRequired = false, debug = true) {
     const countryData = data.find(item => item.ISOCountryCode === countryCode.toUpperCase());

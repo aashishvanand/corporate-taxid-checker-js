@@ -57,4 +57,8 @@ function pymod(a, b) {
     return ((a % b) + b) % b;
 }
 
-module.exports = { validate_uy_rut };
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {validate_uy_rut};
+  } else {
+    window.validate_uy_rut = validate_uy_rut;
+  }

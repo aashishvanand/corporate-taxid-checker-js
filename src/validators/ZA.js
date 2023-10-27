@@ -43,4 +43,8 @@ function luhnChecksumValidate(value) {
     return (sum % 10) === 0;
 }
 
-module.exports = { validate_za_tin };
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {validate_za_tin};
+  } else {
+    window.validate_za_tin = validate_za_tin;
+  }

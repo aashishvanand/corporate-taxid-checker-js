@@ -48,4 +48,8 @@ function validate_id_npwp(input, debug=false) {
   return true;
 }
 
-module.exports = { validate_id_npwp };
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {validate_id_npwp};
+} else {
+  window.validate_id_npwp = validate_id_npwp;
+}

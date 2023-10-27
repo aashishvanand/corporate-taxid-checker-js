@@ -48,4 +48,8 @@ function validate_sv_nit(input, debug=false) {
     return true;
 }
 
-module.exports = { validate_sv_nit };
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {validate_sv_nit};
+  } else {
+    window.validate_sv_nit = validate_sv_nit;
+  }

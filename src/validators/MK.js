@@ -51,4 +51,8 @@ function validate_mk_edb(edb, debug=false) {
   return true;
 }
 
-module.exports = { validate_mk_edb };
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {validate_mk_edb};
+} else {
+  window.validate_mk_edb = validate_mk_edb;
+}

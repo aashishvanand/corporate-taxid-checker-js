@@ -42,4 +42,8 @@ function validate_gh_tin(input, debug=false) {
     return true;
 }
 
-module.exports = { validate_gh_tin };
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {validate_gh_tin};
+  } else {
+    window.validate_gh_tin = validate_gh_tin;
+  }

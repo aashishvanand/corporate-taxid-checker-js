@@ -64,4 +64,8 @@ function validate_nz_ird(ird, debug=false) {
   return true;
 }
 
-module.exports = { validate_nz_ird };
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {validate_nz_ird};
+} else {
+  window.validate_nz_ird = validate_nz_ird;
+}

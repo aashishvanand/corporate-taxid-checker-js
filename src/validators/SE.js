@@ -85,5 +85,9 @@ async function online_check(tin,debug=false) {
     }
 }
 
-// Export the function for use in other files
-module.exports = { verify_se_vat, online_check };
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {verify_se_vat, online_check};
+  } else {
+    window.verify_se_vat = verify_se_vat;
+    window.online_check = online_check;
+  }

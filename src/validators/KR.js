@@ -66,4 +66,9 @@ function validate_kr_brn(kr, debug=false) {
   return true;
 }
 
-module.exports = { validate_kr_brn };
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {validate_kr_brn};
+} else {
+  window.validate_kr_brn = validate_kr_brn;
+}
+

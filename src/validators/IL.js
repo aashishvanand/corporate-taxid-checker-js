@@ -20,4 +20,8 @@ function validate_il_hp(input, debug=false) {
   return true;
 }
 
-module.exports = { validate_il_hp };
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {validate_il_hp};
+} else {
+  window.validate_il_hp = validate_il_hp;
+}

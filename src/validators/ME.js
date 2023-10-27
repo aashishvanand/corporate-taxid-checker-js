@@ -49,4 +49,8 @@ function validate_me_pib(pib, debug=false) {
   return true;
 }
 
-module.exports = { validate_me_pib };
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {validate_me_pib};
+} else {
+  window.validate_me_pib = validate_me_pib;
+}

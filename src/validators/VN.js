@@ -41,4 +41,8 @@ function weightedSum(number, weights, modulus) {
     return sum % modulus;
 }
 
-module.exports = { validate_vn_mst };
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {validate_vn_mst};
+  } else {
+    window.validate_vn_mst = validate_vn_mst;
+  }

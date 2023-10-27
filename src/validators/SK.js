@@ -63,4 +63,9 @@ async function online_check(tin,debug=false) {
     }
 }
 
-module.exports = { validate_sk_dph, online_check };
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {validate_sk_dph, online_check};
+  } else {
+    window.validate_sk_dph = validate_sk_dph;
+    window.online_check = online_check;
+  }

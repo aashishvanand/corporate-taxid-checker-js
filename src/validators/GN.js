@@ -37,4 +37,9 @@ function validate_gn_nifp(input, debug=false) {
     return true;
 }
 
-module.exports = { validate_gn_nifp };
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {validate_gn_nifp};
+  } else {
+    window.validate_gn_nifp = validate_gn_nifp;
+  }
+  

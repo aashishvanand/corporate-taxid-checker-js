@@ -93,4 +93,9 @@ async function online_check(tin,debug=false) {
   }
 }
 
-module.exports = { validate_it_iva, online_check };
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {validate_it_iva, online_check};
+} else {
+  window.validate_it_iva = validate_it_iva;
+  window.online_check = online_check;
+}

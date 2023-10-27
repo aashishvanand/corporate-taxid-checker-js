@@ -37,4 +37,8 @@ async function online_check(tin,debug=false) {
     }
 }
 
-module.exports = { online_check };
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {online_check};
+  } else {
+    window.online_check = online_check;
+  }

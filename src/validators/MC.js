@@ -76,4 +76,8 @@ function validate_ma_tva(input, debug=false) {
   return true;
 }
 
-module.exports = { validate_ma_tva };
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {validate_ma_tva};
+} else {
+  window.validate_ma_tva = validate_ma_tva;
+}

@@ -90,4 +90,9 @@ async function online_check(tin,debug=false) {
   }
 }
 
-module.exports = { validate_pl_nip, online_check };
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {validate_pl_nip, online_check};
+} else {
+  window.validate_pl_nip = validate_pl_nip;
+  window.online_check = online_check;
+}

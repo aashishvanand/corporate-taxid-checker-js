@@ -135,4 +135,9 @@ async function online_check(tin,debug=false) {
   }
 }
 
-module.exports = { validate_lv_pvn, online_check };
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {validate_lv_pvn, online_check};
+} else {
+  window.validate_lv_pvn = validate_lv_pvn;
+  window.online_check = online_check;
+}

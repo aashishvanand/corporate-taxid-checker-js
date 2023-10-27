@@ -75,5 +75,11 @@ function validate_lu_tva(input, debug=false) {
         return false;
     }
 }
-  module.exports = { validate_lu_tva, online_check };
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {validate_lu_tva, online_check};
+} else {
+  window.validate_lu_tva = validate_lu_tva;
+  window.online_check = online_check;
+}
   

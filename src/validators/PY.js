@@ -45,4 +45,8 @@ function validate_py_ruc(ruc, debug=false) {
   return true;
 }
 
-module.exports = { validate_py_ruc };
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {validate_py_ruc};
+} else {
+  window.validate_py_ruc = validate_py_ruc;
+}

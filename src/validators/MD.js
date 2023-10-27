@@ -51,4 +51,8 @@ function validate_md_idno(md, debug=false) {
   return true;
 }
 
-module.exports = { validate_md_idno };
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {validate_md_idno};
+} else {
+  window.validate_md_idno = validate_md_idno;
+}

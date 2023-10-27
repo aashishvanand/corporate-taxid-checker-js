@@ -86,4 +86,9 @@ async function online_check(tin,debug=false) {
   }
 }
 
-module.exports = { validate_mt_vat, online_check };
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {validate_mt_vat, online_check};
+} else {
+  window.validate_mt_vat = validate_mt_vat;
+  window.online_check = online_check;
+}
