@@ -20,7 +20,7 @@
 You can install the package via npm:
 
 ```bash
-npm install taxid-validator
+npm install corporate-taxid-checker-js
 ```
 
 ## Usage
@@ -30,7 +30,7 @@ The tool can be used by importing the main validator function and then calling i
 Here's a basic example:
 
 ```javascript
-const { validateTaxId } = require('taxid-validator');
+const { validateTaxId } = require('corporate-taxid-checker-js');
 
 const taxId = '1234567890';
 const countryCode = 'IN'; // Use the appropriate country code

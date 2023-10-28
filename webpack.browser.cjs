@@ -5,7 +5,7 @@ module.exports = {
     entry: './src/index.js',
     mode: 'production',
     output: {
-        filename: 'taxid-validator.js',
+        filename: 'corporate-taxid-checker.js',
         path: path.resolve(__dirname, 'dist'),
         library: 'TaxidValidator',
         libraryTarget: 'umd',

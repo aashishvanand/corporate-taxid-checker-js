@@ -1,4 +1,4 @@
-const validateTaxId = require('../dist/taxid-validator.js'); 
+const validateTaxId = require('../dist/corporate-taxid-checker.js'); 
 
 test('Testing IN taxId 21WEKSQ0384LZE', async () => {
     const result = await validateTaxId('IN', '21WEKSQ0384LZE');
