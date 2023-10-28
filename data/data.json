@@ -186,6 +186,19 @@
         ]
     },
     {
+        "Country": "Belize",
+        "ISOCountryCode": "BZ",
+        "data": [
+            {
+                "label": "Belize Tax ID",
+                "type": "bz_vat",
+                "regex": "^\\d{3}-\\d{2}-\\d{4}$",
+                "checksum": true,
+                "_comment": "Check"
+            }
+        ]
+    },
+    {
         "Country": "Canada",
         "ISOCountryCode": "CA",
         "data": [
@@ -424,18 +437,6 @@
                 "regex": "^ESA\\d{8}$",
                 "checksum": true,
                 "online": true
-            }
-        ]
-    },
-    {
-        "Country": "EU",
-        "ISOCountryCode": "EU",
-        "data": [
-            {
-                "label": "European One Stop Shop VAT number for non-Union scheme",
-                "type": "eu_oss_vat",
-                "regex": "^EU\\d{9}$",
-                "checksum": false
             }
         ]
     },
@@ -810,6 +811,19 @@
         ]
     },
     {
+        "Country": "Monaco",
+        "ISOCountryCode": "FR",
+        "data": [
+            {
+                "label": "Monacan VAT number (taxe sur la valeur ajoutée)",
+                "type": "fr_nif",
+                "regex": "^[0-3]\\d{1} \\d{2} \\d{3} \\d{3} \\d{3}$",
+                "checksum": false
+
+            }
+        ]
+    }, 
+    {
         "Country": "Moldova",
         "ISOCountryCode": "MD",
         "data": [
@@ -821,7 +835,33 @@
 
             }
         ]
-    },    
+    },
+    {
+        "Country": "Montenegro",
+        "ISOCountryCode": "ME",
+        "data": [
+            {
+                "label": "Montenegro tax number (Poreski Identifikacioni Broj)",
+                "type": "me_pib",
+                "regex": "^\\d{8}$",
+                "checksum": true,
+                "_comment":"Check https://www.vatify.eu/montenegro-vat-number.html"
+            }
+        ]
+    },
+    {
+        "Country": "North Macedonia",
+        "ISOCountryCode": "MK",
+        "data": [
+            {
+                "label": "",
+                "type": "mk_edb",
+                "regex": "",
+                "checksum": true,
+                "_comment":"Check"
+            }
+        ]
+    },         
     {
         "Country": "Malta",
         "ISOCountryCode": "MT",
@@ -1112,6 +1152,18 @@
         ]
     },
     {
+        "Country": "San Marino",
+        "ISOCountryCode": "SM",
+        "data": [
+            {
+                "label": "San Marino national tax number (Codice operatore economico)",
+                "type": "sm_coe",
+                "regex": "^[A-Za-z0-9]{5}$",
+                "checksum": true
+            }
+        ]
+    },
+    {
         "Country": "El Salvador",
         "ISOCountryCode": "SV",
         "data": [
@@ -1131,6 +1183,18 @@
                 "label": "Thai VAT",
                 "type": "th_tin",
                 "regex": "^\\d{13}$",
+                "checksum": true
+            }
+        ]
+    },
+    {
+        "Country": "Tunisia",
+        "ISOCountryCode": "TN",
+        "data": [
+            {
+                "label": "Tunisia tax number (Matricule Fiscal)",
+                "type": "tn_mf",
+                "regex": "^(\\d{7}[A-HJ-NP-TV-Z][APBDN][MP-CNE]000|\\d{7}[A-HJ-NP-TV-Z][APBDN]E\\d{3})$",
                 "checksum": true
             }
         ]

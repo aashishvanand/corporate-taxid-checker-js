@@ -10,6 +10,7 @@ async function compressJSON() {
 
   // Write the compressed data to a new file
   await fs.writeFile('../data/data.compressed', packedData, 'utf8');
+  await fs.writeFile('../src/data.compressed', packedData, 'utf8');
 
   console.log('Compression complete. Compressed data written to airports.compressed');
 }
