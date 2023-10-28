@@ -1,84 +1,12 @@
-# Logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-lerna-debug.log*
-.pnpm-debug.log*
-
-# Diagnostic reports
-report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
-
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
-
-# Coverage and instrumentation
-lib-cov
-coverage
-*.lcov
-.nyc_output
-
-# Build tools and task runners
-.grunt
-.lock-wscript
-build/Release
-*.tsbuildinfo
-*.tgz
-.cache
-.parcel-cache
-.next
-out
-.nuxt
-dist
-.vuepress/dist
-.temp
-
-# Dependency directories
+# Node specific
 node_modules/
-bower_components
-jspm_packages/
-web_modules/
+npm-debug.log
+package-lock.json
 
-# Caches
-.npm
-.eslintcache
-.stylelintcache
-.rpt2_cache/
-.rts2_cache_cjs/
-.rts2_cache_es/
-.rts2_cache_umd/
-.node_repl_history
-.yarn/cache
-.yarn/unplugged
-.yarn/build-state.yml
-.yarn/install-state.gz
-.pnp.*
-.fusebox/
-.dynamodb/
-.tern-port
-.docusaurus
-.serverless/
-
-# Environment variables
-.env
-.env.development.local
-.env.test.local
-.env.production.local
-.env.local
-
-# Frameworks and libraries
-# Gatsby files
-.cache/
-
-# IDE and editors
-.DS_Store
+# IDE specific
 .idea/
+*.code-workspace
 .vscode/
-.vscode-test
 
-# Production-ready build
-dist/
-lib/
+# OS generated files
+.DS_Store
