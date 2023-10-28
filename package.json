@@ -2,7 +2,7 @@
   "name": "taxid-validator",
   "version": "1.0.0",
   "description": "Validate Global Tax IDs: A robust and comprehensive library for validating tax identification numbers (TINs) worldwide. It supports validation against standard regex patterns and offers extended verification through checksum algorithms for countries with such requirements. Ideal for applications dealing with international data, finance, or requiring precise tax ID validation",
-  "main": "dist/your-library-name.js",
+  "main": "dist/taxid-validator.js",
   "keywords": [
     "tax",
     "tax-id",
