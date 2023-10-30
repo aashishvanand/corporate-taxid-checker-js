@@ -1,259 +1,70 @@
-# Tax ID Validator
+# Getting Started with Create React App
 
-## Overview
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-`Tax ID Validator` is a robust tool designed for validating various tax identification numbers (TINs), such as GSTIN in India, UEN in Singapore, etc. The tool uses regular expressions and specific validation logic for each type of TIN, ensuring that the input adheres to the expected format and structural rules of the respective issuing authority.
+## Available Scripts
 
-## Features
+In the project directory, you can run:
 
-- Supports multiple countries and TIN types.
-- Uses precise regular expressions for format validation.
-- Implements checksum logic for countries that incorporate checksum characters in their TINs.
-- Easy to integrate and use in various JavaScript environments.
+### `npm start`
 
-## Requirements
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-- Node.js (v14 or newer recommended)
+The page will reload when you make changes.\
+You may also see any lint errors in the console.
 
-## Installation
+### `npm test`
 
-You can install the package via npm:
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-```bash
-npm install corporate-taxid-checker-js
-```
+### `npm run build`
 
-## Usage
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
 
-The tool can be used by importing the main validator function and then calling it with the appropriate parameters.
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
 
-Here's a basic example:
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-```javascript
-const { validateTaxId } = require('corporate-taxid-checker-js');
+### `npm run eject`
 
-const taxId = '1234567890';
-const countryCode = 'IN'; // Use the appropriate country code
+**Note: this is a one-way operation. Once you `eject`, you can't go back!**
 
-const result = validateTaxId(taxId, countryCode);
-console.log(result); // logs true if valid, false if invalid
-```
-### Validation Levels
+If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-For enhanced accuracy and reliability, our tool offers three levels of TIN validation for several countries:
+Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
 
-1.  **Regex Check:** This initial check ensures the TIN adheres to the expected format using precise regular expressions.
-2.  **Checksum Validation:** Based on the guidelines from the [OECD](https://www.oecd.org/tax/automatic-exchange/crs-implementation-and-assistance/tax-identification-numbers/), this check verifies the integrity of the TIN using its checksum.
-3.  **Authority Lookup (Available for EU countries and Australia):** This advanced check confirms the validity of the TIN by directly querying the respective country's tax authority website.
+You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
 
-## Supported Countries and TINs
+## Learn More
 
-The `Tax ID Validator` currently supports tax identification number validation for the following countries:
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-Country Code | Country | Regex Check | Checksum Check | Online Check
----|---|---|---|---
-AD | Andorra | ✅ | ✅ | 
-AE | United Arab Emirates | ✅ |  | 
-AL | Albania | ✅ | ✅ | 
-AM | Armenia | ✅ |  | 
-AR | Argentina | ✅ | ✅ | 
-AT | Austria | ✅ | ✅ | 
-AU | Australia | ✅ | ✅ | 
-AZ | Azerbaijan |  | ✅ | 
-BD | Bangladesh | ✅ |  | 
-BE | Belgium | ✅ | ✅ | 
-BG | Bulgaria | ✅ | ✅ | 
-BO | Bolivia | ✅ |  | 
-BR | Brazil | ✅ | ✅ | 
-BY | Belarus |  | ✅ | 
-BZ | Belize | ✅ | ✅ | 
-CA | Canada | ✅ | ✅ | 
-CH | Switzerland | ✅ | ✅ | 
-CL | Chile | ✅ | ✅ | 
-CN | China | ✅ | ✅ | 
-CO | Colombia | ✅ | ✅ | 
-CR | Costa Rica | ✅ | ✅ | 
-CY | Cyprus | ✅ | ✅ | 
-CZ | Czech Republic | ✅ | ✅ | 
-DE | Germany | ✅ | ✅ | 
-DK | Denmark | ✅ | ✅ | 
-DO | Dominican Republic | ✅ |  | 
-DZ | Algeria | ✅ |  | 
-EC | Ecuador | ✅ | ✅ | 
-EE | Estonia | ✅ | ✅ | 
-EG | Egypt | ✅ | ✅ | 
-ES | Spain | ✅ | ✅ | 
-FI | Finland | ✅ | ✅ | 
-FR | France | ✅ | ✅ | 
-FO | Faroe Islands | ✅ |  | 
-GB | United Kingdom | ✅ |  | 
-GE | Georgia | ✅ |  | 
-GH | Ghana | ✅ | ✅ | 
-GN | Guinea | ✅ | ✅ | 
-GR | Greece | ✅ |  | 
-GT | Guatemala | ✅ | ✅ | 
-HK | Hong Kong | ✅ |  | 
-HR | Croatia | ✅ |  | 
-HU | Hungary | ✅ | ✅ | 
-ID | Indonesia | ✅ | ✅ | 
-IE | Ireland | ✅ | ✅ | 
-IL | Israel | ✅ | ✅ | 
-IN | India | ✅ | ✅ | 
-IS | Iceland | ✅ |  | 
-IT | Italy | ✅ |  | 
-JP | Japan | ✅ | ✅ | 
-KE | Kenya | ✅ |  | 
-KH | Cambodia | ✅ |  | 
-KR | South Korea | ✅ | ✅ | 
-LI | Liechtenstein | ✅ |  | 
-LT | Lithuania | ✅ |  | 
-LU | Luxembourg | ✅ |  | 
-LV | Latvia | ✅ |  | 
-MA | Morocco | ✅ | ✅ | 
-FR | Monaco | ✅ |  | 
-MD | Moldova | ✅ |  | 
-ME | Montenegro | ✅ | ✅ | 
-MK | North Macedonia |  | ✅ | 
-MT | Malta | ✅ |  | 
-MX | Mexico | ✅ | ✅ | 
-MY | Malaysia | ✅ |  | 
-NG | Nigeria | ✅ |  | 
-NL | Netherlands | ✅ | ✅ | 
-NO | Norway | ✅ | ✅ | 
-NZ | New Zealand | ✅ | ✅ | 
-PE | Peru | ✅ | ✅ | 
-PH | Philippines | ✅ |  | 
-PL | Poland | ✅ | ✅ | 
-PT | Portugal | ✅ | ✅ | 
-PY | Paraguay | ✅ | ✅ | 
-RO | Romania | ✅ | ✅ | 
-RS | Serbia | ✅ | ✅ | 
-RU | Russia | ✅ | ✅ | 
-RW | Rwanda | ✅ |  | 
-SA | Saudi Arabia | ✅ |  | 
-SE | Sweden | ✅ | ✅ | 
-SG | Singapore | ✅ | ✅ | 
-SI | Slovenia | ✅ | ✅ | 
-SK | Slovakia | ✅ | ✅ | 
-SM | San Marino | ✅ | ✅ | 
-SV | El Salvador | ✅ | ✅ | 
-TH | Thailand | ✅ | ✅ | 
-TN | Tunisia | ✅ | ✅ | 
-TR | Turkey | ✅ | ✅ | 
-TW | Taiwan | ✅ | ✅ | 
-UA | Ukraine | ✅ | ✅ | 
-US | United States | ✅ |  | 
-UY | Uruguay | ✅ | ✅ | 
-VE | Venezuela | ✅ | ✅ | 
-VN | Vietnam | ✅ | ✅ | 
-ZA | South Africa | ✅ | ✅ | 
-AD | Andorra | ✅ | ✅ | 
-AE | United Arab Emirates | ✅ |  | 
-AL | Albania | ✅ | ✅ | 
-AM | Armenia | ✅ |  | 
-AR | Argentina | ✅ | ✅ | 
-AT | Austria | ✅ | ✅ | ✅
-AU | Australia | ✅ | ✅ | ✅
-AZ | Azerbaijan |  | ✅ | 
-BD | Bangladesh | ✅ |  | 
-BE | Belgium | ✅ | ✅ | ✅
-BG | Bulgaria | ✅ | ✅ | ✅
-BO | Bolivia | ✅ |  | 
-BR | Brazil | ✅ | ✅ | 
-BY | Belarus |  | ✅ | 
-BZ | Belize | ✅ | ✅ | 
-CA | Canada | ✅ | ✅ | 
-CH | Switzerland | ✅ | ✅ | 
-CL | Chile | ✅ | ✅ | 
-CN | China | ✅ | ✅ | 
-CO | Colombia | ✅ | ✅ | 
-CR | Costa Rica | ✅ | ✅ | 
-CY | Cyprus | ✅ | ✅ | ✅
-CZ | Czech Republic | ✅ | ✅ | ✅
-DE | Germany | ✅ | ✅ | ✅
-DK | Denmark | ✅ | ✅ | ✅
-DO | Dominican Republic | ✅ |  | 
-DZ | Algeria | ✅ |  | 
-EC | Ecuador | ✅ | ✅ | 
-EE | Estonia | ✅ | ✅ | ✅
-EG | Egypt | ✅ | ✅ | 
-ES | Spain | ✅ | ✅ | ✅
-FI | Finland | ✅ | ✅ | ✅
-FR | France | ✅ | ✅ | 
-FO | Faroe Islands | ✅ |  | 
-GB | United Kingdom | ✅ |  | 
-GE | Georgia | ✅ |  | 
-GH | Ghana | ✅ | ✅ | 
-GN | Guinea | ✅ | ✅ | 
-GR | Greece | ✅ |  | ✅
-GT | Guatemala | ✅ | ✅ | 
-HK | Hong Kong | ✅ |  | 
-HR | Croatia | ✅ |  | ✅
-HU | Hungary | ✅ | ✅ | ✅
-ID | Indonesia | ✅ | ✅ | 
-IE | Ireland | ✅ | ✅ | ✅
-IL | Israel | ✅ | ✅ | 
-IN | India | ✅ | ✅ | 
-IS | Iceland | ✅ |  | 
-IT | Italy | ✅ |  | ✅
-JP | Japan | ✅ | ✅ | 
-KE | Kenya | ✅ |  | 
-KH | Cambodia | ✅ |  | 
-KR | South Korea | ✅ | ✅ | 
-LI | Liechtenstein | ✅ |  | 
-LT | Lithuania | ✅ |  | ✅
-LU | Luxembourg | ✅ |  | ✅
-LV | Latvia | ✅ |  | ✅
-MA | Morocco | ✅ | ✅ | 
-FR | Monaco | ✅ |  | 
-MD | Moldova | ✅ |  | 
-ME | Montenegro | ✅ | ✅ | 
-MK | North Macedonia |  | ✅ | 
-MT | Malta | ✅ |  | ✅
-MX | Mexico | ✅ | ✅ | 
-MY | Malaysia | ✅ |  | 
-NG | Nigeria | ✅ |  | 
-NL | Netherlands | ✅ | ✅ | ✅
-NO | Norway | ✅ | ✅ | 
-NZ | New Zealand | ✅ | ✅ | 
-PE | Peru | ✅ | ✅ | 
-PH | Philippines | ✅ |  | 
-PL | Poland | ✅ | ✅ | ✅
-PT | Portugal | ✅ | ✅ | ✅
-PY | Paraguay | ✅ | ✅ | 
-RO | Romania | ✅ | ✅ | ✅
-RS | Serbia | ✅ | ✅ | 
-RU | Russia | ✅ | ✅ | 
-RW | Rwanda | ✅ |  | 
-SA | Saudi Arabia | ✅ |  | 
-SE | Sweden | ✅ | ✅ | ✅
-SG | Singapore | ✅ | ✅ | 
-SI | Slovenia | ✅ | ✅ | ✅
-SK | Slovakia | ✅ | ✅ | ✅
-SM | San Marino | ✅ | ✅ | 
-SV | El Salvador | ✅ | ✅ | 
-TH | Thailand | ✅ | ✅ | 
-TN | Tunisia | ✅ | ✅ | 
-TR | Turkey | ✅ | ✅ | 
-TW | Taiwan | ✅ | ✅ | 
-UA | Ukraine | ✅ | ✅ | 
-US | United States | ✅ |  | 
-UY | Uruguay | ✅ | ✅ | 
-VE | Venezuela | ✅ | ✅ | 
-VN | Vietnam | ✅ | ✅ | 
-ZA | South Africa | ✅ | ✅ | 
+To learn React, check out the [React documentation](https://reactjs.org/).
 
-## Testing
+### Code Splitting
 
-To run the included tests:
+This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
 
-```bash
-npm run test
-```
+### Analyzing the Bundle Size
 
-## Contributing
+This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
 
-Contributions are welcome. Please fork the repository and submit a pull request with your changes. Ensure that your PR includes detailed information about the changes, including any new dependencies, environment variables, or required context.
+### Making a Progressive Web App
 
-## License
-This project is licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0) - see the LICENSE file for details.
+This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+
+### Advanced Configuration
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+
+### Deployment
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+
+### `npm run build` fails to minify
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
