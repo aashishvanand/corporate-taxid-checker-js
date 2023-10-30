@@ -23,10 +23,19 @@ jobs:
       - name: Build project
         run: npm run build
 
+      # Clean gh-pages branch
+      - name: Checkout gh-pages branch and delete all content
+        run: |
+          git fetch
+          git checkout gh-pages
+          git rm -rf *
+          git commit -m "Clean up gh-pages branch"
+          git checkout $GITHUB_REF
+
+      # Push new content to gh-pages
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@4.1.5
         with:
           branch: gh-pages
-          folder: build 
-          clean: true
+          folder: build
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
