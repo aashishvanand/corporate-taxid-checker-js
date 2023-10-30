@@ -17,6 +17,7 @@ import {
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import validateTaxDetails from "corporate-taxid-checker-js";
+import { clarity } from 'react-microsoft-clarity';
 
 const countries = [
   { code: "AD", label: "Andorra" },
@@ -117,6 +118,8 @@ const countries = [
 ];
 
 const App = () => {
+  clarity.init("jiofplb3zu");
+  clarity.consent();
   const [country, setCountry] = useState(null);
   const [taxId, setTaxId] = useState("");
   const [validationResult, setValidationResult] = useState(null);
