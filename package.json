@@ -1,7 +1,7 @@
 {
   "name": "corporate-taxid-checker-frontend",
   "version": "0.1.0",
-  "homepage": "https://aashishvanand.github.io/corporate-taxid-checker-js/",
+  "homepage": "https://corporate-taxid-checker-js.pages.dev/",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.11.1",
