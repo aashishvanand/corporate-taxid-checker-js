@@ -35,7 +35,7 @@ const { validateTaxId } = require('corporate-taxid-checker-js');
 const taxId = '1234567890';
 const countryCode = 'IN'; // Use the appropriate country code
 
-const result = validateTaxId(taxId, countryCode);
+const result = validateTaxId(countryCode, taxId);
 console.log(result); // logs true if valid, false if invalid
 ```
 ### Validation Levels
