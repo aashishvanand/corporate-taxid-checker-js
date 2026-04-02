@@ -1,47 +1,29 @@
 {
   "name": "corporate-taxid-checker-frontend",
-  "version": "0.1.0",
-  "homepage": "https://corporate-taxid-checker-js.pages.dev/",
+  "version": "2.0.0",
   "private": true,
-  "dependencies": {
-    "@emotion/react": "^11.11.1",
-    "@emotion/styled": "^11.11.0",
-    "@mui/icons-material": "^5.14.15",
-    "@mui/material": "^5.14.15",
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
-    "corporate-taxid-checker-js": "^1.0.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-microsoft-clarity": "^1.2.0",
-    "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
-  },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -b gh-pages -d build"
+    "dev": "vinext dev",
+    "build": "vinext build",
+    "start": "vinext start",
+    "preview": "vinext build && vinext start",
+    "deploy": "vinext deploy"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^7.0.1",
+    "@mui/material": "^7.0.1",
+    "corporate-taxid-checker-js": "^2.0.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "vinext": "latest"
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  }
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.30.3",
+    "@vitejs/plugin-rsc": "^0.5.21",
+    "vite": "^8.0.3",
+    "wrangler": "^4.79.0"
+  },
+  "type": "module"
 }

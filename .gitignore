@@ -1,31 +1,32 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
 # dependencies
-/node_modules
+node_modules/
 
-# testing
-/coverage
+# vinext / next build output
+.vinext/
+.next/
+out/
 
-# production
-/build
+# wrangler
+.wrangler/
+.dev.vars
 
 # misc
 .DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+*.local
+.env
+.env.*
+/dist
 
-# Log files
+# logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Editor directories and files
+# editor
 .idea
 .vscode
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
 *.sw*
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
