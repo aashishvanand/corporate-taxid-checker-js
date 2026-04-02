@@ -1,7 +1,11 @@
 module.exports = {
   "transform": {
-    "^.+\\.jsx?$": "babel-jest"
+    "\\.compressed$": "<rootDir>/tests/rawTransform.js",
+    "^.+\\.tsx?$": ["ts-jest", {
+      tsconfig: "tsconfig.json",
+      diagnostics: false
+    }]
   },
   "testEnvironment": "node",
-  "testPathIgnorePatterns": ["data.compressed"]
-  };
+  "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json"]
+};

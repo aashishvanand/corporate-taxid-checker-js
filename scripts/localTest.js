@@ -1,4 +1,4 @@
-const validateTaxId = require('../src/index.js');
+const validateTaxId = require('../lib/index.js');
 
 async function testValidation(countryCode, taxId, onlineCheck = false) {
     console.log(`Testing ${taxId} from ${countryCode}`);
@@ -9,7 +9,7 @@ async function testValidation(countryCode, taxId, onlineCheck = false) {
     if (result.checkSumCheckPresent) {
     console.log(`Checksum Valid`, result.checkSum);
     }
-    if (result.onnlineCheckPresent) {
+    if (result.onlineCheckPresent) {
     console.log(`Online Check:`, result.onlineCheck);
     }
     console.log('-----------------------------');

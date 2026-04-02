@@ -1,4 +1,4 @@
-name: Node.js CI
+name: Publish to npm
 
 on:
   push:
@@ -7,23 +7,39 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [14.x]
+        node-version: [20.x, 22.x, 24.x]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
-        registry-url: https://registry.npmjs.org/
     - run: npm ci
     - run: npm run build
     - run: npm test
-    - run: npm publish
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    if: success()
+    permissions:
+      contents: read
+      id-token: write
+    environment: release
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js 22.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22.x
+        registry-url: https://registry.npmjs.org/
+    - run: npm ci
+    - run: npm run build
+    - run: npm publish --provenance --access public
       env:
         NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}

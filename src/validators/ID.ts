@@ -1,0 +1,35 @@
+import { luhnChecksumValidate } from '../utils';
+
+function validate_id_npwp(input: string, debug: boolean = false): boolean {
+  const NPWP_TAX_IDENTITIES = [
+    '01', '02', '21', '31', '00', '20', '04', '05', '06', '07', '08', '09',
+    '24', '25', '26', '31', '34', '35', '36', '47', '48', '49', '57', '58',
+    '67', '77', '78', '79', '87', '88', '89', '97',
+  ];
+
+  const value = input;
+
+  if (value.length !== 15) {
+    if (debug) { console.log("Invalid Length"); }
+      return false;
+  }
+
+  if (!/^\d+$/.test(value)) {
+    if (debug) { console.log("Invalid Format"); }
+    return false;
+  }
+
+  if (!NPWP_TAX_IDENTITIES.includes(value.substr(0, 2))) {
+    if (debug) { console.log("Invalid Component"); }
+    return false
+  }
+
+  if (!luhnChecksumValidate(value.substr(0, 9))) {
+    if (debug) { console.log("Invalid Checksum"); }
+      return false;
+  }
+
+  return true;
+}
+
+export { validate_id_npwp };

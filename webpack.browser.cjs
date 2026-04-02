@@ -2,7 +2,7 @@ const path = require('path');
 
 module.exports = {
     target: 'web',
-    entry: './src/index.js',
+    entry: './src/index.ts',
     mode: 'production',
     output: {
         filename: 'corporate-taxid-checker.js',
@@ -12,16 +12,30 @@ module.exports = {
         umdNamedDefine: true,
         globalObject: 'this'
     },
+    externals: {
+        axios: {
+            commonjs: 'axios',
+            commonjs2: 'axios',
+            amd: 'axios',
+            root: 'axios'
+        },
+        cheerio: {
+            commonjs: 'cheerio',
+            commonjs2: 'cheerio',
+            amd: 'cheerio',
+            root: 'cheerio'
+        }
+    },
+    resolve: {
+        extensions: ['.ts', '.js', '.json']
+    },
     module: {
         rules: [
             {
-                test: /\.js$/,
+                test: /\.ts$/,
                 exclude: /node_modules/,
                 use: {
-                    loader: 'babel-loader',
-                    options: {
-                        presets: ['@babel/preset-env']
-                    }
+                    loader: 'ts-loader',
                 }
             },
             {
@@ -35,6 +49,6 @@ module.exports = {
             "fs": false,
             "path": require.resolve("path-browserify")
          },
-        extensions: ['.js', '.json']
+        extensions: ['.ts', '.js', '.json']
     }
 };

@@ -1,18 +1,17 @@
 const jsonpack = require('jsonpack');
-const fs = require('fs-extra');
+const fs = require('fs');
+const path = require('path');
 
 async function compressJSON() {
-  // Read the original JSON data
-  const originalData = await fs.readJson('../data/data.json');
+  const dataPath = path.join(__dirname, '..', 'data', 'data.json');
+  const originalData = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
 
-  // Compress the data using jsonpack
   const packedData = jsonpack.pack(originalData);
 
-  // Write the compressed data to a new file
-  await fs.writeFile('../data/data.compressed', packedData, 'utf8');
-  await fs.writeFile('../src/data.compressed', packedData, 'utf8');
+  fs.writeFileSync(path.join(__dirname, '..', 'data', 'data.compressed'), packedData, 'utf8');
+  fs.writeFileSync(path.join(__dirname, '..', 'src', 'data.compressed'), packedData, 'utf8');
 
-  console.log('Compression complete. Compressed data written to airports.compressed');
+  console.log('Compression complete.');
 }
 
 compressJSON().catch(err => {

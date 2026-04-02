@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-  entry: './src/index.js',
+  entry: './src/index.ts',
   target: 'node',
   mode: 'production',
   output: {
@@ -9,13 +9,21 @@ module.exports = {
     path: path.resolve(__dirname, 'lib'),
     libraryTarget: 'commonjs2'
   },
+  externals: {
+    axios: 'commonjs2 axios',
+    cheerio: 'commonjs2 cheerio',
+    jsonpack: 'commonjs2 jsonpack'
+  },
+  resolve: {
+    extensions: ['.ts', '.js', '.json']
+  },
   module: {
     rules: [
         {
-            test: /\.js$/,
+            test: /\.ts$/,
             exclude: /node_modules/,
             use: {
-                loader: 'babel-loader',
+                loader: 'ts-loader',
             },
         },
         {

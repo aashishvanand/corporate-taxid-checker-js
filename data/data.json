@@ -24,13 +24,37 @@
         ]
     },
     {
+        "Country": "Antigua and Barbuda",
+        "ISOCountryCode": "AG",
+        "data": [
+            {
+                "label": "Antigua and Barbuda TIN",
+                "type": "ag_tin",
+                "regex": "^\\d{6,8}$",
+                "checksum": false
+            }
+        ]
+    },
+    {
+        "Country": "Anguilla",
+        "ISOCountryCode": "AI",
+        "data": [
+            {
+                "label": "Anguilla TIN",
+                "type": "ai_tin",
+                "regex": "^[12]\\d{9}$",
+                "checksum": false
+            }
+        ]
+    },
+    {
         "Country": "Albania",
         "ISOCountryCode": "AL",
         "data": [
             {
                 "label": "VAT",
                 "type": "al_nipt",
-                "regex": "^[A-Z]{1}[0-9A-Z]{8}$",
+                "regex": "^[A-Z][0-9A-Z]{8,9}$",
                 "checksum": true
             }
         ]
@@ -43,6 +67,18 @@
                 "label": "VAT",
                 "type": "am_vat",
                 "regex": "^[0-9]{7}/1$",
+                "checksum": false
+            }
+        ]
+    },
+    {
+        "Country": "Angola",
+        "ISOCountryCode": "AO",
+        "data": [
+            {
+                "label": "Angola Tax Identification Number",
+                "type": "ao_tin",
+                "regex": "^\\d{10}$",
                 "checksum": false
             }
         ]
@@ -66,7 +102,7 @@
             {
                 "label": "Austrian tax identification number (Abgabenkontonummer)",
                 "type": "at_abn",
-                "regex": "(AT)?U[0-9]{8}",
+                "regex": "^(AT)?U[0-9]{8}$",
                 "checksum": true,
                 "online": true
             }
@@ -92,15 +128,51 @@
         ]
     },
     {
+        "Country": "Aruba",
+        "ISOCountryCode": "AW",
+        "data": [
+            {
+                "label": "Aruba Persoonsnummer",
+                "type": "aw_pn",
+                "regex": "^\\d{8}$",
+                "checksum": false
+            }
+        ]
+    },
+    {
         "Country": "Azerbaijan",
         "ISOCountryCode": "AZ",
         "data": [
             {
                 "label": "Azerbaijani Tax Identification Number (Vergi identifikasiya nömrəsi (VÖEN))",
                 "type": "az_vat",
-                "regex": "",
+                "regex": "^\\d{10}$",
                 "checksum": true,
                 "_comment": "Check"
+            }
+        ]
+    },
+    {
+        "Country": "Bosnia and Herzegovina",
+        "ISOCountryCode": "BA",
+        "data": [
+            {
+                "label": "Bosnia and Herzegovina Tax Identification Number",
+                "type": "ba_tin",
+                "regex": "^\\d{12}$",
+                "checksum": false
+            }
+        ]
+    },
+    {
+        "Country": "Barbados",
+        "ISOCountryCode": "BB",
+        "data": [
+            {
+                "label": "Barbados TIN",
+                "type": "bb_tin",
+                "regex": "^1\\d{12}$",
+                "checksum": false
             }
         ]
     },
@@ -111,7 +183,7 @@
             {
                 "label": "Business Identification Number (BIN)",
                 "type": "bd_bin",
-                "regex": "^[1-9]{1}[0-9]{12}$",
+                "regex": "^[1-9]\\d{8}-\\d{4}$|^[1-9]\\d{12}$",
                 "checksum": false
             }
         ]
@@ -130,15 +202,57 @@
         ]
     },
     {
+        "Country": "Burkina Faso",
+        "ISOCountryCode": "BF",
+        "data": [
+            {
+                "label": "Burkina Faso IFU Number",
+                "type": "bf_ifu",
+                "regex": "^\\d{8}[A-Z]$",
+                "checksum": false
+            }
+        ]
+    },
+    {
         "Country": "Bulgaria",
         "ISOCountryCode": "BG",
         "data": [
             {
                 "label": "Bulgarian VAT Number",
-                "type": "eu_vat",
-                "regex": "^BG\\d{9}$",
+                "type": "bg_vat",
+                "regex": "^BG\\d{9,10}$",
                 "checksum": true,
                 "online": true
+            },
+            {
+                "label": "Bulgaria Unified Identification Code",
+                "type": "bg_uic",
+                "regex": "^\\d{9}$",
+                "checksum": false
+            }
+        ]
+    },
+    {
+        "Country": "Bahrain",
+        "ISOCountryCode": "BH",
+        "data": [
+            {
+                "label": "Bahrain VAT Registration Number",
+                "type": "bh_vat",
+                "regex": "^\\d{15}$",
+                "checksum": false
+            }
+        ]
+    },
+    {
+        "Country": "Benin",
+        "ISOCountryCode": "BJ",
+        "data": [
+            {
+                "label": "Benin IFU Number",
+                "type": "bj_ifu",
+                "regex": "^\\d{13}$",
+                "checksum": false
             }
         ]
     },
@@ -173,13 +287,25 @@
         ]
     },
     {
+        "Country": "Bahamas",
+        "ISOCountryCode": "BS",
+        "data": [
+            {
+                "label": "Bahamas Tax Identification Number",
+                "type": "bs_tin",
+                "regex": "^\\d{3}\\.\\d{3}\\.\\d{3}$",
+                "checksum": false
+            }
+        ]
+    },
+    {
         "Country": "Belarus",
         "ISOCountryCode": "BY",
         "data": [
             {
                 "label": "Belarus VAT number",
                 "type": "by_vat",
-                "regex": "",
+                "regex": "^\\d{9}$",
                 "checksum": true,
                 "_comment": "Check"
             }
@@ -235,8 +361,20 @@
             {
                 "label": "Canadian QST number (Qubec)",
                 "type": "ca_qst",
-                "regex": "^|^(\\d{10}TQ\\d{4})$",
+                "regex": "^(\\d{10}TQ\\d{4})$",
                 "checksum": true
+            }
+        ]
+    },
+    {
+        "Country": "Congo (DR)",
+        "ISOCountryCode": "CD",
+        "data": [
+            {
+                "label": "Congo (DR) Tax Identification Number",
+                "type": "cd_nif",
+                "regex": "^[A-Z]\\d{7}[A-Z]$",
+                "checksum": false
             }
         ]
     },
@@ -265,13 +403,25 @@
         ]
     },
     {
+        "Country": "Cameroon",
+        "ISOCountryCode": "CM",
+        "data": [
+            {
+                "label": "Cameroon Tax Identification Number",
+                "type": "cm_niu",
+                "regex": "^[A-Z]\\d{12}[A-Z]$",
+                "checksum": false
+            }
+        ]
+    },
+    {
         "Country": "China",
         "ISOCountryCode": "CN",
         "data": [
             {
                 "label": "Chinese tax ID",
                 "type": "cn_uscc",
-                "regex": "^\\d{15}$",
+                "regex": "^[A-Z0-9]{15}$|^[A-Z0-9]{18}$",
                 "checksum": true
             }
         ]
@@ -301,12 +451,48 @@
         ]
     },
     {
+        "Country": "Cuba",
+        "ISOCountryCode": "CU",
+        "data": [
+            {
+                "label": "Cuba Numero de Identidad",
+                "type": "cu_ni",
+                "regex": "^\\d{11}$",
+                "checksum": false
+            }
+        ]
+    },
+    {
+        "Country": "Cape Verde",
+        "ISOCountryCode": "CV",
+        "data": [
+            {
+                "label": "Cape Verde Tax Identification Number",
+                "type": "cv_nif",
+                "regex": "^\\d{9}$",
+                "checksum": false
+            }
+        ]
+    },
+    {
+        "Country": "Curacao",
+        "ISOCountryCode": "CW",
+        "data": [
+            {
+                "label": "Curacao Persoonsnummer",
+                "type": "cw_pn",
+                "regex": "^\\d{9}$",
+                "checksum": false
+            }
+        ]
+    },
+    {
         "Country": "Cyprus",
         "ISOCountryCode": "CY",
         "data": [
             {
                 "label": "European VAT number",
-                "type": "eu_vat",
+                "type": "cy_vat",
                 "regex": "^CY\\d{8}[A-Z]$",
                 "checksum": true,
                 "online": true
@@ -333,7 +519,7 @@
             {
                 "label": "German tax number",
                 "type": "de_stnr",
-                "regex": "^[1-9][0-9]{10}$",
+                "regex": "^[1-9]\\d{9,12}$",
                 "checksum": true,
                 "online": true
             },
@@ -414,7 +600,7 @@
         "data": [
             {
                 "label": "Egyptian Tax Identification Number",
-                "type": "eg_tin",
+                "type": "eg_tn",
                 "regex": "^\\d{9}$",
                 "checksum": true
             }
@@ -434,9 +620,21 @@
             {
                 "label": "Spanish VAT number",
                 "type": "es_vat",
-                "regex": "^ESA\\d{8}$",
+                "regex": "^ES[A-Z0-9]\\d{7}[A-Z0-9]$",
                 "checksum": true,
                 "online": true
+            }
+        ]
+    },
+    {
+        "Country": "Ethiopia",
+        "ISOCountryCode": "ET",
+        "data": [
+            {
+                "label": "Ethiopia TIN",
+                "type": "et_tin",
+                "regex": "^\\d{10}$",
+                "checksum": false
             }
         ]
     },
@@ -450,6 +648,18 @@
                 "regex": "^FI\\d{8}$",
                 "checksum": true,
                 "online": true
+            }
+        ]
+    },
+    {
+        "Country": "Faroe Islands",
+        "ISOCountryCode": "FO",
+        "data": [
+            {
+                "label": "European VAT number",
+                "type": "fo_vat",
+                "regex": "^[PCGQV]{1}00[A-Z0-9]{8}$",
+                "checksum": false
             }
         ]
     },
@@ -470,18 +680,6 @@
                 "regex": "^FR[A-Z0-9]{2}\\d{9}$",
                 "checksum": true,
                 "online": true
-            }
-        ]
-    },
-    {
-        "Country": "Faroe Islands",
-        "ISOCountryCode": "FO",
-        "data": [
-            {
-                "label": "European VAT number",
-                "type": "fo_vat",
-                "regex": "^[PCGQV]{1}00[A-Z0-9]{8}$",
-                "checksum": false
             }
         ]
     },
@@ -516,6 +714,18 @@
         ]
     },
     {
+        "Country": "Guernsey",
+        "ISOCountryCode": "GG",
+        "data": [
+            {
+                "label": "Guernsey Social Insurance Number",
+                "type": "gg_sin",
+                "regex": "^GY\\d{6}$",
+                "checksum": false
+            }
+        ]
+    },
+    {
         "Country": "Ghana",
         "ISOCountryCode": "GH",
         "data": [
@@ -528,13 +738,25 @@
         ]
     },
     {
+        "Country": "Gibraltar",
+        "ISOCountryCode": "GI",
+        "data": [
+            {
+                "label": "Gibraltar TIN",
+                "type": "gi_tin",
+                "regex": "^\\d{5,6}$",
+                "checksum": false
+            }
+        ]
+    },
+    {
         "Country": "Guinea",
         "ISOCountryCode": "GN",
         "data": [
             {
                 "label": "Guinean Tax Number",
                 "type": "gn_nifp",
-                "regex": "^\\d{3}-\\d{3}-\\d{3}$",
+                "regex": "^\\d{3}-\\d{3}-\\d{3}$|^\\d{9}$",
                 "checksum": true
             }
         ]
@@ -548,7 +770,7 @@
                 "type": "gr_vat",
                 "regex": "^EL\\d{9}$",
                 "checksum": false,
-                "online":true
+                "online": true
             }
         ]
     },
@@ -582,9 +804,9 @@
         "data": [
             {
                 "label": "European VAT number",
-                "type": "eu_vat",
+                "type": "hr_oib",
                 "regex": "^HR\\d{11}$",
-                "checksum": false,
+                "checksum": true,
                 "online": true
             }
         ]
@@ -609,7 +831,7 @@
             {
                 "label": "Indonesian NPWP number",
                 "type": "id_npwp",
-                "regex": "^\\d{2}\\.\\d{3}\\.\\d{3}\\.\\d-\\d{3}\\.\\d{3}$",
+                "regex": "^\\d{2,3}\\.\\d{3}\\.\\d{3}\\.\\d-\\d{3}\\.\\d{3}$",
                 "checksum": true
             }
         ]
@@ -636,6 +858,18 @@
                 "type": "il_hp",
                 "regex": "^\\d{9}$",
                 "checksum": true
+            }
+        ]
+    },
+    {
+        "Country": "Isle of Man",
+        "ISOCountryCode": "IM",
+        "data": [
+            {
+                "label": "Isle of Man NINO",
+                "type": "im_nino",
+                "regex": "^[A-Z]{2}\\d{6}[A-D]$",
+                "checksum": false
             }
         ]
     },
@@ -683,6 +917,18 @@
         ]
     },
     {
+        "Country": "Jamaica",
+        "ISOCountryCode": "JM",
+        "data": [
+            {
+                "label": "Jamaica TRN (Taxpayer Registration Number)",
+                "type": "jm_trn",
+                "regex": "^\\d{9}$",
+                "checksum": false
+            }
+        ]
+    },
+    {
         "Country": "Japan",
         "ISOCountryCode": "JP",
         "data": [
@@ -719,12 +965,37 @@
         ]
     },
     {
+        "Country": "Kyrgyzstan",
+        "ISOCountryCode": "KG",
+        "data": [
+            {
+                "label": "Kyrgyzstan TIN",
+                "type": "kg_tin",
+                "regex": "^\\d{14}$",
+                "checksum": false
+            }
+        ]
+    },
+    {
         "Country": "Cambodia",
         "ISOCountryCode": "KH",
         "data": [
             {
                 "label": "VAT TIN",
-                "regex": "^L00\\d-\\d{9}$|^K00\\d-\\d{9}$|^E00\\d-\\d{10}$",
+                "type": "kh_tin",
+                "regex": "^[A-Z0-9]\\d{3}-\\d{9}$|^E00\\d-\\d{10}$",
+                "checksum": false
+            }
+        ]
+    },
+    {
+        "Country": "St. Kitts and Nevis",
+        "ISOCountryCode": "KN",
+        "data": [
+            {
+                "label": "St. Kitts and Nevis TIN",
+                "type": "kn_tin",
+                "regex": "^\\d{7}$",
                 "checksum": false
             }
         ]
@@ -742,6 +1013,54 @@
         ]
     },
     {
+        "Country": "Kuwait",
+        "ISOCountryCode": "KW",
+        "data": [
+            {
+                "label": "Kuwait Tax ID",
+                "type": "kw_tin",
+                "regex": "^\\d{10}$",
+                "checksum": false
+            }
+        ]
+    },
+    {
+        "Country": "Kazakhstan",
+        "ISOCountryCode": "KZ",
+        "data": [
+            {
+                "label": "Kazakhstan TIN",
+                "type": "kz_tin",
+                "regex": "^\\d{12}$",
+                "checksum": false
+            }
+        ]
+    },
+    {
+        "Country": "Laos",
+        "ISOCountryCode": "LA",
+        "data": [
+            {
+                "label": "Laos Tax Identification Number",
+                "type": "la_tin",
+                "regex": "^\\d{9}-\\d{3}$",
+                "checksum": false
+            }
+        ]
+    },
+    {
+        "Country": "Lebanon",
+        "ISOCountryCode": "LB",
+        "data": [
+            {
+                "label": "Lebanon TIN",
+                "type": "lb_tin",
+                "regex": "^\\d{11}$",
+                "checksum": false
+            }
+        ]
+    },
+    {
         "Country": "Liechtenstein",
         "ISOCountryCode": "LI",
         "data": [
@@ -749,6 +1068,24 @@
                 "label": "Liechtensteinian UID number",
                 "type": "li_uid",
                 "regex": "^CHE\\d{9}$",
+                "checksum": false
+            },
+            {
+                "label": "Liechtensteinian VAT number",
+                "type": "li_vat",
+                "regex": "^\\d{5}$",
+                "checksum": false
+            }
+        ]
+    },
+    {
+        "Country": "Sri Lanka",
+        "ISOCountryCode": "LK",
+        "data": [
+            {
+                "label": "Sri Lanka TIN",
+                "type": "lk_tin",
+                "regex": "^\\d{9}[A-Z]?$",
                 "checksum": false
             }
         ]
@@ -807,22 +1144,27 @@
                 "type": "ma_ice9",
                 "regex": "^\\d{9}$",
                 "checksum": true
+            },
+            {
+                "label": "Morocco VAT Number",
+                "type": "ma_vat",
+                "regex": "^\\d{8}$",
+                "checksum": false
             }
         ]
     },
     {
         "Country": "Monaco",
-        "ISOCountryCode": "FR",
+        "ISOCountryCode": "MC",
         "data": [
             {
                 "label": "Monacan VAT number (taxe sur la valeur ajoutée)",
-                "type": "fr_nif",
+                "type": "mc_tva",
                 "regex": "^[0-3]\\d{1} \\d{2} \\d{3} \\d{3} \\d{3}$",
                 "checksum": false
-
             }
         ]
-    }, 
+    },
     {
         "Country": "Moldova",
         "ISOCountryCode": "MD",
@@ -832,7 +1174,12 @@
                 "type": "md_idno",
                 "regex": "^\\d{13}$",
                 "checksum": false
-
+            },
+            {
+                "label": "Moldova VAT Number",
+                "type": "md_vat",
+                "regex": "^\\d{7}$",
+                "checksum": false
             }
         ]
     },
@@ -845,7 +1192,25 @@
                 "type": "me_pib",
                 "regex": "^\\d{8}$",
                 "checksum": true,
-                "_comment":"Check https://www.vatify.eu/montenegro-vat-number.html"
+                "_comment": "Check https://www.vatify.eu/montenegro-vat-number.html"
+            }
+        ]
+    },
+    {
+        "Country": "Marshall Islands",
+        "ISOCountryCode": "MH",
+        "data": [
+            {
+                "label": "Marshall Islands SSN",
+                "type": "mh_ssn",
+                "regex": "^\\d{2}-\\d{6}$",
+                "checksum": false
+            },
+            {
+                "label": "Marshall Islands EIN",
+                "type": "mh_ein",
+                "regex": "^\\d{5}-\\d{2}$",
+                "checksum": false
             }
         ]
     },
@@ -854,24 +1219,60 @@
         "ISOCountryCode": "MK",
         "data": [
             {
-                "label": "",
+                "label": "North Macedonian EDB number",
                 "type": "mk_edb",
-                "regex": "",
+                "regex": "^(MK)?\\d{13}$",
                 "checksum": true,
-                "_comment":"Check"
+                "_comment": "Check"
             }
         ]
-    },         
+    },
+    {
+        "Country": "Mauritania",
+        "ISOCountryCode": "MR",
+        "data": [
+            {
+                "label": "Mauritania Tax Identification Number",
+                "type": "mr_nif",
+                "regex": "^\\d{8}$",
+                "checksum": false
+            }
+        ]
+    },
     {
         "Country": "Malta",
         "ISOCountryCode": "MT",
         "data": [
             {
                 "label": "European VAT number",
-                "type": "eu_vat",
+                "type": "mt_vat",
                 "regex": "^MT\\d{8}$",
                 "checksum": false,
                 "online": true
+            }
+        ]
+    },
+    {
+        "Country": "Mauritius",
+        "ISOCountryCode": "MU",
+        "data": [
+            {
+                "label": "Mauritius TAN (Tax Account Number)",
+                "type": "mu_tan",
+                "regex": "^\\d{8}$",
+                "checksum": false
+            }
+        ]
+    },
+    {
+        "Country": "Maldives",
+        "ISOCountryCode": "MV",
+        "data": [
+            {
+                "label": "Maldives TIN",
+                "type": "mv_tin",
+                "regex": "^\\d{7}[A-Z]{3}\\d{3}$",
+                "checksum": false
             }
         ]
     },
@@ -930,6 +1331,18 @@
         ]
     },
     {
+        "Country": "Nicaragua",
+        "ISOCountryCode": "NI",
+        "data": [
+            {
+                "label": "Nicaragua RUC (VAT Number)",
+                "type": "ni_ruc",
+                "regex": "^[A-Z0-9]{14}$",
+                "checksum": false
+            }
+        ]
+    },
+    {
         "Country": "Netherlands",
         "ISOCountryCode": "NL",
         "data": [
@@ -951,6 +1364,24 @@
                 "type": "no_mva",
                 "regex": "^\\d{9}MVA$",
                 "checksum": true
+            },
+            {
+                "label": "Norwegian VAT on e-commerce number",
+                "type": "no_voec",
+                "regex": "^\\d{7}$",
+                "checksum": false
+            }
+        ]
+    },
+    {
+        "Country": "Nepal",
+        "ISOCountryCode": "NP",
+        "data": [
+            {
+                "label": "Nepal PAN (Permanent Account Number)",
+                "type": "np_pan",
+                "regex": "^\\d{9}$",
+                "checksum": false
             }
         ]
     },
@@ -963,6 +1394,30 @@
                 "type": "nz_ird",
                 "regex": "^\\d{9}$",
                 "checksum": true
+            }
+        ]
+    },
+    {
+        "Country": "Oman",
+        "ISOCountryCode": "OM",
+        "data": [
+            {
+                "label": "Oman VAT Number",
+                "type": "om_vat",
+                "regex": "^OM\\d{10}$",
+                "checksum": false
+            }
+        ]
+    },
+    {
+        "Country": "Panama",
+        "ISOCountryCode": "PA",
+        "data": [
+            {
+                "label": "Panama RUC (Registro Unico de Contribuyente)",
+                "type": "pa_ruc",
+                "regex": "^\\d{1,2}-\\d{1,4}-\\d{1,6}$",
+                "checksum": false
             }
         ]
     },
@@ -986,6 +1441,24 @@
                 "label": "Philippines Tax Identification Number",
                 "type": "ph_tin",
                 "regex": "^\\d{12}$",
+                "checksum": false
+            }
+        ]
+    },
+    {
+        "Country": "Pakistan",
+        "ISOCountryCode": "PK",
+        "data": [
+            {
+                "label": "Pakistan NTN (National Tax Number)",
+                "type": "pk_ntn",
+                "regex": "^\\d{7}-\\d$",
+                "checksum": false
+            },
+            {
+                "label": "Pakistan STRN (Sales Tax Registration Number)",
+                "type": "pk_strn",
+                "regex": "^\\d{13}$",
                 "checksum": false
             }
         ]
@@ -1027,7 +1500,19 @@
                 "checksum": true
             }
         ]
-    },    
+    },
+    {
+        "Country": "Qatar",
+        "ISOCountryCode": "QA",
+        "data": [
+            {
+                "label": "Qatar TIN",
+                "type": "qa_tin",
+                "regex": "^\\d{10}$",
+                "checksum": false
+            }
+        ]
+    },
     {
         "Country": "Romania",
         "ISOCountryCode": "RO",
@@ -1038,6 +1523,12 @@
                 "regex": "^RO\\d{2,10}$",
                 "checksum": true,
                 "online": true
+            },
+            {
+                "label": "Romanian tax ID number",
+                "type": "ro_tin",
+                "regex": "^\\d{13}$",
+                "checksum": false
             }
         ]
     },
@@ -1076,7 +1567,8 @@
         "ISOCountryCode": "RW",
         "data": [
             {
-                "label": "Rawanda TIN",
+                "label": "Rwanda TIN",
+                "type": "rw_tin",
                 "regex": "^\\d{9}$",
                 "checksum": false
             }
@@ -1090,6 +1582,18 @@
                 "label": "Saudi Arabia VAT",
                 "type": "sa_vat",
                 "regex": "^\\d{15}$",
+                "checksum": false
+            }
+        ]
+    },
+    {
+        "Country": "Seychelles",
+        "ISOCountryCode": "SC",
+        "data": [
+            {
+                "label": "Seychelles TIN",
+                "type": "sc_tin",
+                "regex": "^\\d{9}$",
                 "checksum": false
             }
         ]
@@ -1135,6 +1639,12 @@
                 "regex": "^SI\\d{8}$",
                 "checksum": true,
                 "online": true
+            },
+            {
+                "label": "Slovenia tax number",
+                "type": "si_tin",
+                "regex": "^\\d{8}$",
+                "checksum": false
             }
         ]
     },
@@ -1164,6 +1674,30 @@
         ]
     },
     {
+        "Country": "Senegal",
+        "ISOCountryCode": "SN",
+        "data": [
+            {
+                "label": "Senegal NINEA Number",
+                "type": "sn_ninea",
+                "regex": "^\\d{8}[A-Z]\\d$",
+                "checksum": false
+            }
+        ]
+    },
+    {
+        "Country": "Suriname",
+        "ISOCountryCode": "SR",
+        "data": [
+            {
+                "label": "Suriname FIN Number",
+                "type": "sr_fin",
+                "regex": "^\\d{10}$",
+                "checksum": false
+            }
+        ]
+    },
+    {
         "Country": "El Salvador",
         "ISOCountryCode": "SV",
         "data": [
@@ -1172,6 +1706,18 @@
                 "type": "sv_nit",
                 "regex": "^\\d{4}-\\d{6}-\\d{3}-\\d$",
                 "checksum": true
+            }
+        ]
+    },
+    {
+        "Country": "Sint Maarten",
+        "ISOCountryCode": "SX",
+        "data": [
+            {
+                "label": "Sint Maarten CRIB Number",
+                "type": "sx_crib",
+                "regex": "^\\d{9}$",
+                "checksum": false
             }
         ]
     },
@@ -1188,13 +1734,37 @@
         ]
     },
     {
+        "Country": "Tajikistan",
+        "ISOCountryCode": "TJ",
+        "data": [
+            {
+                "label": "Tajikistan TIN",
+                "type": "tj_tin",
+                "regex": "^[A-Z0-9]{7,20}$",
+                "checksum": false
+            }
+        ]
+    },
+    {
+        "Country": "Turkmenistan",
+        "ISOCountryCode": "TM",
+        "data": [
+            {
+                "label": "Turkmenistan TIN",
+                "type": "tm_tin",
+                "regex": "^[A-Z0-9]{7,20}$",
+                "checksum": false
+            }
+        ]
+    },
+    {
         "Country": "Tunisia",
         "ISOCountryCode": "TN",
         "data": [
             {
                 "label": "Tunisia tax number (Matricule Fiscal)",
                 "type": "tn_mf",
-                "regex": "^(\\d{7}[A-HJ-NP-TV-Z][APBDN][MP-CNE]000|\\d{7}[A-HJ-NP-TV-Z][APBDN]E\\d{3})$",
+                "regex": "^(\\d{7}[A-HJ-NP-TV-Z][APBDN][MPCNE]000|\\d{7}[A-HJ-NP-TV-Z][APBDN]E\\d{3})$",
                 "checksum": true
             }
         ]
@@ -1212,6 +1782,18 @@
         ]
     },
     {
+        "Country": "Trinidad and Tobago",
+        "ISOCountryCode": "TT",
+        "data": [
+            {
+                "label": "Trinidad and Tobago BIR (Board of Inland Revenue) number",
+                "type": "tt_bir",
+                "regex": "^\\d{9}$",
+                "checksum": false
+            }
+        ]
+    },
+    {
         "Country": "Taiwan",
         "ISOCountryCode": "TW",
         "data": [
@@ -1220,6 +1802,18 @@
                 "type": "tw_ubn",
                 "regex": "^\\d{8}$",
                 "checksum": true
+            }
+        ]
+    },
+    {
+        "Country": "Tanzania",
+        "ISOCountryCode": "TZ",
+        "data": [
+            {
+                "label": "Tanzania TIN",
+                "type": "tz_tin",
+                "regex": "^\\d{9}$|^\\d{8}[A-Z]$",
+                "checksum": false
             }
         ]
     },
@@ -1236,6 +1830,18 @@
         ]
     },
     {
+        "Country": "Uganda",
+        "ISOCountryCode": "UG",
+        "data": [
+            {
+                "label": "Uganda TIN",
+                "type": "ug_tin",
+                "regex": "^\\d{10}$",
+                "checksum": false
+            }
+        ]
+    },
+    {
         "Country": "United States",
         "ISOCountryCode": "US",
         "data": [
@@ -1248,7 +1854,7 @@
             {
                 "label": "United States ITIN",
                 "type": "us_itin",
-                "regex": "(9\\d{2})([ \\-]?)(5\\d|6[0-5]|7\\d|8[0-8]|9[0-2,4-9])([ \\-]?)(\\d{4})",
+                "regex": "^(9\\d{2})([ \\-]?)(5\\d|6[0-5]|7\\d|8[0-8]|9[0-2,4-9])([ \\-]?)(\\d{4})$",
                 "checksum": false
             }
         ]
@@ -1262,6 +1868,18 @@
                 "type": "uy_rut",
                 "regex": "^\\d{12}$",
                 "checksum": true
+            }
+        ]
+    },
+    {
+        "Country": "Uzbekistan",
+        "ISOCountryCode": "UZ",
+        "data": [
+            {
+                "label": "Uzbekistan VAT Number",
+                "type": "uz_vat",
+                "regex": "^\\d{9}$",
+                "checksum": false
             }
         ]
     },
@@ -1290,6 +1908,18 @@
         ]
     },
     {
+        "Country": "Samoa",
+        "ISOCountryCode": "WS",
+        "data": [
+            {
+                "label": "Samoa TIN",
+                "type": "ws_tin",
+                "regex": "^\\d{5,9}$",
+                "checksum": false
+            }
+        ]
+    },
+    {
         "Country": "South Africa",
         "ISOCountryCode": "ZA",
         "data": [
@@ -1298,6 +1928,30 @@
                 "type": "za_tin",
                 "regex": "^4\\d{9}$|^\\d{10}$",
                 "checksum": true
+            }
+        ]
+    },
+    {
+        "Country": "Zambia",
+        "ISOCountryCode": "ZM",
+        "data": [
+            {
+                "label": "Zambia Tax Identification Number",
+                "type": "zm_tin",
+                "regex": "^\\d{10}$",
+                "checksum": false
+            }
+        ]
+    },
+    {
+        "Country": "Zimbabwe",
+        "ISOCountryCode": "ZW",
+        "data": [
+            {
+                "label": "Zimbabwe Tax Identification Number",
+                "type": "zw_tin",
+                "regex": "^\\d{10}$",
+                "checksum": false
             }
         ]
     }
