@@ -48,41 +48,38 @@ import {
 
 const COUNTRY_NAMES: Record<string, string> = {
   AD: "Andorra", AE: "United Arab Emirates", AG: "Antigua and Barbuda",
-  AL: "Albania", AM: "Armenia", AO: "Angola", AR: "Argentina", AT: "Austria",
-  AU: "Australia", AZ: "Azerbaijan", BA: "Bosnia and Herzegovina",
-  BB: "Barbados", BD: "Bangladesh", BE: "Belgium", BF: "Burkina Faso",
-  BG: "Bulgaria", BH: "Bahrain", BM: "Bermuda", BO: "Bolivia", BR: "Brazil",
-  BS: "Bahamas", BW: "Botswana", BY: "Belarus", BZ: "Belize", CA: "Canada",
-  CD: "Congo (DRC)", CG: "Congo", CH: "Switzerland", CI: "Côte d'Ivoire",
-  CL: "Chile", CM: "Cameroon", CN: "China", CO: "Colombia", CR: "Costa Rica",
+  AI: "Anguilla", AL: "Albania", AM: "Armenia", AO: "Angola", AR: "Argentina",
+  AT: "Austria", AU: "Australia", AW: "Aruba", AZ: "Azerbaijan",
+  BA: "Bosnia and Herzegovina", BB: "Barbados", BD: "Bangladesh", BE: "Belgium",
+  BF: "Burkina Faso", BG: "Bulgaria", BH: "Bahrain", BJ: "Benin",
+  BO: "Bolivia", BR: "Brazil", BS: "Bahamas", BY: "Belarus", BZ: "Belize",
+  CA: "Canada", CD: "Congo (DRC)", CH: "Switzerland", CL: "Chile",
+  CM: "Cameroon", CN: "China", CO: "Colombia", CR: "Costa Rica", CU: "Cuba",
   CV: "Cape Verde", CW: "Curaçao", CY: "Cyprus", CZ: "Czech Republic",
-  DE: "Germany", DJ: "Djibouti", DK: "Denmark", DM: "Dominica",
-  DO: "Dominican Republic", DZ: "Algeria", EC: "Ecuador", EE: "Estonia",
-  EG: "Egypt", ES: "Spain", ET: "Ethiopia", FI: "Finland", FJ: "Fiji",
-  FR: "France", GA: "Gabon", GB: "United Kingdom", GE: "Georgia",
-  GH: "Ghana", GM: "Gambia", GR: "Greece", GT: "Guatemala", GY: "Guyana",
-  HK: "Hong Kong", HN: "Honduras", HR: "Croatia", HU: "Hungary",
-  ID: "Indonesia", IE: "Ireland", IL: "Israel", IN: "India", IQ: "Iraq",
-  IS: "Iceland", IT: "Italy", JM: "Jamaica", JO: "Jordan", JP: "Japan",
-  KE: "Kenya", KH: "Cambodia", KR: "South Korea", KW: "Kuwait",
-  KZ: "Kazakhstan", LA: "Laos", LB: "Lebanon", LC: "Saint Lucia",
+  DE: "Germany", DK: "Denmark", DO: "Dominican Republic", DZ: "Algeria",
+  EC: "Ecuador", EE: "Estonia", EG: "Egypt", ES: "Spain", ET: "Ethiopia",
+  FI: "Finland", FO: "Faroe Islands", FR: "France", GB: "United Kingdom",
+  GE: "Georgia", GG: "Guernsey", GH: "Ghana", GI: "Gibraltar", GN: "Guinea",
+  GR: "Greece", GT: "Guatemala", HK: "Hong Kong", HR: "Croatia", HU: "Hungary",
+  ID: "Indonesia", IE: "Ireland", IL: "Israel", IM: "Isle of Man", IN: "India",
+  IS: "Iceland", IT: "Italy", JM: "Jamaica", JP: "Japan", KE: "Kenya",
+  KG: "Kyrgyzstan", KH: "Cambodia", KN: "Saint Kitts and Nevis",
+  KR: "South Korea", KW: "Kuwait", KZ: "Kazakhstan", LA: "Laos", LB: "Lebanon",
   LI: "Liechtenstein", LK: "Sri Lanka", LT: "Lithuania", LU: "Luxembourg",
   LV: "Latvia", MA: "Morocco", MC: "Monaco", MD: "Moldova", ME: "Montenegro",
-  MG: "Madagascar", MK: "North Macedonia", ML: "Mali", MM: "Myanmar",
-  MN: "Mongolia", MO: "Macao", MT: "Malta", MU: "Mauritius", MW: "Malawi",
-  MX: "Mexico", MY: "Malaysia", MZ: "Mozambique", NA: "Namibia",
-  NE: "Niger", NG: "Nigeria", NI: "Nicaragua", NL: "Netherlands",
-  NO: "Norway", NP: "Nepal", NZ: "New Zealand", OM: "Oman", PA: "Panama",
-  PE: "Peru", PG: "Papua New Guinea", PH: "Philippines", PK: "Pakistan",
-  PL: "Poland", PT: "Portugal", PY: "Paraguay", QA: "Qatar", RO: "Romania",
-  RS: "Serbia", RU: "Russia", RW: "Rwanda", SA: "Saudi Arabia",
+  MH: "Marshall Islands", MK: "North Macedonia", MR: "Mauritania", MT: "Malta",
+  MU: "Mauritius", MV: "Maldives", MX: "Mexico", MY: "Malaysia",
+  NG: "Nigeria", NI: "Nicaragua", NL: "Netherlands", NO: "Norway", NP: "Nepal",
+  NZ: "New Zealand", OM: "Oman", PA: "Panama", PE: "Peru", PH: "Philippines",
+  PK: "Pakistan", PL: "Poland", PT: "Portugal", PY: "Paraguay", QA: "Qatar",
+  RO: "Romania", RS: "Serbia", RU: "Russia", RW: "Rwanda", SA: "Saudi Arabia",
   SC: "Seychelles", SE: "Sweden", SG: "Singapore", SI: "Slovenia",
-  SK: "Slovakia", SL: "Sierra Leone", SM: "San Marino", SN: "Senegal",
-  SV: "El Salvador", TG: "Togo", TH: "Thailand", TN: "Tunisia",
-  TR: "Turkey", TT: "Trinidad and Tobago", TW: "Taiwan", TZ: "Tanzania",
-  UA: "Ukraine", UG: "Uganda", US: "United States", UY: "Uruguay",
-  UZ: "Uzbekistan", VC: "St. Vincent & Grenadines", VE: "Venezuela",
-  VN: "Vietnam", ZA: "South Africa", ZM: "Zambia", ZW: "Zimbabwe",
+  SK: "Slovakia", SM: "San Marino", SN: "Senegal", SR: "Suriname",
+  SV: "El Salvador", SX: "Sint Maarten", TH: "Thailand", TJ: "Tajikistan",
+  TM: "Turkmenistan", TN: "Tunisia", TR: "Turkey", TT: "Trinidad and Tobago",
+  TW: "Taiwan", TZ: "Tanzania", UA: "Ukraine", UG: "Uganda",
+  US: "United States", UY: "Uruguay", UZ: "Uzbekistan", VE: "Venezuela",
+  VN: "Vietnam", WS: "Samoa", ZA: "South Africa", ZM: "Zambia", ZW: "Zimbabwe",
 };
 
 function getCountryFlag(code: string): string {
@@ -113,6 +110,11 @@ function StatusIcon({ value, present }: { value: boolean; present?: boolean }) {
 export default function Home() {
   const prefersDark = useMediaQuery("(prefers-color-scheme: dark)");
   const [darkMode, setDarkMode] = useState(prefersDark);
+
+  useEffect(() => {
+    setDarkMode(prefersDark);
+  }, [prefersDark]);
+
   const [country, setCountry] = useState<CountryOption | null>(null);
   const [taxId, setTaxId] = useState("");
   const [onlineCheck, setOnlineCheck] = useState(false);
