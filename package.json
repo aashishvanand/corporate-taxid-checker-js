@@ -1,7 +1,7 @@
 {
   "name": "corporate-taxid-checker-js",
-  "version": "2.0.0",
-  "description": "Validate Global Tax IDs: A robust and comprehensive library for validating tax identification numbers (TINs) worldwide. It supports validation against standard regex patterns and offers extended verification through checksum algorithms for countries with such requirements. Ideal for applications dealing with international data, finance, or requiring precise tax ID validation",
+  "version": "2.1.0",
+  "description": "Validate tax identification numbers (TIN, VAT, EIN, GST, ITIN, SSN) for 76+ countries. Regex, checksum, and online VIES/government verification. TypeScript-first with LLM tool definitions.",
   "main": "lib/index.js",
   "browser": "dist/corporate-taxid-checker.js",
   "types": "types/index.d.ts",
@@ -12,6 +12,11 @@
       "import": "./esm/index.mjs",
       "require": "./lib/index.js",
       "default": "./lib/index.js"
+    },
+    "./tools": {
+      "types": "./types/tools.d.ts",
+      "require": "./lib/tools.js",
+      "default": "./lib/tools.js"
     }
   },
   "files": [
@@ -23,30 +28,40 @@
   "keywords": [
     "tax",
     "tax-id",
-    "validation",
-    "validator",
-    "finance",
-    "accounting",
-    "regex",
-    "checksum",
-    "international",
-    "global",
-    "business",
-    "identification",
-    "compliance",
+    "tax-number",
+    "tax-id-validation",
     "TIN",
     "VAT",
+    "vat-number",
+    "vat-validation",
+    "VATIN",
+    "VIES",
     "EIN",
     "GST",
-    "fiscal",
-    "audit"
+    "ITIN",
+    "SSN",
+    "taxpayer",
+    "validation",
+    "validator",
+    "number",
+    "identification",
+    "compliance",
+    "checksum",
+    "finance",
+    "typescript",
+    "javascript",
+    "node.js",
+    "EU",
+    "international",
+    "company"
   ],
   "scripts": {
     "test": "jest",
     "build:lib": "webpack --config webpack.node.cjs",
     "build:dist": "webpack --config webpack.browser.cjs",
     "build:esm": "webpack --config webpack.esm.cjs",
-    "build": "npm run build:lib && npm run build:dist && npm run build:esm",
+    "build:tools": "webpack --config webpack.tools.cjs",
+    "build": "npm run build:lib && npm run build:dist && npm run build:esm && npm run build:tools",
     "typecheck": "tsc --noEmit"
   },
   "repository": {
