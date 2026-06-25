@@ -87,7 +87,7 @@
   "devDependencies": {
     "@types/jest": "^30.0.0",
     "@types/jsonpack": "^1.1.6",
-    "@types/node": "^25.5.0",
+    "@types/node": "^26.0.1",
     "jest": "^30.3.0",
     "path-browserify": "^1.0.1",
     "raw-loader": "^4.0.2",
