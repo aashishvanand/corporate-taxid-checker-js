@@ -1,10 +1,7 @@
 module.exports = {
   "transform": {
     "\\.compressed$": "<rootDir>/tests/rawTransform.js",
-    "^.+\\.tsx?$": ["ts-jest", {
-      tsconfig: "tsconfig.json",
-      diagnostics: false
-    }]
+    "^.+\\.tsx?$": "@swc/jest"
   },
   "testEnvironment": "node",
   "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json"]

@@ -23,7 +23,7 @@ module.exports = {
             test: /\.ts$/,
             exclude: /node_modules/,
             use: {
-                loader: 'ts-loader',
+                loader: 'swc-loader',
             },
         },
         {
