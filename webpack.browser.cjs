@@ -24,6 +24,12 @@ module.exports = {
             commonjs2: 'cheerio',
             amd: 'cheerio',
             root: 'cheerio'
+        },
+        jsonpack: {
+            commonjs: 'jsonpack',
+            commonjs2: 'jsonpack',
+            amd: 'jsonpack',
+            root: 'jsonpack'
         }
     },
     resolve: {
@@ -35,7 +41,7 @@ module.exports = {
                 test: /\.ts$/,
                 exclude: /node_modules/,
                 use: {
-                    loader: 'ts-loader',
+                    loader: 'swc-loader',
                 }
             },
             {

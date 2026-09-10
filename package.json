@@ -61,7 +61,8 @@
     "build:dist": "webpack --config webpack.browser.cjs",
     "build:esm": "webpack --config webpack.esm.cjs",
     "build:tools": "webpack --config webpack.tools.cjs",
-    "build": "npm run build:lib && npm run build:dist && npm run build:esm && npm run build:tools",
+    "build:types": "tsc --emitDeclarationOnly",
+    "build": "npm run build:lib && npm run build:dist && npm run build:esm && npm run build:tools && npm run build:types",
     "typecheck": "tsc --noEmit"
   },
   "repository": {
@@ -78,24 +79,25 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
-    "axios": "^1.5.1",
+    "axios": "^1.20.0",
     "jsonpack": "^2.0.0"
   },
   "optionalDependencies": {
-    "cheerio": "^1.0.0-rc.12"
+    "cheerio": "^1.2.0"
   },
   "devDependencies": {
+    "@swc/core": "^1.16.1",
+    "@swc/jest": "^0.2.39",
     "@types/jest": "^30.0.0",
     "@types/jsonpack": "^1.1.6",
-    "@types/node": "^26.0.1",
-    "jest": "^30.3.0",
+    "@types/node": "^26.4.0",
+    "jest": "^30.5.0",
     "path-browserify": "^1.0.1",
     "raw-loader": "^4.0.2",
-    "ts-jest": "^29.4.9",
-    "ts-loader": "^9.5.7",
-    "typescript": "^6.0.2",
-    "webpack": "^5.89.0",
-    "webpack-cli": "^7.0.2"
+    "swc-loader": "^0.2.7",
+    "typescript": "^7.0.2",
+    "webpack": "^5.110.2",
+    "webpack-cli": "^7.2.3"
   },
   "overrides": {
     "js-yaml": "^3.15.0",
