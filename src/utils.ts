@@ -41,8 +41,11 @@ export function luhnChecksumValidate(number: string | number): boolean {
         .map((x) => parseInt(x, 10));
     const lastDigit = arr.splice(0, 1)[0];
     let sum = arr.reduce(
-        (acc, value, index) =>
-            (index % 2 !== 0 ? acc + value : acc + ((2 * value) % 9) || 9),
+        (acc, value, index) => {
+            if (index % 2 !== 0) return acc + value;
+            const doubled = value * 2;
+            return acc + (doubled > 9 ? doubled - 9 : doubled);
+        },
         0
     );
     sum += lastDigit;

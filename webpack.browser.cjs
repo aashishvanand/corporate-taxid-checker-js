@@ -24,12 +24,6 @@ module.exports = {
             commonjs2: 'cheerio',
             amd: 'cheerio',
             root: 'cheerio'
-        },
-        jsonpack: {
-            commonjs: 'jsonpack',
-            commonjs2: 'jsonpack',
-            amd: 'jsonpack',
-            root: 'jsonpack'
         }
     },
     resolve: {
@@ -43,10 +37,6 @@ module.exports = {
                 use: {
                     loader: 'swc-loader',
                 }
-            },
-            {
-                test: /\.compressed$/,
-                use: 'raw-loader',
             }
         ]
     },

@@ -1,5 +1,4 @@
-import jsonpack from 'jsonpack';
-import compressedData from './data.compressed';
+import rawData from './data.json';
 import { sanitize, maskTaxId } from './utils';
 
 /**
@@ -99,7 +98,7 @@ interface ValidatorModule {
     [key: string]: (input: string, debug?: boolean) => boolean | Promise<boolean>;
 }
 
-const data: CountryData[] = jsonpack.unpack(compressedData);
+const data = rawData as unknown as CountryData[];
 
 // Territory aliasing: map overseas territories to parent country validation rules
 const territoryAliases: Record<string, string> = {

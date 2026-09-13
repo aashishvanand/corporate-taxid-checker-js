@@ -32,8 +32,8 @@ function validate_hr_oib(oib: string, debug: boolean = false): boolean {
 }
 
 async function online_check(tin: string, debug: boolean = false): Promise<boolean> {
-    // Extract the relevant portion of the TIN (excluding the msCode)
-    const processedTin = tin.substring(2);
+    // Only the EU VAT form carries the "HR" msCode prefix; the bare OIB is plain digits.
+    const processedTin = tin.toUpperCase().startsWith('HR') ? tin.substring(2) : tin;
 
     try {
         const response = await axios.post('https://ec.europa.eu/taxation_customs/tin/rest-api/tinRequest', {

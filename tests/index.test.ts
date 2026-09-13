@@ -39,6 +39,10 @@ test('AL invalid NIPT', async () => {
 // ============================================================================
 // Armenia (AM)
 // ============================================================================
+test('AM valid TIN', async () => {
+    const result = await validateTaxId('AM', '02538904');
+    expect(result.isValid).toBe(true);
+});
 test('AM valid VAT', async () => {
     const result = await validateTaxId('AM', '1234567/1');
     expect(result.isValid).toBe(true);
@@ -133,6 +137,30 @@ test('BG invalid VAT', async () => {
 });
 
 // ============================================================================
+// Brunei Darussalam (BN)
+// ============================================================================
+test('BN valid NRIC', async () => {
+    const result = await validateTaxId('BN', '01-119100');
+    expect(result.isValid).toBe(true);
+});
+test('BN valid company registration number', async () => {
+    const result = await validateTaxId('BN', 'RC12345678');
+    expect(result.isValid).toBe(true);
+});
+test('BN valid sole-proprietorship registration number', async () => {
+    const result = await validateTaxId('BN', 'P12345678');
+    expect(result.isValid).toBe(true);
+});
+test('BN valid foreign branch registration number', async () => {
+    const result = await validateTaxId('BN', 'RFC12345678');
+    expect(result.isValid).toBe(true);
+});
+test('BN invalid TIN', async () => {
+    const result = await validateTaxId('BN', '12345');
+    expect(result.isValid).toBe(false);
+});
+
+// ============================================================================
 // Bolivia (BO)
 // ============================================================================
 test('BO valid TIN', async () => {
@@ -191,6 +219,14 @@ test('CA valid BN', async () => {
     const result = await validateTaxId('CA', '123456789');
     expect(result.regexValid).toBe(true);
 });
+test('CA valid BN checksum', async () => {
+    const result = await validateTaxId('CA', '123456782');
+    expect(result.isValid).toBe(true);
+});
+test('CA invalid BN checksum', async () => {
+    const result = await validateTaxId('CA', '123456789');
+    expect(result.isValid).toBe(false);
+});
 test('CA valid GST/HST', async () => {
     const result = await validateTaxId('CA', '123456789RT0001');
     expect(result.isValid).toBe(true);
@@ -209,6 +245,18 @@ test('CH valid VAT', async () => {
 });
 test('CH invalid VAT', async () => {
     const result = await validateTaxId('CH', '12345');
+    expect(result.isValid).toBe(false);
+});
+
+// ============================================================================
+// Cote d'Ivoire (CI)
+// ============================================================================
+test('CI valid NCC', async () => {
+    const result = await validateTaxId('CI', '9500015F');
+    expect(result.isValid).toBe(true);
+});
+test('CI invalid NCC', async () => {
+    const result = await validateTaxId('CI', '12345');
     expect(result.isValid).toBe(false);
 });
 
@@ -411,11 +459,15 @@ test('FR invalid', async () => {
 // ============================================================================
 // Faroe Islands (FO)
 // ============================================================================
-test('FO valid VAT', async () => {
-    const result = await validateTaxId('FO', 'P00ABC12345');
+test('FO valid P-number', async () => {
+    const result = await validateTaxId('FO', '010180-123');
     expect(result.isValid).toBe(true);
 });
-test('FO invalid VAT', async () => {
+test('FO valid V-number', async () => {
+    const result = await validateTaxId('FO', '123456');
+    expect(result.isValid).toBe(true);
+});
+test('FO invalid TIN', async () => {
     const result = await validateTaxId('FO', '12345');
     expect(result.isValid).toBe(false);
 });
@@ -462,6 +514,14 @@ test('GH invalid TIN', async () => {
 test('GN valid NIFP', async () => {
     const result = await validateTaxId('GN', '123-456-789');
     expect(result.regexValid).toBe(true);
+});
+test('GN valid NIFP checksum (hyphenated)', async () => {
+    const result = await validateTaxId('GN', '123-456-782');
+    expect(result.isValid).toBe(true);
+});
+test('GN valid NIFP checksum (plain)', async () => {
+    const result = await validateTaxId('GN', '123456782');
+    expect(result.isValid).toBe(true);
 });
 test('GN invalid NIFP', async () => {
     const result = await validateTaxId('GN', '12345');
@@ -511,6 +571,10 @@ test('HR valid OIB', async () => {
     const result = await validateTaxId('HR', 'HR95000000011');
     expect(result.regexValid).toBe(true);
 });
+test('HR valid bare OIB (domestic, no HR prefix)', async () => {
+    const result = await validateTaxId('HR', '55555555551');
+    expect(result.isValid).toBe(true);
+});
 test('HR invalid OIB', async () => {
     const result = await validateTaxId('HR', '12345');
     expect(result.isValid).toBe(false);
@@ -523,6 +587,10 @@ test('HU valid ANUM', async () => {
     const result = await validateTaxId('HU', 'HU15082245');
     expect(result.regexValid).toBe(true);
 });
+test('HU valid ANUM checksum (dashed domestic form)', async () => {
+    const result = await validateTaxId('HU', '12345676-1-23');
+    expect(result.isValid).toBe(true);
+});
 test('HU invalid ANUM', async () => {
     const result = await validateTaxId('HU', '12345');
     expect(result.isValid).toBe(false);
@@ -534,6 +602,14 @@ test('HU invalid ANUM', async () => {
 test('ID valid NPWP', async () => {
     const result = await validateTaxId('ID', '01.234.567.8-901.234');
     expect(result.regexValid).toBe(true);
+});
+test('ID valid NPWP checksum', async () => {
+    const result = await validateTaxId('ID', '01.234.567.4-123.456');
+    expect(result.isValid).toBe(true);
+});
+test('ID invalid NPWP checksum', async () => {
+    const result = await validateTaxId('ID', '01.234.567.5-123.456');
+    expect(result.isValid).toBe(false);
 });
 test('ID invalid NPWP', async () => {
     const result = await validateTaxId('ID', '12345');
@@ -602,6 +678,10 @@ test('IT valid IVA', async () => {
 test('IT invalid IVA', async () => {
     const result = await validateTaxId('IT', '12345');
     expect(result.isValid).toBe(false);
+});
+test('IT valid Codice Fiscale', async () => {
+    const result = await validateTaxId('IT', 'ABCDEF12A12A123A');
+    expect(result.isValid).toBe(true);
 });
 
 // ============================================================================
@@ -765,6 +845,30 @@ test('MK invalid EDB', async () => {
 });
 
 // ============================================================================
+// Myanmar (MM)
+// ============================================================================
+test('MM valid TIN', async () => {
+    const result = await validateTaxId('MM', '123456789');
+    expect(result.isValid).toBe(true);
+});
+test('MM invalid TIN', async () => {
+    const result = await validateTaxId('MM', '12345');
+    expect(result.isValid).toBe(false);
+});
+
+// ============================================================================
+// Mongolia (MN)
+// ============================================================================
+test('MN valid TIN', async () => {
+    const result = await validateTaxId('MN', '1234567');
+    expect(result.isValid).toBe(true);
+});
+test('MN invalid TIN', async () => {
+    const result = await validateTaxId('MN', '12345');
+    expect(result.isValid).toBe(false);
+});
+
+// ============================================================================
 // Malta (MT)
 // ============================================================================
 test('MT valid VAT', async () => {
@@ -805,10 +909,26 @@ test('MY invalid', async () => {
 });
 
 // ============================================================================
+// Namibia (NA)
+// ============================================================================
+test('NA valid TIN', async () => {
+    const result = await validateTaxId('NA', '12345678');
+    expect(result.isValid).toBe(true);
+});
+test('NA invalid TIN', async () => {
+    const result = await validateTaxId('NA', '12345');
+    expect(result.isValid).toBe(false);
+});
+
+// ============================================================================
 // Nigeria (NG)
 // ============================================================================
 test('NG valid TIN', async () => {
     const result = await validateTaxId('NG', '12345678-9012');
+    expect(result.isValid).toBe(true);
+});
+test('NG valid TIN (JTB 10-digit format)', async () => {
+    const result = await validateTaxId('NG', '1234567890');
     expect(result.isValid).toBe(true);
 });
 test('NG invalid TIN', async () => {
@@ -882,6 +1002,10 @@ test('PH invalid TIN', async () => {
 test('PL valid NIP', async () => {
     const result = await validateTaxId('PL', 'PL5257596835');
     expect(result.regexValid).toBe(true);
+});
+test('PL valid bare NIP (domestic, no PL prefix)', async () => {
+    const result = await validateTaxId('PL', '5257596835');
+    expect(result.isValid).toBe(true);
 });
 test('PL invalid NIP', async () => {
     const result = await validateTaxId('PL', '12345');
@@ -975,6 +1099,25 @@ test('SA invalid VAT', async () => {
 // ============================================================================
 // Sweden (SE)
 // ============================================================================
+test('SE valid personnummer TIN', async () => {
+    const result = await validateTaxId('SE', '811218-9876');
+    expect(result.isValid).toBe(true);
+    expect(result.matchedType).toBe('se_tin');
+});
+test('SE valid personnummer TIN without separator', async () => {
+    const result = await validateTaxId('SE', '8112189876');
+    expect(result.isValid).toBe(true);
+    expect(result.matchedType).toBe('se_tin');
+});
+test('SE invalid TIN checksum', async () => {
+    const result = await validateTaxId('SE', '811218-9875');
+    expect(result.isValid).toBe(false);
+});
+test('SE valid organisationsnummer TIN', async () => {
+    const result = await validateTaxId('SE', '556036-0793');
+    expect(result.isValid).toBe(true);
+    expect(result.matchedType).toBe('se_tin');
+});
 test('SE valid VAT', async () => {
     const result = await validateTaxId('SE', 'SE559000594101');
     expect(result.regexValid).toBe(true);
@@ -1159,6 +1302,10 @@ test('ZA valid TIN', async () => {
     const result = await validateTaxId('ZA', '9848974535');
     expect(result.regexValid).toBe(true);
 });
+test('ZA valid TIN checksum', async () => {
+    const result = await validateTaxId('ZA', '9123456783');
+    expect(result.isValid).toBe(true);
+});
 test('ZA invalid TIN', async () => {
     const result = await validateTaxId('ZA', '4123456789');
     expect(result.isValid).toBe(false);
@@ -1205,6 +1352,10 @@ test('PK invalid NTN', async () => {
 // ============================================================================
 test('LK valid TIN', async () => {
     const result = await validateTaxId('LK', '123456789');
+    expect(result.isValid).toBe(true);
+});
+test('LK valid VAT registration number', async () => {
+    const result = await validateTaxId('LK', '123456789-7000');
     expect(result.isValid).toBe(true);
 });
 test('LK invalid TIN', async () => {
@@ -1371,8 +1522,12 @@ test('MU invalid TAN', async () => {
 // ============================================================================
 // Uzbekistan (UZ)
 // ============================================================================
-test('UZ valid VAT', async () => {
+test('UZ valid TIN', async () => {
     const result = await validateTaxId('UZ', '123456789');
+    expect(result.isValid).toBe(true);
+});
+test('UZ valid VAT (12-digit)', async () => {
+    const result = await validateTaxId('UZ', '123456789012');
     expect(result.isValid).toBe(true);
 });
 test('UZ invalid VAT', async () => {

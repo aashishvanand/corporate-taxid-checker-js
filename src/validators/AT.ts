@@ -39,9 +39,9 @@ function validate_at_abn(input: string, debug: boolean = false): boolean {
     return true;
 }
 
-  async function online_check(tin: string, debug: boolean = false): Promise<boolean> {    
-    // Extract the relevant portion of the TIN (excluding the msCode)
-    const processedTin = tin.substring(2);
+  async function online_check(tin: string, debug: boolean = false): Promise<boolean> {
+    // Only strip the "AT" msCode prefix when present; the "U" stays part of the TIN.
+    const processedTin = tin.toUpperCase().startsWith('AT') ? tin.substring(2) : tin;
     
     try {
         const response = await axios.post('https://ec.europa.eu/taxation_customs/tin/rest-api/tinRequest', {
