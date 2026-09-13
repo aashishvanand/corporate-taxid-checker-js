@@ -2,7 +2,9 @@ import { weightedSum } from '../utils';
 import axios from 'axios';
 
 function validate_hu_anum(input: string, debug: boolean = false): boolean {
-  const value = input;
+  // The regex also accepts the dashed domestic form ("12345678-1-23"); strip the
+  // dashes so that form reaches the checksum instead of failing the length check.
+  const value = input.replace(/-\d-\d{2}$/, '');
 
   if (value.length !== 8) {
     if (debug) { console.log("Invalid Length"); }
@@ -27,9 +29,12 @@ function validate_hu_anum(input: string, debug: boolean = false): boolean {
   return true;
 }
 
-async function online_check(tin: string, debug: boolean = false): Promise<boolean> {  
-  // Extract the relevant portion of the TIN (excluding the msCode)
-  const processedTin = tin.substring(2);
+async function online_check(tin: string, debug: boolean = false): Promise<boolean> {
+  // VIES only recognizes the bare 8-digit body: strip the "HU" msCode prefix if
+  // present, or the "-C-RR" suffix of the dashed domestic form if present.
+  const processedTin = tin.toUpperCase().startsWith('HU')
+    ? tin.substring(2)
+    : tin.replace(/-\d-\d{2}$/, '');
   
   try {
       const response = await axios.post('https://ec.europa.eu/taxation_customs/tin/rest-api/tinRequest', {

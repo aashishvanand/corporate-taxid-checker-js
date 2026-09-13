@@ -7,7 +7,9 @@ function validate_id_npwp(input: string, debug: boolean = false): boolean {
     '67', '77', '78', '79', '87', '88', '89', '97',
   ];
 
-  const value = input;
+  // The regex requires the dotted/dashed format ("XX.XXX.XXX.X-XXX.XXX");
+  // strip the separators before checking the digit payload/checksum.
+  const value = input.replace(/[.\-]/g, '');
 
   if (value.length !== 15) {
     if (debug) { console.log("Invalid Length"); }

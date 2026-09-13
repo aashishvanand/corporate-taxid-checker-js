@@ -11,8 +11,7 @@ module.exports = {
   },
   externals: {
     axios: 'commonjs2 axios',
-    cheerio: 'commonjs2 cheerio',
-    jsonpack: 'commonjs2 jsonpack'
+    cheerio: 'commonjs2 cheerio'
   },
   resolve: {
     extensions: ['.ts', '.js', '.json']
@@ -25,10 +24,6 @@ module.exports = {
             use: {
                 loader: 'swc-loader',
             },
-        },
-        {
-            test: /\.compressed$/,
-            use: 'raw-loader',
         },
     ]
   }

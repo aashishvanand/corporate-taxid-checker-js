@@ -103,8 +103,8 @@ function validate_es_vat(es: string, debug: boolean = false): boolean {
 }
 
 async function online_check(tin: string, debug: boolean = false): Promise<boolean> {
-    // Extract the relevant portion of the TIN (excluding the msCode)
-    const processedTin = tin.substring(2);
+    // Only the VAT form carries the "ES" msCode prefix; the domestic CIF/NIF does not.
+    const processedTin = tin.toUpperCase().startsWith('ES') ? tin.substring(2) : tin;
 
     try {
         const response = await axios.post('https://ec.europa.eu/taxation_customs/tin/rest-api/tinRequest', {

@@ -1,6 +1,32 @@
 import { luhnChecksumValidate } from '../utils';
 import axios from 'axios';
 
+// Validates a Swedish personal identity number (personnummer), co-ordination number
+// (samordningsnummer), or organisation number (organisationsnummer). All three share the
+// same 10-digit structure (YYMMDD-NNNC / NNNNNN-NNNN) with a Luhn check digit — per the
+// OECD TIN table for Sweden, this is the actual TIN, not the VAT number.
+function validate_se_tin(input: string, debug: boolean = false): boolean {
+    // Remove separators (hyphen or plus sign used for centenarians)
+    const value = input.replace(/[-+]/g, '');
+
+    if (value.length !== 10) {
+        if (debug) { console.log("Invalid length. The input should be 10 digits long."); }
+        return false;
+    }
+
+    if (!/^\d+$/.test(value)) {
+        if (debug) { console.log("Invalid format. The input should contain only digits."); }
+        return false;
+    }
+
+    if (!luhnChecksumValidate(value)) {
+        if (debug) { console.log("Invalid checksum."); }
+        return false;
+    }
+
+    return true;
+}
+
 function validate_se_vat(input: string, debug: boolean = false): boolean {
     // Remove any non-numeric characters
     const value = input.replace(/\D/g, '');
@@ -34,8 +60,9 @@ function validate_se_vat(input: string, debug: boolean = false): boolean {
 }
 
 async function online_check(tin: string, debug: boolean = false): Promise<boolean> {
-    // Extract the relevant portion of the TIN (excluding the msCode)
-    const processedTin = tin.substring(2);
+    // Only VAT numbers carry the "SE" msCode prefix; TINs (personnummer/organisationsnummer)
+    // are plain digits and must be sent as-is.
+    const processedTin = tin.toUpperCase().startsWith('SE') ? tin.substring(2) : tin;
 
     try {
         const response = await axios.post('https://ec.europa.eu/taxation_customs/tin/rest-api/tinRequest', {
@@ -71,4 +98,4 @@ async function online_check(tin: string, debug: boolean = false): Promise<boolea
     return false;
 }
 
-export { validate_se_vat, online_check };
+export { validate_se_tin, validate_se_vat, online_check };
