@@ -1,12 +1,12 @@
 # corporate-taxid-checker-js
 
-Validate corporate tax identification numbers (TINs) across **131 countries** with three levels of verification: regex format checks, checksum algorithms, and online authority lookups.
+Validate corporate tax identification numbers (TINs) across **150 countries** with three levels of verification: regex format checks, checksum algorithms, and online authority lookups.
 
 ## Features
 
-- **131 countries** with regex format validation
-- **60+ countries** with checksum verification (Luhn, MOD-97, ISO 7064, weighted sums, and more)
-- **24 countries** with online authority lookup (EU TIN API, Australian ABR)
+- **150 countries** with regex format validation
+- **68 countries** with checksum verification (Luhn, MOD-97, ISO 7064, weighted sums, and more)
+- **28 countries** with online authority lookup (EU TIN API, Australian ABR)
 - Works in Node.js and browsers (UMD bundle)
 - **Bulk validation** — validate multiple tax IDs in one call
 - **Helper utilities** — check supported countries and tax ID types
@@ -136,136 +136,155 @@ Returns `TaxIdTypeInfo[]` with `{ label, type, hasChecksum, hasOnlineCheck }` fo
 Code | Country | Regex | Checksum | Online
 ---|---|---|---|---
 AD | Andorra | Y | Y |
-AE | United Arab Emirates | Y | |
-AG | Antigua and Barbuda | Y | |
-AI | Anguilla | Y | |
+AE | United Arab Emirates | Y |  |
+AG | Antigua and Barbuda | Y |  |
+AI | Anguilla | Y |  |
 AL | Albania | Y | Y |
-AM | Armenia | Y | |
+AM | Armenia | Y |  |
+AO | Angola | Y |  |
 AR | Argentina | Y | Y |
 AT | Austria | Y | Y | Y
 AU | Australia | Y | Y | Y
-AW | Aruba | Y | |
+AW | Aruba | Y |  |
 AZ | Azerbaijan | Y | Y |
-BB | Barbados | Y | |
-BD | Bangladesh | Y | |
+BA | Bosnia and Herzegovina | Y |  |
+BB | Barbados | Y |  |
+BD | Bangladesh | Y |  |
 BE | Belgium | Y | Y | Y
+BF | Burkina Faso | Y |  |
 BG | Bulgaria | Y | Y | Y
-BH | Bahrain | Y | |
-BO | Bolivia | Y | |
+BH | Bahrain | Y |  |
+BJ | Benin | Y |  |
+BN | Brunei Darussalam | Y |  |
+BO | Bolivia | Y |  |
 BR | Brazil | Y | Y |
+BS | Bahamas | Y |  |
 BY | Belarus | Y | Y |
 BZ | Belize | Y | Y |
 CA | Canada | Y | Y |
+CD | Congo (DR) | Y |  |
 CH | Switzerland | Y | Y |
+CI | Cote d'Ivoire | Y |  |
 CL | Chile | Y | Y |
+CM | Cameroon | Y |  |
 CN | China | Y | Y |
 CO | Colombia | Y | Y |
 CR | Costa Rica | Y | Y |
-CU | Cuba | Y | |
-CW | Curacao | Y | |
+CU | Cuba | Y |  |
+CV | Cape Verde | Y |  |
+CW | Curacao | Y |  |
 CY | Cyprus | Y | Y | Y
 CZ | Czech Republic | Y | Y | Y
 DE | Germany | Y | Y | Y
 DK | Denmark | Y | Y | Y
-DO | Dominican Republic | Y | |
-DZ | Algeria | Y | |
+DO | Dominican Republic | Y |  |
+DZ | Algeria | Y |  |
 EC | Ecuador | Y | Y |
 EE | Estonia | Y | Y | Y
 EG | Egypt | Y | Y |
 ES | Spain | Y | Y | Y
-ET | Ethiopia | Y | |
+ET | Ethiopia | Y |  |
 FI | Finland | Y | Y | Y
-FO | Faroe Islands | Y | |
+FO | Faroe Islands | Y |  |
 FR | France | Y | Y | Y
 GB | United Kingdom | Y | Y |
-GE | Georgia | Y | |
-GG | Guernsey | Y | |
+GE | Georgia | Y |  |
+GG | Guernsey | Y |  |
 GH | Ghana | Y | Y |
-GI | Gibraltar | Y | |
+GI | Gibraltar | Y |  |
 GN | Guinea | Y | Y |
-GR | Greece | Y | | Y
+GR | Greece | Y |  | Y
 GT | Guatemala | Y | Y |
-HK | Hong Kong | Y | |
+HK | Hong Kong | Y |  |
 HR | Croatia | Y | Y | Y
 HU | Hungary | Y | Y | Y
 ID | Indonesia | Y | Y |
 IE | Ireland | Y | Y | Y
 IL | Israel | Y | Y |
-IM | Isle of Man | Y | |
+IM | Isle of Man | Y |  |
 IN | India | Y | Y |
-IS | Iceland | Y | |
-IT | Italy | Y | | Y
-JM | Jamaica | Y | |
+IS | Iceland | Y |  |
+IT | Italy | Y |  | Y
+JM | Jamaica | Y |  |
 JP | Japan | Y | Y |
-KE | Kenya | Y | |
-KG | Kyrgyzstan | Y | |
-KH | Cambodia | Y | |
-KN | St. Kitts and Nevis | Y | |
+KE | Kenya | Y |  |
+KG | Kyrgyzstan | Y |  |
+KH | Cambodia | Y |  |
+KN | St. Kitts and Nevis | Y |  |
 KR | South Korea | Y | Y |
-KW | Kuwait | Y | |
-KZ | Kazakhstan | Y | |
-LB | Lebanon | Y | |
-LI | Liechtenstein | Y | |
-LK | Sri Lanka | Y | |
-LT | Lithuania | Y | | Y
-LU | Luxembourg | Y | | Y
-LV | Latvia | Y | | Y
+KW | Kuwait | Y |  |
+KZ | Kazakhstan | Y |  |
+LA | Laos | Y |  |
+LB | Lebanon | Y |  |
+LI | Liechtenstein | Y |  |
+LK | Sri Lanka | Y |  |
+LT | Lithuania | Y |  | Y
+LU | Luxembourg | Y |  | Y
+LV | Latvia | Y |  | Y
 MA | Morocco | Y | Y |
-MC | Monaco | Y | |
-MD | Moldova | Y | |
+MC | Monaco | Y |  |
+MD | Moldova | Y |  |
 ME | Montenegro | Y | Y |
-MH | Marshall Islands | Y | |
+MH | Marshall Islands | Y |  |
 MK | North Macedonia | Y | Y |
-MT | Malta | Y | | Y
-MU | Mauritius | Y | |
-MV | Maldives | Y | |
+MM | Myanmar | Y |  |
+MN | Mongolia | Y |  |
+MR | Mauritania | Y |  |
+MT | Malta | Y |  | Y
+MU | Mauritius | Y |  |
+MV | Maldives | Y |  |
 MX | Mexico | Y | Y |
-MY | Malaysia | Y | |
-NG | Nigeria | Y | |
-NI | Nicaragua | Y | |
+MY | Malaysia | Y |  |
+NA | Namibia | Y |  |
+NG | Nigeria | Y |  |
+NI | Nicaragua | Y |  |
 NL | Netherlands | Y | Y | Y
 NO | Norway | Y | Y |
-NP | Nepal | Y | |
+NP | Nepal | Y |  |
 NZ | New Zealand | Y | Y |
-OM | Oman | Y | |
-PA | Panama | Y | |
+OM | Oman | Y |  |
+PA | Panama | Y |  |
 PE | Peru | Y | Y |
-PH | Philippines | Y | |
-PK | Pakistan | Y | |
+PH | Philippines | Y |  |
+PK | Pakistan | Y |  |
 PL | Poland | Y | Y | Y
 PT | Portugal | Y | Y | Y
 PY | Paraguay | Y | Y |
-QA | Qatar | Y | |
+QA | Qatar | Y |  |
 RO | Romania | Y | Y | Y
 RS | Serbia | Y | Y |
 RU | Russia | Y | Y |
-RW | Rwanda | Y | |
-SA | Saudi Arabia | Y | |
-SC | Seychelles | Y | |
+RW | Rwanda | Y |  |
+SA | Saudi Arabia | Y |  |
+SC | Seychelles | Y |  |
 SE | Sweden | Y | Y | Y
 SG | Singapore | Y | Y |
 SI | Slovenia | Y | Y | Y
 SK | Slovakia | Y | Y | Y
 SM | San Marino | Y | Y |
+SN | Senegal | Y |  |
+SR | Suriname | Y |  |
 SV | El Salvador | Y | Y |
-SX | Sint Maarten | Y | |
+SX | Sint Maarten | Y |  |
 TH | Thailand | Y | Y |
-TJ | Tajikistan | Y | |
-TM | Turkmenistan | Y | |
+TJ | Tajikistan | Y |  |
+TM | Turkmenistan | Y |  |
 TN | Tunisia | Y | Y |
 TR | Turkey | Y | Y |
-TT | Trinidad and Tobago | Y | |
+TT | Trinidad and Tobago | Y |  |
 TW | Taiwan | Y | Y |
-TZ | Tanzania | Y | |
+TZ | Tanzania | Y |  |
 UA | Ukraine | Y | Y |
-UG | Uganda | Y | |
-US | United States | Y | |
+UG | Uganda | Y |  |
+US | United States | Y |  |
 UY | Uruguay | Y | Y |
-UZ | Uzbekistan | Y | |
+UZ | Uzbekistan | Y |  |
 VE | Venezuela | Y | Y |
 VN | Vietnam | Y | Y |
-WS | Samoa | Y | |
+WS | Samoa | Y |  |
 ZA | South Africa | Y | Y |
+ZM | Zambia | Y |  |
+ZW | Zimbabwe | Y |  |
 
 ## v2.0.0 Breaking Changes
 
@@ -280,7 +299,7 @@ npm run build
 npm test
 ```
 
-280 tests covering all 131 supported countries plus utility functions.
+502 tests covering all 150 supported countries plus utility functions.
 
 ## Contributing
 

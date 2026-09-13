@@ -1,7 +1,7 @@
 {
   "name": "corporate-taxid-checker-js",
-  "version": "2.1.0",
-  "description": "Validate tax identification numbers (TIN, VAT, EIN, GST, ITIN, SSN) for 76+ countries. Regex, checksum, and online VIES/government verification. TypeScript-first with LLM tool definitions.",
+  "version": "2.2.0",
+  "description": "Validate tax identification numbers (TIN, VAT, EIN, GST, ITIN, SSN) for 150+ countries. Regex, checksum, and online VIES/government verification. TypeScript-first with LLM tool definitions.",
   "main": "lib/index.js",
   "browser": "dist/corporate-taxid-checker.js",
   "types": "types/index.d.ts",
@@ -85,16 +85,16 @@
     "cheerio": "^1.2.0"
   },
   "devDependencies": {
-    "@swc/core": "^1.16.1",
+    "@swc/core": "^1.16.2",
     "@swc/jest": "^0.2.39",
     "@types/jest": "^30.0.0",
     "@types/node": "^26.4.0",
-    "jest": "^30.5.0",
+    "jest": "^30.5.1",
     "path-browserify": "^1.0.1",
     "raw-loader": "^4.0.2",
     "swc-loader": "^0.2.7",
     "typescript": "^7.0.2",
-    "webpack": "^5.110.2",
+    "webpack": "^5.110.3",
     "webpack-cli": "^7.2.3"
   },
   "overrides": {
