@@ -1,5 +1,44 @@
 # Changelog
 
+## [2.2.0] - 2026-09-13
+
+### New Features
+
+- **5 new countries** — Brunei Darussalam (BN), Côte d'Ivoire (CI), Myanmar (MM), Mongolia (MN), and Namibia (NA), sourced from OECD TIN documentation and official tax authority guidance. Expanded from 145 to 150 supported countries.
+- **Swedish TIN corrected** — Sweden previously only exposed a VAT-number check under the generic TIN entry. Added the actual TIN (personnummer / samordningsnummer / organisationsnummer per the OECD spec), keeping VAT validation available separately (`se_vat`).
+- **New tax ID types for existing countries**, found by cross-checking every entry against Stripe's published tax-ID reference and OECD source documents:
+  - Croatia (`hr_oib`) and Poland (`pl_nip`) now accept the bare domestic form, not just the EU-VAT-prefixed one.
+  - Italy: added Codice Fiscale (`it_cf`).
+  - Nigeria (`ng_tin`): added the JTB 10-digit format alongside the existing FIRS 8-hyphen-4 format.
+  - Sri Lanka: added VAT registration number (`lk_vat`).
+  - Armenia: added the general 8-digit TIN (`am_tin`).
+  - Uzbekistan: corrected the mislabeled 9-digit `uz_vat` to `uz_tin`, and added the real 12-digit `uz_vat`.
+  - Faroe Islands: replaced a format with no basis in any source with the real P-number (individual) and V-number (business) formats.
+
+### Bug Fixes
+
+- **Fixed a two-part bug in the shared Luhn checksum helper** (`luhnChecksumValidate`) — an operator-precedence error and a mod-9 shortcut that conflated digit `0` with `9` — that silently mis-validated checksums for Canada, Guinea, Indonesia, South Africa, and Sweden (VAT) whenever certain digits landed in a doubled position.
+- **Fixed checksum-unreachable formats** in Guinea, Indonesia, and Hungary, where the regex accepted separators (hyphens/dots) that the checksum function then rejected outright, so valid IDs in that form could never pass.
+- **Fixed online-check prefix corruption** in Austria, Germany, Spain, Croatia, Hungary, Poland, and Sweden — `online_check` unconditionally stripped a 2-character country-code prefix before querying the EU VIES endpoint, corrupting input for any format that also allows a bare/domestic (unprefixed) form.
+- **Removed a semantic bug** where Germany's domestic Steuernummer (`de_stnr`) was marked as online-checkable even though it isn't an EU VAT number and can never be verified via VIES.
+
+### Performance
+
+- **Removed the `jsonpack` dependency** — country/type data is now imported directly as JSON (`src/data.json`) instead of being packed at build time and unpacked at every module load. One less dependency, no runtime decompression cost.
+- **Removed the unused `data/data.compressed` artifact** — it was written by the build script but never read by anything; `data/data.json` is now the single source of truth, copied into `src/` for bundling.
+
+### Testing
+
+- **New `tests/validators/onlineCheck.test.ts`** — a data-driven suite (with axios mocked) that locks in the exact `{ msCode, tinNumber }` payload sent to the VIES endpoint for all 26 EU-VAT-style validators with online checks, covering both prefixed and bare-domestic input where applicable. This is the regression guard for the online-check prefix bug above.
+- Added real, checksum-verified test cases (not just regex-shape checks) for every country touched by the Luhn fix and the new/corrected formats above.
+- **502 tests**, up from 280.
+
+## [2.1.0] - 2026-09-10
+
+### Infrastructure
+
+- **Migrated build and test tooling to SWC** — replaced `ts-loader`/`ts-jest` with `swc-loader`/`@swc/jest` across all four webpack configs and the Jest config for faster builds and test runs.
+
 ## [2.0.0] - 2026-04-02
 
 ### Breaking Changes
