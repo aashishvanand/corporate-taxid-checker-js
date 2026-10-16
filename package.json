@@ -85,16 +85,16 @@
     "cheerio": "^1.2.0"
   },
   "devDependencies": {
-    "@swc/core": "^1.16.2",
+    "@swc/core": "^1.16.18",
     "@swc/jest": "^0.2.39",
     "@types/jest": "^30.0.0",
-    "@types/node": "^26.5.1",
-    "jest": "^30.5.1",
+    "@types/node": "^26.6.5",
+    "jest": "^30.5.2",
     "path-browserify": "^1.0.1",
     "raw-loader": "^4.0.2",
     "swc-loader": "^0.2.7",
     "typescript": "^7.0.2",
-    "webpack": "^5.110.3",
+    "webpack": "^5.112.0",
     "webpack-cli": "^7.2.3"
   },
   "overrides": {
