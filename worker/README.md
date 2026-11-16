@@ -32,6 +32,13 @@ Then, in the demo:
 validateTaxId(country, taxId, { online: true, endpoint: 'https://taxid-online-check.<account>.workers.dev/check' });
 ```
 
+### Same-origin option
+
+`aashishvanand.me` is on Cloudflare, so the Worker can also run on the demo's own hostname.
+Uncomment `routes` in `wrangler.jsonc`, deploy, and use `endpoint: '/api/check'`. Requests
+are then same-origin and need no CORS. Make sure nothing else on the site already serves
+`/api/check`.
+
 ## Local development
 
 ```bash

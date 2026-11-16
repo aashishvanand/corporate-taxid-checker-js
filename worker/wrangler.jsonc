@@ -4,6 +4,11 @@
   "main": "src/index.ts",
   "compatibility_date": "2026-11-01",
   "observability": { "enabled": true },
+  // Optional: serve on the demo's own hostname (zone is on Cloudflare) so calls are
+  // same-origin and need no CORS. The demo then uses endpoint: '/api/check'.
+  // "routes": [
+  //   { "pattern": "corporate-taxid-checker-js.aashishvanand.me/api/check", "zone_name": "aashishvanand.me" }
+  // ],
   "vars": {
     // Comma-separated origins allowed to call the Worker from a browser. Set to your demo's origin.
     "ALLOWED_ORIGINS": "https://corporate-taxid-checker-js.aashishvanand.me,http://localhost:5173"

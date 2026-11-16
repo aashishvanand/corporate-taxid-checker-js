@@ -58,7 +58,8 @@ export async function handle(req: Request, env: Env, ctx?: { waitUntil(p: Promis
     const url = new URL(req.url);
 
     if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors });
-    if (url.pathname !== '/check') return json({ error: 'not_found' }, 404, cors);
+    // "/check" on workers.dev, "/api/check" when routed on the demo's own hostname
+    if (url.pathname !== '/check' && url.pathname !== '/api/check') return json({ error: 'not_found' }, 404, cors);
     if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405, cors, { Allow: 'POST, OPTIONS' });
 
     if (env.RATE_LIMITER) {

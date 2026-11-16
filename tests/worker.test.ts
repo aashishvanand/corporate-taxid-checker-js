@@ -62,6 +62,15 @@ describe('online-check worker', () => {
         expect(upstream).not.toHaveBeenCalled();
     });
 
+    test('also serves /api/check for same-origin routing', async () => {
+        const req = new Request('https://corporate-taxid-checker-js.aashishvanand.me/api/check', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ countryCode: 'BE', taxId: 'BE0417497106' }),
+        });
+        expect((await (await handle(req, env)).json()).status).toBe('valid');
+    });
+
     test('unknown paths and methods are refused', async () => {
         expect((await handle(new Request('https://w.test/other', { method: 'POST' }), env)).status).toBe(404);
         expect((await handle(new Request('https://w.test/check'), env)).status).toBe(405);
