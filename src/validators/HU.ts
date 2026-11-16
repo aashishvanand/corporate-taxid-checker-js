@@ -1,9 +1,10 @@
 import { weightedSum } from '../utils';
 
 function validate_hu_anum(input: string, debug: boolean = false): boolean {
-  // The regex also accepts the dashed domestic form ("12345678-1-23"); strip the
-  // dashes so that form reaches the checksum instead of failing the length check.
-  const value = input.replace(/-\d-\d{2}$/, '');
+  // The regex also accepts the domestic form "12345678-1-23" (11 digits once separators
+  // are stripped); only the first 8 digits carry the checksum.
+  const stripped = input.replace(/-\d-\d{2}$/, '');
+  const value = /^\d{11}$/.test(stripped) ? stripped.slice(0, 8) : stripped;
 
   if (value.length !== 8) {
     if (debug) { console.log("Invalid Length"); }

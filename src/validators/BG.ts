@@ -1,7 +1,7 @@
 import { weightedSum } from '../utils';
 
 function validate_bg_vat(vat: string, debug: boolean = false): boolean {
-    if (!['0', '1', '2', '3', '9'].includes(vat[0])) {
+    if (!/^\d{9,10}$/.test(vat)) {
         if (debug) {
             console.log("Invalid format");
         }
@@ -20,10 +20,10 @@ function checkLegal(vat: string, debug: boolean = false): boolean {
     const front = vat.slice(0, -1);
     const check = vat.slice(-1);
 
-    let sum = weightedSum(front, weights);
+    let sum = weightedSum(front, weights, 11);
 
     if (sum === 10) {
-        sum = weightedSum(front, [3, 4, 5, 6, 7, 8, 9, 10]);
+        sum = weightedSum(front, [3, 4, 5, 6, 7, 8, 9, 10], 11);
     }
 
     if (String(sum % 10) !== check) {

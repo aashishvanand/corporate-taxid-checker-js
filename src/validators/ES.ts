@@ -19,7 +19,7 @@ function validate_es_cif(cif: string, debug: boolean = false): boolean {
             sum += n;
             alt = !alt;
         }
-        return sum % 10;
+        return (10 - (sum % 10)) % 10;
     }
 
     const [first, body, check] = [cif.charAt(0), cif.slice(1, -1), cif.slice(-1)];

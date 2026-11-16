@@ -29,7 +29,7 @@ function validate_pl_nip(nip: string, debug: boolean = false): boolean {
   }
 
   // Calculate the weighted sum
-  const sum = weightedSum(value, {
+  const sum = weightedSum(value.slice(0, 9), {
     weights: [6, 5, 7, 2, 3, 4, 5, 6, 7],
     modulus: 11,
   });

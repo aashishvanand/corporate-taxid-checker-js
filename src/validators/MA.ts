@@ -1,7 +1,11 @@
-// Utility to perform Modulus 97 validation for a base 10 number
-function mod97base10Validate(number: string, checkDigitsPosition: number): boolean {
-  const weight = Math.pow(10, checkDigitsPosition + 2);
-  return parseInt(number, 10) % 97 === weight % 97;
+// ICE: the last two digits are chosen so the full 15-digit number is divisible by 97.
+// Computed digit by digit to avoid relying on floating-point precision.
+function mod97Validate(number: string): boolean {
+  let remainder = 0;
+  for (const ch of number) {
+    remainder = (remainder * 10 + parseInt(ch, 10)) % 97;
+  }
+  return remainder === 0;
 }
 // Main validation function for ICE (15 digits)
 function validate_ma_ice(input: string, debug: boolean = false): boolean {
@@ -27,7 +31,7 @@ function validate_ma_ice(input: string, debug: boolean = false): boolean {
   }
 
   // Validate using Modulus 97 for base 10 numbers
-  if (!mod97base10Validate(value, 0)) {
+  if (!mod97Validate(value)) {
     if (debug) {
       console.log("Invalid checksum");
     }

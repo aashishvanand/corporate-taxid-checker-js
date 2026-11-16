@@ -15,20 +15,15 @@ function validate_rs_pib(rs: string, debug: boolean = false): boolean {
         return false;
     }
 
-    // Define the weights for the Modulus 11 algorithm
-    const weights = [7, 6, 5, 4, 3, 2, 7, 6, 5, 4, 3, 2];
-
-    // Calculate the weighted sum of the digits
-    let weightedSum = 0;
-    for (let i = 0; i < value.length - 1; i++) { // exclude the last digit (checksum)
-        weightedSum += parseInt(value[i], 10) * weights[i];
+    // ISO 7064 MOD 11,10 over all 9 digits (check digit included); valid when the final S is 1
+    let product = 10;
+    let s = 0;
+    for (const ch of value) {
+        s = (product + parseInt(ch, 10)) % 10 || 10;
+        product = (s * 2) % 11;
     }
 
-    // Calculate the checksum using the Modulus 11 algorithm
-    const checksum = (11 - (weightedSum % 11)) % 10;
-
-    // Validate the checksum
-    if (parseInt(value[value.length - 1], 10) !== checksum) {
+    if (s !== 1) {
         if (debug) { console.log("Invalid checksum."); }
         return false;
     }

@@ -1,5 +1,23 @@
 import { weightedSum } from '../utils';
 
+// Shared 13-digit checksum for Thai personal IDs and corporate (MOA) TINs
+function checksumValid(value: string, debug: boolean = false): boolean {
+    const front = value.substring(0, 12);
+    const check = value[12];
+
+    const sum = weightedSum(front, {
+        weights: [13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2],
+        modulus: 11,
+    });
+
+    if (String((11 - sum) % 10) !== check) {
+        if (debug) { console.log("Invalid checksum"); }
+        return false;
+    }
+
+    return true;
+}
+
 function idnrvalidate(input: string, debug: boolean = false): boolean {
     // Assuming clean function removes any hyphens, white spaces and converts letters to uppercase
     const value = input.replace(/[-\s]/g, '').toUpperCase();
@@ -18,20 +36,7 @@ function idnrvalidate(input: string, debug: boolean = false): boolean {
         return false;
     }
 
-    const front = value.substring(0, 12);
-    const check = value[12];
-
-    const sum = weightedSum(front, {
-        weights: [13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1],
-        modulus: 11,
-    });
-
-    if (String((11 - sum) % 10) !== check) {
-        if (debug) { console.log("Invalid checksum"); }
-        return false;
-    }
-
-    return true;
+    return checksumValid(value, debug);
 }
 
 function moavalidate(input: string, debug: boolean = false): boolean {
@@ -52,8 +57,8 @@ function moavalidate(input: string, debug: boolean = false): boolean {
         return false;
     }
 
-    // same sum as IDNR
-    return idnrvalidate(input); // reusing logic from idnrvalidate
+    // Same checksum as the personal ID, without the personal-ID first-digit rule
+    return checksumValid(value, debug);
 }
 
 function validate_th_tin(input: string, debug: boolean = false): boolean {

@@ -6,7 +6,7 @@ function validate_py_ruc(ruc: string, debug: boolean = false): boolean {
   }
 
   // Clean the input
-  const value = ruc.replace(/\s+/g, '');
+  const value = ruc.replace(/[\s-]+/g, '');
 
   // Check for empty input post-cleanup
   if (!value) {
@@ -35,7 +35,7 @@ function validate_py_ruc(ruc: string, debug: boolean = false): boolean {
     sum += reversedDigits[i] * (i + 2);
   }
 
-  const checksum = (11 - (sum % 11)) % 10;
+  const checksum = ((11 - (sum % 11)) % 11) % 10;
 
   if (checksum !== parseInt(value.charAt(value.length - 1), 10)) {
     if (debug) { console.log("Invalid checksum"); }

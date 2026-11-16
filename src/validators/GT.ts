@@ -1,6 +1,6 @@
   
   function validate_gt_nit(input: string, debug: boolean = false): boolean {
-    const value = input;
+    const value = input.toUpperCase();
   
     if (value.length < 2 || value.length > 12) {
       if (debug) { console.log("Invalid Length"); }
@@ -13,8 +13,8 @@
     // For simplicity, we'll use a regular expression to check if the input is all digits
     
   
-    const checkDigit = '0123456789ABCDEFGHIJKLMN';
-    if (!checkDigit.includes(check)) {
+    const checkDigit = '0123456789K'; // a check value of 10 is written as K
+    if (!/^\d+$/.test(front) || !checkDigit.includes(check)) {
       if (debug) { console.log("InvalidComponent"); }
         return false;
     }
