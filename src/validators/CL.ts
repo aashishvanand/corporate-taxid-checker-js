@@ -2,7 +2,7 @@ function validate_cl_rut(rut: string, debug: boolean = false): boolean {
 
     // Extracting the front part and the check digit from the input
     var front = rut.substring(0, rut.length - 1);
-    var check = rut[rut.length - 1];
+    var check = rut[rut.length - 1].toUpperCase();
 
     // Verifying if 'front' part consists only of digits
     if (!/^\d+$/.test(front)) {

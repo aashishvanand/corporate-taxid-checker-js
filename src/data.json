@@ -6,7 +6,7 @@
             {
                 "label": "Andorran NRT number",
                 "type": "ad_nrt",
-                "regex": "^A-\\d{6}-[A-Z]$",
+                "regex": "^[ACDEFGLOPU]-?\\d{6}-?[A-Z]$",
                 "checksum": true
             }
         ]
@@ -55,7 +55,7 @@
                 "label": "VAT",
                 "type": "al_nipt",
                 "regex": "^[A-Z][0-9A-Z]{8,9}$",
-                "checksum": true
+                "checksum": false
             }
         ]
     },
@@ -96,7 +96,7 @@
             {
                 "label": "Argentinian tax ID number",
                 "type": "ar_cuit",
-                "regex": "^\\d{2}-\\d{7}-\\d{2}$",
+                "regex": "^\\d{2}-\\d{7}-\\d{2}$|^\\d{2}-?\\d{8}-?\\d$",
                 "checksum": true
             }
         ]
@@ -335,6 +335,18 @@
         ]
     },
     {
+        "Country": "Botswana",
+        "ISOCountryCode": "BW",
+        "data": [
+            {
+                "label": "Botswana TIN",
+                "type": "bw_tin",
+                "regex": "^(?:[A-Z]{1,2}-?\\d{6,11}|\\d{9,10})$",
+                "checksum": false
+            }
+        ]
+    },
+    {
         "Country": "Belarus",
         "ISOCountryCode": "BY",
         "data": [
@@ -399,6 +411,12 @@
                 "type": "ca_qst",
                 "regex": "^(\\d{10}TQ\\d{4})$",
                 "checksum": true
+            },
+            {
+                "label": "Canadian QST number (Québec, specified system for suppliers outside Québec)",
+                "type": "ca_qst_nr",
+                "regex": "^NR\\d{8}$",
+                "checksum": false
             }
         ]
     },
@@ -445,7 +463,7 @@
             {
                 "label": "Chilean RUT",
                 "type": "cl_rut",
-                "regex": "^\\d{2}\\.\\d{3}\\.\\d{3}-[K0-9]$",
+                "regex": "^\\d{1,2}(\\.?\\d{3}){2}-?[0-9Kk]$",
                 "checksum": true
             }
         ]
@@ -493,8 +511,14 @@
             {
                 "label": "Costa Rican tax ID",
                 "type": "cr_cpj",
-                "regex": "^1-\\d{3}-\\d{6}$",
+                "regex": "^[2-5]-?\\d{3}-?\\d{6}$",
                 "checksum": true
+            },
+            {
+                "label": "Costa Rican individual tax ID (cédula física)",
+                "type": "cr_cpf",
+                "regex": "^1-\\d{3}-\\d{6}$|^[1-9]-?\\d{4}-?\\d{4}$",
+                "checksum": false
             }
         ]
     },
@@ -600,8 +624,8 @@
             {
                 "label": "Dominican RCN number",
                 "type": "do_rnc",
-                "regex": "^\\d{3}-\\d{7}-\\d$",
-                "checksum": false
+                "regex": "^\\d{3}-?\\d{7}-?\\d$|^\\d-?\\d{2}-?\\d{5}-?\\d$",
+                "checksum": true
             }
         ]
     },
@@ -649,7 +673,7 @@
             {
                 "label": "Egyptian Tax Identification Number",
                 "type": "eg_tn",
-                "regex": "^\\d{9}$",
+                "regex": "^\\d{3}-?\\d{3}-?\\d{3}$",
                 "checksum": true
             }
         ]
@@ -853,6 +877,18 @@
         ]
     },
     {
+        "Country": "Honduras",
+        "ISOCountryCode": "HN",
+        "data": [
+            {
+                "label": "Honduran RTN (Registro Tributario Nacional)",
+                "type": "hn_rtn",
+                "regex": "^\\d{4}-?\\d{4}-?\\d{6}$",
+                "checksum": false
+            }
+        ]
+    },
+    {
         "Country": "Croatia",
         "ISOCountryCode": "HR",
         "data": [
@@ -885,7 +921,7 @@
             {
                 "label": "Indonesian NPWP number",
                 "type": "id_npwp",
-                "regex": "^\\d{2,3}\\.\\d{3}\\.\\d{3}\\.\\d-\\d{3}\\.\\d{3}$",
+                "regex": "^0?\\d{2}\\.?\\d{3}\\.?\\d{3}\\.?\\d-?\\d{3}\\.?\\d{3}$|^\\d{16}$",
                 "checksum": true
             }
         ]
@@ -897,7 +933,7 @@
             {
                 "label": "Irish tax reference number",
                 "type": "ie_vat",
-                "regex": "^IE[0-9]{7}[A-Z]{1,2}$",
+                "regex": "^IE(\\d{7}[A-W]{1,2}|\\d[A-Z+*]\\d{5}[A-W])$",
                 "checksum": true,
                 "online": true
             }
@@ -954,6 +990,12 @@
                 "type": "is_vat",
                 "regex": "^\\d{6}$",
                 "checksum": false
+            },
+            {
+                "label": "Icelandic kennitala",
+                "type": "is_kt",
+                "regex": "^\\d{6}-?\\d{4}$",
+                "checksum": true
             }
         ]
     },
@@ -984,6 +1026,18 @@
                 "label": "Jamaica TRN (Taxpayer Registration Number)",
                 "type": "jm_trn",
                 "regex": "^\\d{9}$",
+                "checksum": false
+            }
+        ]
+    },
+    {
+        "Country": "Jordan",
+        "ISOCountryCode": "JO",
+        "data": [
+            {
+                "label": "Jordanian tax number (GST registration or personal TIN)",
+                "type": "jo_tin",
+                "regex": "^\\d{7,10}$",
                 "checksum": false
             }
         ]
@@ -1092,7 +1146,7 @@
                 "label": "Kazakhstan TIN",
                 "type": "kz_tin",
                 "regex": "^\\d{12}$",
-                "checksum": false
+                "checksum": true
             }
         ]
     },
@@ -1224,10 +1278,10 @@
         "ISOCountryCode": "MC",
         "data": [
             {
-                "label": "Monacan VAT number (taxe sur la valeur ajoutée)",
-                "type": "mc_tva",
-                "regex": "^[0-3]\\d{1} \\d{2} \\d{3} \\d{3} \\d{3}$",
-                "checksum": false
+                "label": "Monacan VAT number",
+                "type": "mc_vat",
+                "regex": "^FR\\d{2}000\\d{6}$",
+                "checksum": true
             }
         ]
     },
@@ -1409,6 +1463,18 @@
         ]
     },
     {
+        "Country": "Mozambique",
+        "ISOCountryCode": "MZ",
+        "data": [
+            {
+                "label": "Mozambican NUIT",
+                "type": "mz_nuit",
+                "regex": "^\\d{9}$",
+                "checksum": false
+            }
+        ]
+    },
+    {
         "Country": "Namibia",
         "ISOCountryCode": "NA",
         "data": [
@@ -1464,7 +1530,7 @@
             {
                 "label": "Norwegian VAT number",
                 "type": "no_mva",
-                "regex": "^\\d{9}MVA$",
+                "regex": "^(NO)?\\d{9}(MVA)?$",
                 "checksum": true
             },
             {
@@ -1494,7 +1560,7 @@
             {
                 "label": "New Zealand GST number",
                 "type": "nz_ird",
-                "regex": "^\\d{9}$",
+                "regex": "^\\d{8,9}$|^\\d{2,3}-\\d{3}-\\d{3}$",
                 "checksum": true
             }
         ]
@@ -1727,7 +1793,7 @@
             {
                 "label": "Registration Number or ACRA, Singaporean UEN",
                 "type": "sg_uen",
-                "regex": "^[0-9]{9}[a-zA-Z]$",
+                "regex": "^\\d{8,9}[a-zA-Z]$|^[RSTrst]\\d{2}[a-zA-Z]{2}\\d{4}[a-zA-Z]$",
                 "checksum": true
             },
             {
@@ -1958,7 +2024,7 @@
                 "label": "United States EIN",
                 "type": "us_ein",
                 "regex": "^\\d{2}-\\d{7}$",
-                "checksum": false
+                "checksum": true
             },
             {
                 "label": "United States ITIN",
@@ -2005,7 +2071,7 @@
             {
                 "label": "Venezuelan RIF number",
                 "type": "ve_rif",
-                "regex": "^[A-Z]-\\d{8}-\\d$",
+                "regex": "^[A-Z]-?\\d{8}-?\\d$",
                 "checksum": true
             }
         ]
@@ -2030,6 +2096,18 @@
                 "label": "Samoa TIN",
                 "type": "ws_tin",
                 "regex": "^\\d{5,9}$",
+                "checksum": false
+            }
+        ]
+    },
+    {
+        "Country": "Kosovo",
+        "ISOCountryCode": "XK",
+        "data": [
+            {
+                "label": "Kosovo NUI / fiscal number / VAT number",
+                "type": "xk_nui",
+                "regex": "^\\d{9}$",
                 "checksum": false
             }
         ]

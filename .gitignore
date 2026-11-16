@@ -82,3 +82,6 @@ web_modules/
 # Production-ready build
 dist/
 lib/
+
+# Local task list
+TODO.md

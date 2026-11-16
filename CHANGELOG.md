@@ -1,5 +1,19 @@
 # Changelog
 
+## [Unreleased]
+
+### Breaking Changes
+
+- **Removed Monaco `mc_tva`** — the legacy format (`NN NN NNN NNN NNN`) was a French individual NIF pattern, not a Monegasque tax ID. Use `mc_vat` (`FR` + 2 digits + `000` + 6 digits, with checksum).
+
+### New Features
+
+- **5 new countries** (regex only; no published check-digit algorithm could be confirmed): Botswana (BW, `bw_tin`), Honduras (HN, `hn_rtn`), Jordan (JO, `jo_tin`), Mozambique (MZ, `mz_nuit`), and Kosovo (XK, `xk_nui`). Expanded from 150 to 155 supported countries.
+
+### Bug Fixes
+
+- **Fixed checksum validation rejecting valid IDs** for PL, JP, RS, MA, BG, TH, PY, and MK ([#141](https://github.com/aashishvanand/corporate-taxid-checker-js/issues/141)).
+
 ## [2.2.0] - 2026-09-13
 
 ### New Features
