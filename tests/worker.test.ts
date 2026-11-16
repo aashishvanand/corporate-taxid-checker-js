@@ -75,4 +75,30 @@ describe('online-check worker', () => {
         expect((await handle(new Request('https://w.test/other', { method: 'POST' }), env)).status).toBe(404);
         expect((await handle(new Request('https://w.test/check'), env)).status).toBe(405);
     });
+
+    test('enforces MAX_BODY by byte length, not character count', async () => {
+        // 600 two-byte characters = 1200 bytes but only 600 UTF-16 code units.
+        const res = await handle(post({ countryCode: 'BE', taxId: 'é'.repeat(600) }), env);
+        expect(res.status).toBe(413);
+        expect(upstream).not.toHaveBeenCalled();
+    });
+
+    test('enforces MAX_BODY on a streamed body with no Content-Length', async () => {
+        const enc = new TextEncoder();
+        const stream = new ReadableStream({
+            start(c) {
+                c.enqueue(enc.encode('{"countryCode":"BE","taxId":"'));
+                c.enqueue(enc.encode('1'.repeat(2000)));
+                c.enqueue(enc.encode('"}'));
+            },
+        });
+        const req = new Request('https://w.test/check', {
+            method: 'POST',
+            headers: { Origin: 'https://demo.test' },
+            body: stream,
+            duplex: 'half',
+        } as RequestInit);
+        expect((await handle(req, env)).status).toBe(413);
+        expect(upstream).not.toHaveBeenCalled();
+    });
 });

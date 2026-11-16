@@ -161,11 +161,11 @@ Returns `TaxIdValidationResult`:
 | `options` | `boolean \| ValidateOptions` | `false` | As above, plus `concurrency` (default 5) for online lookups |
 | `debug` | boolean | `false` | Enable debug logging to console |
 
+Returns `Array<{ countryCode, taxId, result }>` where `result` is a `TaxIdValidationResult` or an error string.
+
 #### `checkOnline(countryCode, taxId, options?)`
 
 Queries the registry directly, without regex/checksum. Never throws; returns `{ status, provider?, details?, reason? }`.
-
-Returns `Array<{ countryCode, taxId, result }>` where `result` is a `TaxIdValidationResult` or an error string.
 
 #### `getSupportedCountries()`
 

@@ -48,6 +48,39 @@ function json(body: unknown, status: number, headers: Record<string, string>, ex
     });
 }
 
+/**
+ * Reads the request body, aborting as soon as it exceeds `limit` bytes.
+ * A whole-body `req.text()` would buffer an oversized upload before the size check,
+ * so concurrent large POSTs could exhaust isolate memory before returning 413.
+ * `Content-Length` is only a fast path — the streamed byte count is authoritative.
+ */
+async function readBodyWithLimit(req: Request, limit: number): Promise<string | null> {
+    const declared = Number(req.headers.get('content-length'));
+    if (Number.isFinite(declared) && declared > limit) return null;
+    if (!req.body) return '';
+
+    const reader = req.body.getReader();
+    const decoder = new TextDecoder();
+    let total = 0;
+    let text = '';
+    try {
+        for (;;) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            total += value.byteLength;
+            if (total > limit) {
+                await reader.cancel();
+                return null;
+            }
+            text += decoder.decode(value, { stream: true });
+        }
+        text += decoder.decode();
+        return text;
+    } finally {
+        try { reader.releaseLock(); } catch { /* already released by cancel */ }
+    }
+}
+
 function cacheKey(countryCode: string, taxId: string): Request {
     const id = getOnlineProvider(countryCode) === 'abr' ? taxId.replace(/\D/g, '') : normalizeForVies(countryCode, taxId);
     return new Request(`https://online-check.cache/${countryCode}/${encodeURIComponent(id)}`);
@@ -68,8 +101,8 @@ export async function handle(req: Request, env: Env, ctx?: { waitUntil(p: Promis
         if (!success) return json({ status: 'unavailable', reason: 'RATE_LIMITED' }, 429, cors, { 'Retry-After': '60' });
     }
 
-    const raw = await req.text();
-    if (raw.length > MAX_BODY) return json({ error: 'payload_too_large' }, 413, cors);
+    const raw = await readBodyWithLimit(req, MAX_BODY);
+    if (raw === null) return json({ error: 'payload_too_large' }, 413, cors);
     let body: any;
     try {
         body = JSON.parse(raw);

@@ -192,6 +192,35 @@ describe('validateTaxId with online checks', () => {
         expect(f.mock).not.toHaveBeenCalled();
     });
 
+    test('an endpoint does not make an uncheckable ID type checkable', async () => {
+        // IT Codice Fiscale is a personal code, not a VAT number. Sending it to VIES through
+        // the proxy would return "invalid" and wrongly fail an otherwise valid ID.
+        const f = fakeFetch({ status: 'invalid', provider: 'vies' });
+        const r: any = await validateTaxId('IT', 'RSSMRA85T10A562S', {
+            online: true,
+            fetch: f.fetch,
+            endpoint: 'https://proxy.test/check',
+        });
+        expect(r.onlineStatus).toBe('not_supported');
+        expect(r.isValid).toBe(true);
+        expect(f.mock).not.toHaveBeenCalled();
+    });
+
+    test('the timeout also covers reading the response body', async () => {
+        // fetch() resolves as soon as headers arrive; a stalled body must still hit timeoutMs.
+        const stalled = jest.fn(async (_url: string, init: any = {}) => {
+            const signal: AbortSignal = init.signal;
+            const body = new ReadableStream({
+                start(controller) {
+                    signal.addEventListener('abort', () => controller.error(new Error('aborted')));
+                },
+            });
+            return new Response(body, { status: 200 });
+        }) as unknown as typeof fetch;
+        const r = await checkOnline('BE', 'BE0417497106', { fetch: stalled, timeoutMs: 20, retries: 0 });
+        expect(r).toMatchObject({ status: 'unavailable', reason: 'TIMEOUT' });
+    });
+
     test('online not requested reports not_requested', async () => {
         const r: any = await validateTaxId('BE', 'BE0417497106');
         expect(r.onlineStatus).toBe('not_requested');

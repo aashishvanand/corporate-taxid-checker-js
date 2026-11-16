@@ -103,11 +103,19 @@ export function normalizeForVies(countryCode: string, taxId: string): string {
 
 class TimeoutError extends Error {}
 
-async function fetchWithTimeout(
+/**
+ * Runs `fetch` and `consume` inside one timeout/abort scope.
+ *
+ * The body must be read inside that scope: `fetch()` resolves as soon as the response
+ * headers arrive, so clearing the timer there would let `res.json()` / `res.text()`
+ * hang past `timeoutMs` — and a stalled lookup would hold its bulk-worker slot.
+ */
+async function withTimeout<T>(
     url: string,
     init: RequestInit,
-    opts: OnlineCheckOptions
-): Promise<Response> {
+    opts: OnlineCheckOptions,
+    consume: (res: Response) => Promise<T>
+): Promise<T> {
     const doFetch = opts.fetch || (typeof fetch !== 'undefined' ? fetch : undefined);
     if (!doFetch) throw new Error('No fetch implementation available; pass options.fetch');
 
@@ -120,7 +128,8 @@ async function fetchWithTimeout(
         else opts.signal.addEventListener('abort', onAbort, { once: true });
     }
     try {
-        return await doFetch(url, { ...init, signal: controller.signal });
+        const res = await doFetch(url, { ...init, signal: controller.signal });
+        return await consume(res);
     } catch (err) {
         if (timedOut) throw new TimeoutError('timeout');
         throw err;
@@ -139,32 +148,32 @@ function cleanField(v: unknown): string | undefined {
 async function checkVies(countryCode: string, taxId: string, opts: OnlineCheckOptions): Promise<OnlineCheckResult> {
     const viesCode = VIES_COUNTRIES[countryCode.toUpperCase()];
     const vatNumber = normalizeForVies(countryCode, taxId);
-    const res = await fetchWithTimeout(VIES_URL, {
+    return withTimeout(VIES_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({ countryCode: viesCode, vatNumber }),
-    }, opts);
+    }, opts, async (res) => {
+        if (!res.ok) return { status: 'unavailable', provider: 'vies', reason: `HTTP_${res.status}` };
+        const body: any = await res.json();
 
-    if (!res.ok) return { status: 'unavailable', provider: 'vies', reason: `HTTP_${res.status}` };
-    const body: any = await res.json();
+        if (body && body.actionSucceed === false) {
+            const code = body.errorWrappers?.[0]?.error || 'UNKNOWN';
+            if (code === 'INVALID_INPUT') return { status: 'invalid', provider: 'vies', reason: code };
+            return { status: 'unavailable', provider: 'vies', reason: code };
+        }
 
-    if (body && body.actionSucceed === false) {
-        const code = body.errorWrappers?.[0]?.error || 'UNKNOWN';
-        if (code === 'INVALID_INPUT') return { status: 'invalid', provider: 'vies', reason: code };
-        return { status: 'unavailable', provider: 'vies', reason: code };
-    }
-
-    // POST returns `valid`; the GET variant returns `isValid`
-    const valid = body?.valid ?? body?.isValid;
-    if (valid === true) {
-        return {
-            status: 'valid',
-            provider: 'vies',
-            details: { name: cleanField(body.name), address: cleanField(body.address) },
-        };
-    }
-    if (valid === false) return { status: 'invalid', provider: 'vies', reason: 'NOT_REGISTERED' };
-    return { status: 'unavailable', provider: 'vies', reason: 'UNEXPECTED_RESPONSE' };
+        // POST returns `valid`; the GET variant returns `isValid`
+        const valid = body?.valid ?? body?.isValid;
+        if (valid === true) {
+            return {
+                status: 'valid',
+                provider: 'vies',
+                details: { name: cleanField(body.name), address: cleanField(body.address) },
+            };
+        }
+        if (valid === false) return { status: 'invalid', provider: 'vies', reason: 'NOT_REGISTERED' };
+        return { status: 'unavailable', provider: 'vies', reason: 'UNEXPECTED_RESPONSE' };
+    });
 }
 
 async function checkAbr(taxId: string, opts: OnlineCheckOptions): Promise<OnlineCheckResult> {
@@ -174,44 +183,46 @@ async function checkAbr(taxId: string, opts: OnlineCheckOptions): Promise<Online
 
     const abn = taxId.replace(/\D/g, '');
     const url = `${ABR_URL}?abn=${encodeURIComponent(abn)}&callback=c&guid=${encodeURIComponent(guid)}`;
-    const res = await fetchWithTimeout(url, { method: 'GET' }, opts);
-    if (!res.ok) return { status: 'unavailable', provider: 'abr', reason: `HTTP_${res.status}` };
+    return withTimeout(url, { method: 'GET' }, opts, async (res) => {
+        if (!res.ok) return { status: 'unavailable', provider: 'abr', reason: `HTTP_${res.status}` };
 
-    // Response is JSONP: c({...})
-    const text = await res.text();
-    const json = text.substring(text.indexOf('(') + 1, text.lastIndexOf(')'));
-    let body: any;
-    try {
-        body = JSON.parse(json);
-    } catch {
-        return { status: 'unavailable', provider: 'abr', reason: 'UNEXPECTED_RESPONSE' };
-    }
+        // Response is JSONP: c({...})
+        const text = await res.text();
+        const json = text.substring(text.indexOf('(') + 1, text.lastIndexOf(')'));
+        let body: any;
+        try {
+            body = JSON.parse(json);
+        } catch {
+            return { status: 'unavailable', provider: 'abr', reason: 'UNEXPECTED_RESPONSE' };
+        }
 
-    if (!body.Abn) {
-        const msg: string = body.Message || '';
-        if (/GUID/i.test(msg)) return { status: 'unavailable', provider: 'abr', reason: 'ABR_GUID_INVALID' };
-        return { status: 'invalid', provider: 'abr', reason: msg || 'NOT_FOUND' };
-    }
+        if (!body.Abn) {
+            const msg: string = body.Message || '';
+            if (/GUID/i.test(msg)) return { status: 'unavailable', provider: 'abr', reason: 'ABR_GUID_INVALID' };
+            return { status: 'invalid', provider: 'abr', reason: msg || 'NOT_FOUND' };
+        }
 
-    const details: OnlineDetails = {
-        name: cleanField(body.EntityName),
-        address: cleanField([body.AddressState, body.AddressPostcode].filter(Boolean).join(' ')),
-        status: cleanField(body.AbnStatus),
-    };
-    if (body.AbnStatus === 'Active') return { status: 'valid', provider: 'abr', details };
-    return { status: 'invalid', provider: 'abr', details, reason: 'NOT_ACTIVE' };
+        const details: OnlineDetails = {
+            name: cleanField(body.EntityName),
+            address: cleanField([body.AddressState, body.AddressPostcode].filter(Boolean).join(' ')),
+            status: cleanField(body.AbnStatus),
+        };
+        if (body.AbnStatus === 'Active') return { status: 'valid', provider: 'abr', details };
+        return { status: 'invalid', provider: 'abr', details, reason: 'NOT_ACTIVE' };
+    });
 }
 
 async function checkViaEndpoint(countryCode: string, taxId: string, opts: OnlineCheckOptions): Promise<OnlineCheckResult> {
-    const res = await fetchWithTimeout(opts.endpoint as string, {
+    return withTimeout(opts.endpoint as string, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({ countryCode, taxId }),
-    }, opts);
-    if (!res.ok) return { status: 'unavailable', reason: `PROXY_HTTP_${res.status}` };
-    const body: any = await res.json();
-    if (!body || typeof body.status !== 'string') return { status: 'unavailable', reason: 'PROXY_UNEXPECTED_RESPONSE' };
-    return body as OnlineCheckResult;
+    }, opts, async (res) => {
+        if (!res.ok) return { status: 'unavailable', reason: `PROXY_HTTP_${res.status}` };
+        const body: any = await res.json();
+        if (!body || typeof body.status !== 'string') return { status: 'unavailable', reason: 'PROXY_UNEXPECTED_RESPONSE' };
+        return body as OnlineCheckResult;
+    });
 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));

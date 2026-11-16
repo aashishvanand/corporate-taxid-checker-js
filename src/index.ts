@@ -320,7 +320,10 @@ async function validateTaxId(
         if (!localValid) {
             // Don't spend a registry round-trip on an ID that already failed locally
             online = { status: 'skipped' };
-        } else if (!onlineCheckPresent && !opts.endpoint) {
+        } else if (!onlineCheckPresent) {
+            // `endpoint` is only a transport for browser use; it does not make an ID type
+            // checkable. Otherwise a personal code (e.g. IT Codice Fiscale) would be sent to
+            // VIES as a VAT number, come back "invalid", and wrongly fail validation.
             online = { status: 'not_supported' };
         } else {
             online = await checkOnline(code, taxId, opts);
