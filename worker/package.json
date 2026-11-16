@@ -1,0 +1,13 @@
+{
+  "name": "taxid-online-check-worker",
+  "private": true,
+  "description": "Cloudflare Worker that proxies online tax ID checks (VIES / ABN Lookup) for the browser demo",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "check": "wrangler deploy --dry-run --outdir dist"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}

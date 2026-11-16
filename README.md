@@ -6,7 +6,7 @@ Validate corporate tax identification numbers (TINs) across **155 countries** wi
 
 - **155 countries** with regex format validation
 - **72 countries** with checksum verification (Luhn, MOD-97, ISO 7064, weighted sums, and more)
-- **28 countries** with online authority lookup (EU TIN API, Australian ABR)
+- **28 countries** with online registry lookup (EU VIES, Australian ABN Lookup) — returns the registered company name/address
 - Works in Node.js and browsers (UMD bundle)
 - **Bulk validation** — validate multiple tax IDs in one call
 - **Helper utilities** — check supported countries and tax ID types
@@ -39,22 +39,69 @@ console.log(result);
 //   onlineCheck: false
 // }
 
-// With online authority check (for supported countries)
-const result2 = await validateTaxId('AT', 'ATU62123456', true);
+// With online registry check (EU VIES / Australian ABN Lookup)
+const result2 = await validateTaxId('BE', 'BE0417497106', true);
 console.log(result2);
 // {
-//   isValid: true/false,
+//   isValid: true,
 //   regexValid: true,
 //   checkSumCheckPresent: true,
-//   checkSum: true/false,
+//   checkSum: true,
 //   onlineCheckPresent: true,
-//   onlineCheck: true/false
+//   onlineCheck: true,
+//   onlineStatus: 'valid',
+//   onlineDetails: { name: 'NV Anheuser-Busch InBev', address: 'Grote Markt 1\n1000 Brussel' }
 // }
 ```
 
+### Online Checks
+
+Online checks confirm that a number is actually **registered**, not just well-formed:
+
+| Region | Registry | Notes |
+|---|---|---|
+| EU (27 member states) | [VIES](https://ec.europa.eu/taxation_customs/vies/) | No key needed. Returns name/address where the member state publishes them. |
+| Australia | [ABN Lookup](https://abr.business.gov.au/Tools/WebServices) | Needs a free GUID: pass `abrGuid` or set `ABR_GUID`. |
+
+`onlineStatus` tells you what happened:
+
+| `onlineStatus` | Meaning | Effect on `isValid` |
+|---|---|---|
+| `valid` | Registry confirmed the number | — |
+| `invalid` | Registry says not registered / inactive | `false` |
+| `unavailable` | Registry down, rate-limited, timed out (see `onlineReason`) | unchanged (`false` with `strict`) |
+| `not_supported` | No registry for this country / ID type | unchanged (`false` with `strict`) |
+| `skipped` | Regex or checksum already failed — no request made | already `false` |
+| `not_requested` | Online check not requested | — |
+
+Pass an options object instead of `true` for more control:
+
+```javascript
+await validateTaxId('DE', 'DE136695976', {
+    online: true,
+    strict: false,      // true: require onlineStatus === 'valid'
+    timeoutMs: 10000,   // per request
+    retries: 1,         // for transient VIES errors (MS_UNAVAILABLE, MS_MAX_CONCURRENT_REQ, ...)
+    abrGuid: '...',     // Australian ABN Lookup GUID
+    endpoint: undefined // proxy URL — required in browsers, see below
+});
+
+// Or call the registry directly
+const { checkOnline } = require('corporate-taxid-checker-js');
+await checkOnline('GR', 'EL094014201'); // { status: 'valid', provider: 'vies', details: { ... } }
+```
+
+**Browsers:** VIES and ABN Lookup don't send CORS headers, so browsers can't call them directly. Deploy the Cloudflare Worker in [`worker/`](worker/) and pass its URL as `endpoint`:
+
+```javascript
+await validateTaxId('BE', 'BE0417497106', { online: true, endpoint: 'https://taxid-online-check.<you>.workers.dev/check' });
+```
+
+Online checks use the global `fetch`, so the library has **no runtime dependencies**.
+
 ### Bulk Validation
 
-Validate multiple tax IDs in a single call. All validations run in parallel.
+Validate multiple tax IDs in a single call. Offline validations run in parallel; online lookups are limited to `concurrency` (default 5) at a time because VIES rate-limits.
 
 ```javascript
 const results = await validateTaxIds([
@@ -83,35 +130,42 @@ const info = getTaxIdInfo('IN');
 
 ### API Reference
 
-#### `validateTaxId(countryCode, taxId, onlineCheckRequired?, debug?)`
+#### `validateTaxId(countryCode, taxId, options?, debug?)`
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
 | `countryCode` | string | required | ISO 3166-1 alpha-2 country code (case-insensitive) |
 | `taxId` | string | required | The tax ID to validate |
-| `onlineCheckRequired` | boolean | `false` | Whether to perform online authority lookup |
+| `options` | `boolean \| ValidateOptions` | `false` | `true` for an online registry lookup, or an options object (`online`, `strict`, `timeoutMs`, `retries`, `endpoint`, `abrGuid`, `fetch`, `signal`) |
 | `debug` | boolean | `false` | Enable debug logging to console |
 
 Returns `TaxIdValidationResult`:
 
 | Field | Type | Description |
 |---|---|---|
-| `isValid` | boolean | Overall validation result |
+| `isValid` | boolean | Regex matches, checksum passes (if any), and the registry didn't answer `invalid` (with `strict`: answered `valid`) |
 | `regexValid` | boolean | Whether the format matches the expected pattern |
 | `checkSumCheckPresent` | boolean | Whether checksum validation is available for this tax ID type |
 | `checkSum` | boolean | Checksum validation result |
 | `onlineCheckPresent` | boolean | Whether online validation is available |
-| `onlineCheck` | boolean | Online authority lookup result |
+| `onlineCheck` | boolean | `true` only when the registry confirmed the number |
+| `onlineStatus` | string | `valid` / `invalid` / `unavailable` / `not_supported` / `skipped` / `not_requested` |
+| `onlineDetails` | object? | `{ name, address, status }` from the registry, when available |
+| `onlineReason` | string? | Why a check was `invalid` / `unavailable` (e.g. `MS_UNAVAILABLE`, `TIMEOUT`) |
 
-#### `validateTaxIds(items, onlineCheckRequired?, debug?)`
+#### `validateTaxIds(items, options?, debug?)`
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
 | `items` | `Array<{countryCode, taxId}>` | required | Array of tax IDs to validate |
-| `onlineCheckRequired` | boolean | `false` | Whether to perform online authority lookup |
+| `options` | `boolean \| ValidateOptions` | `false` | As above, plus `concurrency` (default 5) for online lookups |
 | `debug` | boolean | `false` | Enable debug logging to console |
 
 Returns `Array<{ countryCode, taxId, result }>` where `result` is a `TaxIdValidationResult` or an error string.
+
+#### `checkOnline(countryCode, taxId, options?)`
+
+Queries the registry directly, without regex/checksum. Never throws; returns `{ status, provider?, details?, reason? }`.
 
 #### `getSupportedCountries()`
 
@@ -129,7 +183,7 @@ Returns `TaxIdTypeInfo[]` with `{ label, type, hasChecksum, hasOnlineCheck }` fo
 
 1. **Regex Check** — Validates the TIN format against known patterns
 2. **Checksum Validation** — Verifies the TIN's check digit using the appropriate algorithm (based on [OECD guidelines](https://www.oecd.org/tax/automatic-exchange/crs-implementation-and-assistance/tax-identification-numbers/))
-3. **Online Authority Lookup** — Confirms validity by querying the country's tax authority API (EU countries via the EC TIN API, Australia via ABR)
+3. **Online Registry Lookup** — Confirms the number is actually registered by querying the official registry (EU countries via VIES, Australia via ABN Lookup)
 
 ## Supported Countries
 

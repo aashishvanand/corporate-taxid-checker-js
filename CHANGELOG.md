@@ -8,11 +8,23 @@
 
 ### New Features
 
+- **`onlineStatus`, `onlineDetails`, `onlineReason`** result fields. `onlineStatus` is one of `valid`, `invalid`, `unavailable`, `not_supported`, `skipped`, or `not_requested`; `onlineCheck` stays a boolean that is true only when the registry confirms.
+- **Options object** for `validateTaxId` / `validateTaxIds` — `online`, `strict`, `timeoutMs`, `retries`, `endpoint`, `fetch`, `signal`, `abrGuid`, `concurrency`. Passing `true` still works.
+- **`checkOnline()`** is exported for direct registry lookups.
+- **Cloudflare Worker proxy** in [`worker/`](worker/) so browsers can use online checks (VIES and ABN Lookup send no CORS headers). Includes a CORS allowlist, per-IP rate limiting, edge caching, and input validation, and reuses `src/online.ts`.
 - **5 new countries** (regex only; no published check-digit algorithm could be confirmed): Botswana (BW, `bw_tin`), Honduras (HN, `hn_rtn`), Jordan (JO, `jo_tin`), Mozambique (MZ, `mz_nuit`), and Kosovo (XK, `xk_nui`). Expanded from 150 to 155 supported countries.
 
 ### Bug Fixes
 
+- **Online checks now use VIES** — they actually confirm EU VAT registration and return the trader name/address. The previous EC TIN endpoint only checked the syntax of personal TINs and rejected VAT numbers, so the "online authority lookup" mostly returned false negatives. Greece is sent as `EL`, and HU 11-digit numbers are reduced to the 8-digit VAT core.
+- **`isValid` with online checks** — no longer `false` for countries without a registry, ID types without a checksum, or registry outages. Only an explicit `invalid` answer fails an ID; use `strict: true` for the old "must be confirmed" behaviour.
+- **Australia** — replaced the broken ABR HTML scrape (the page now returns a 302) with the official ABN Lookup JSON service (`abrGuid` / `ABR_GUID`).
+- **Fewer wasted calls** — no network request after a regex or checksum failure, transient VIES errors (`MS_UNAVAILABLE`, `MS_MAX_CONCURRENT_REQ`, ...) are retried with backoff, requests time out, and bulk lookups are capped at 5 concurrent.
 - **Fixed checksum validation rejecting valid IDs** for PL, JP, RS, MA, BG, TH, PY, and MK ([#141](https://github.com/aashishvanand/corporate-taxid-checker-js/issues/141)).
+
+### Dependencies
+
+- **Removed `axios` and `cheerio`** — the package now has zero runtime dependencies and uses the global `fetch`.
 
 ## [2.2.0] - 2026-09-13
 

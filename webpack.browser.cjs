@@ -12,20 +12,6 @@ module.exports = {
         umdNamedDefine: true,
         globalObject: 'this'
     },
-    externals: {
-        axios: {
-            commonjs: 'axios',
-            commonjs2: 'axios',
-            amd: 'axios',
-            root: 'axios'
-        },
-        cheerio: {
-            commonjs: 'cheerio',
-            commonjs2: 'cheerio',
-            amd: 'cheerio',
-            root: 'cheerio'
-        }
-    },
     resolve: {
         extensions: ['.ts', '.js', '.json']
     },
