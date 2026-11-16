@@ -5,8 +5,23 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
+    groups:
+      dev-dependencies:
+        dependency-type: "development"
+        update-types: ["minor", "patch"]
+      production-dependencies:
+        dependency-type: "production"
+        update-types: ["minor", "patch"]
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
+    groups:
+      # init / analyze / upload-sarif must stay on the same version,
+      # otherwise the CodeQL Analyze job fails on a version mismatch.
+      codeql-action:
+        patterns: ["github/codeql-action*"]
+      github-actions:
+        patterns: ["*"]
+        exclude-patterns: ["github/codeql-action*"]
