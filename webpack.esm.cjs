@@ -15,10 +15,6 @@ module.exports = {
     },
     chunkFormat: 'module'
   },
-  externals: {
-    axios: 'axios',
-    cheerio: 'cheerio'
-  },
   resolve: {
     extensions: ['.ts', '.js', '.json']
   },

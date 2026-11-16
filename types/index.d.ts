@@ -1,4 +1,24 @@
 import { sanitize, maskTaxId } from './utils';
+import { checkOnline } from './online';
+import type { OnlineCheckOptions, OnlineCheckResult, OnlineDetails, OnlineStatus } from './online';
+export type { OnlineCheckOptions, OnlineCheckResult, OnlineDetails, OnlineStatus };
+/**
+ * Options for {@link validateTaxId} / {@link validateTaxIds}.
+ * Passing `true` instead of an object is shorthand for `{ online: true }`.
+ */
+export interface ValidateOptions extends OnlineCheckOptions {
+    /** Verify against the official registry (VIES / ABN Lookup). Default false. */
+    online?: boolean;
+    /**
+     * Require a positive registry answer: `unavailable` / `not_supported` then make
+     * `isValid` false. Default false (only an explicit `invalid` fails the ID).
+     */
+    strict?: boolean;
+    /** Log validation steps to the console. */
+    debug?: boolean;
+    /** Max simultaneous registry lookups in {@link validateTaxIds}. Default 5. */
+    concurrency?: number;
+}
 /**
  * Result of validating a single tax ID.
  *
@@ -11,7 +31,11 @@ import { sanitize, maskTaxId } from './utils';
  * ```
  */
 export interface TaxIdValidationResult {
-    /** Overall validity — true only when all applicable checks (regex, checksum, online) pass */
+    /**
+     * Overall validity: regex must match, checksum must pass (when one exists), and — when an
+     * online check was requested — the registry must not have answered `invalid`
+     * (with `strict: true`, it must have answered `valid`).
+     */
     isValid: boolean;
     /** Whether the tax ID matched the country's regex pattern */
     regexValid: boolean;
@@ -21,8 +45,14 @@ export interface TaxIdValidationResult {
     checkSum: boolean;
     /** Whether an online verification endpoint exists for this tax ID type */
     onlineCheckPresent: boolean;
-    /** Result of the online verification (false if not requested or unavailable) */
+    /** True only when the registry confirmed the ID (`onlineStatus === 'valid'`) */
     onlineCheck: boolean;
+    /** Detailed outcome of the online check — distinguishes "not registered" from "registry down" */
+    onlineStatus: OnlineStatus;
+    /** Registered name/address returned by the registry, when available */
+    onlineDetails?: OnlineDetails;
+    /** Machine-readable reason for `invalid` / `unavailable` (e.g. "MS_UNAVAILABLE", "TIMEOUT") */
+    onlineReason?: string;
     /** Tax ID type code that matched (e.g., "vat", "tin", "ein") */
     matchedType?: string;
     /** Human-readable label for the matched type (e.g., "Value Added Tax", "Employer Identification Number") */
@@ -83,8 +113,8 @@ export interface TaxIdTypeInfo {
  * @param countryCode - ISO 3166-1 alpha-2 country code (e.g., "DE", "US", "GB").
  *   Overseas territories are automatically resolved (e.g., "GF" → "FR").
  * @param taxId - The tax identification number to validate.
- * @param onlineCheckRequired - When true, also verifies the tax ID against
- *   the country's online endpoint (if available). Defaults to false.
+ * @param options - `true` to also verify against the country's registry (VIES for EU,
+ *   ABN Lookup for AU), or a {@link ValidateOptions} object. Defaults to false.
  * @param debug - When true, logs detailed validation steps to the console. Defaults to false.
  * @returns The validation result, or "Country code not found" if the country is unsupported.
  *
@@ -94,16 +124,22 @@ export interface TaxIdTypeInfo {
  * const result = await validateTaxId('AT', 'ATU62123456');
  * console.log(result.isValid); // true
  *
- * // With online verification
- * const result2 = await validateTaxId('DE', '123456789', true);
+ * // With online verification (VIES)
+ * const r2 = await validateTaxId('BE', 'BE0417497106', true);
+ * console.log(r2.onlineStatus, r2.onlineDetails?.name); // 'valid', 'NV Anheuser-Busch InBev'
+ *
+ * // In a browser, through a proxy, requiring a positive registry answer
+ * await validateTaxId('BE', 'BE0417497106', { online: true, endpoint: 'https://proxy.example/check', strict: true });
  * ```
  */
-declare function validateTaxId(countryCode: string, taxId: string, onlineCheckRequired?: boolean, debug?: boolean): Promise<TaxIdValidationResult | string>;
+declare function validateTaxId(countryCode: string, taxId: string, options?: boolean | ValidateOptions, debug?: boolean): Promise<TaxIdValidationResult | string>;
 /**
  * Validates multiple tax IDs in parallel.
  *
  * @param items - Array of country code / tax ID pairs to validate.
- * @param onlineCheckRequired - When true, also performs online verification. Defaults to false.
+ * @param options - `true` or a {@link ValidateOptions} object to also perform online
+ *   verification. Registry lookups are limited to `concurrency` (default 5) at a time,
+ *   since VIES rate-limits aggressively.
  * @param debug - When true, logs detailed validation steps. Defaults to false.
  * @returns Array of results in the same order as the input items.
  *
@@ -116,7 +152,7 @@ declare function validateTaxId(countryCode: string, taxId: string, onlineCheckRe
  * results.forEach(r => console.log(r.countryCode, r.result));
  * ```
  */
-declare function validateTaxIds(items: BulkValidationItem[], onlineCheckRequired?: boolean, debug?: boolean): Promise<BulkValidationResult[]>;
+declare function validateTaxIds(items: BulkValidationItem[], options?: boolean | ValidateOptions, debug?: boolean): Promise<BulkValidationResult[]>;
 /**
  * Returns all supported ISO 3166-1 alpha-2 country codes, sorted alphabetically.
  *
@@ -160,5 +196,5 @@ declare function isCountrySupported(countryCode: string): boolean;
  * ```
  */
 declare function getTaxIdInfo(countryCode: string): TaxIdTypeInfo[] | string;
-export { validateTaxId, validateTaxIds, getSupportedCountries, isCountrySupported, getTaxIdInfo, sanitize, maskTaxId };
+export { validateTaxId, validateTaxIds, getSupportedCountries, isCountrySupported, getTaxIdInfo, sanitize, maskTaxId, checkOnline };
 export default validateTaxId;

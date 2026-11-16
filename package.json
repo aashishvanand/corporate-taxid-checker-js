@@ -78,12 +78,6 @@
   "engines": {
     "node": ">=18.0.0"
   },
-  "dependencies": {
-    "axios": "^1.20.0"
-  },
-  "optionalDependencies": {
-    "cheerio": "^1.2.0"
-  },
   "devDependencies": {
     "@swc/core": "^1.16.18",
     "@swc/jest": "^0.2.39",

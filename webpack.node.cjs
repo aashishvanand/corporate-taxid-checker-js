@@ -9,10 +9,6 @@ module.exports = {
     path: path.resolve(__dirname, 'lib'),
     libraryTarget: 'commonjs2'
   },
-  externals: {
-    axios: 'commonjs2 axios',
-    cheerio: 'commonjs2 cheerio'
-  },
   resolve: {
     extensions: ['.ts', '.js', '.json']
   },

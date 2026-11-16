@@ -1,17 +1,13 @@
-import axios from 'axios';
+import { checkOnline } from '../../src/online';
 
-jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
-
-const VIES_URL = 'https://ec.europa.eu/taxation_customs/tin/rest-api/tinRequest';
+const VIES_URL = 'https://ec.europa.eu/taxation_customs/vies/rest-api/check-vat-number';
 
 /**
- * Every EU VIES-backed validator's online_check strips a 2-letter country/msCode
- * prefix before sending the TIN to the shared REST endpoint. This suite locks in
- * that stripping behavior for every online-check-enabled validator, for both the
- * always-prefixed case and (where the format allows it) the bare domestic case —
- * the class of bug fixed for AT/DE/ES/HR/HU/PL/SE (unconditional `substring(2)`
- * corrupting input that has no prefix).
+ * Every EU country is checked through VIES, which expects the bare national VAT number
+ * (no 2-letter prefix; Greece uses "EL"). This suite locks in the normalisation for every
+ * online-check-enabled country, for both the prefixed and (where the format allows it)
+ * the bare domestic form — the class of bug previously fixed for AT/DE/ES/HR/HU/PL/SE
+ * (unconditional `substring(2)` corrupting input that has no prefix).
  */
 interface Case {
     module: string;
@@ -99,7 +95,6 @@ const configs: Case[] = [
     ] },
     { module: 'SE', msCode: 'SE', cases: [
         { input: 'SE559000594101', expectedTinNumber: '559000594101' },
-        { input: '811218-9876', expectedTinNumber: '811218-9876' },
     ] },
     { module: 'SI', msCode: 'SI', cases: [
         { input: 'SI12345678', expectedTinNumber: '12345678' },
@@ -109,28 +104,20 @@ const configs: Case[] = [
     ] },
 ];
 
-describe('online_check TIN payload (VIES-backed validators)', () => {
-    afterEach(() => {
-        jest.clearAllMocks();
-    });
-
+describe('VIES payload per country', () => {
     for (const { module, msCode, cases } of configs) {
         describe(module, () => {
             for (const { input, expectedTinNumber } of cases) {
                 test(`sends "${expectedTinNumber}" for input "${input}"`, async () => {
-                    mockedAxios.post.mockResolvedValue({
-                        status: 200,
-                        data: { result: { structureValid: true, syntaxValid: true } }
-                    });
+                    const fetchMock = jest.fn(async (_url: string, _init?: any) =>
+                        new Response(JSON.stringify({ valid: true }), { status: 200 }));
+                    const r = await checkOnline(module, input, { fetch: fetchMock as unknown as typeof fetch });
 
-                    // eslint-disable-next-line @typescript-eslint/no-var-requires
-                    const { online_check } = require(`../../src/validators/${module}`);
-                    await online_check(input);
-
-                    expect(mockedAxios.post).toHaveBeenCalledWith(
-                        VIES_URL,
-                        { msCode, tinNumber: expectedTinNumber }
-                    );
+                    expect(r.status).toBe('valid');
+                    expect(fetchMock).toHaveBeenCalledTimes(1);
+                    const [url, init] = fetchMock.mock.calls[0];
+                    expect(url).toBe(VIES_URL);
+                    expect(JSON.parse(init.body)).toEqual({ countryCode: msCode, vatNumber: expectedTinNumber });
                 });
             }
         });

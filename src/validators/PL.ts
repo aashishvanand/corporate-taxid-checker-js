@@ -1,5 +1,4 @@
 import { weightedSum } from '../utils';
-import axios from 'axios';
 
 function validate_pl_nip(nip: string, debug: boolean = false): boolean {
   // Validate input type
@@ -44,42 +43,4 @@ function validate_pl_nip(nip: string, debug: boolean = false): boolean {
   return true;
 }
 
-async function online_check(tin: string, debug: boolean = false): Promise<boolean> {
-  // Only the EU VAT form carries the "PL" msCode prefix; the bare NIP is plain digits.
-  const processedTin = tin.toUpperCase().startsWith('PL') ? tin.substring(2) : tin;
-  
-  try {
-      const response = await axios.post('https://ec.europa.eu/taxation_customs/tin/rest-api/tinRequest', {
-          msCode: 'PL',
-          tinNumber: processedTin
-      });
-
-      if (response.status !== 200) {
-          if (debug) console.log(`Request failed with status: ${response.status}`);
-          return false;
-      }
-
-      const data = response.data;
-      if (data.result.structureValid === true && data.result.syntaxValid === true) {
-          return true;
-      }
-
-      if (data.result.userError !== "0" || data.result.error === true || data.result.structureValid === false || data.result.syntaxValid === false) {
-          if (debug) {
-              console.log('Response Data:', data.result);
-              if (data.result.userError !== "0") console.log(`User Error with code: ${data.result.userError}`);
-              if (data.result.error === true) console.log('Error flag set to true in response');
-              if (data.result.structureValid === false) console.log('Structure validity check failed');
-              if (data.result.syntaxValid === false) console.log('Syntax validity check failed');
-          }
-          return false;
-      }
-  } catch (error) {
-      if (debug) console.log('Axios request error:', error);
-      console.error(error);
-      return false;
-  }
-  return false;
-}
-
-export { validate_pl_nip, online_check };
+export { validate_pl_nip };

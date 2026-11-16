@@ -1,0 +1,20 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "taxid-online-check",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-01",
+  "observability": { "enabled": true },
+  "vars": {
+    // Comma-separated origins allowed to call the Worker from a browser. Set to your demo's origin.
+    "ALLOWED_ORIGINS": "http://localhost:5173,https://aashishvanand.github.io"
+  },
+  // Per-IP rate limit. namespace_id is any account-unique integer string.
+  "ratelimits": [
+    {
+      "name": "RATE_LIMITER",
+      "namespace_id": "4401",
+      "simple": { "limit": 20, "period": 60 }
+    }
+  ]
+  // Secret (not committed): npx wrangler secret put ABR_GUID
+}
