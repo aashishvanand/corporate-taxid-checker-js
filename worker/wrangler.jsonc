@@ -6,7 +6,7 @@
   "observability": { "enabled": true },
   "vars": {
     // Comma-separated origins allowed to call the Worker from a browser. Set to your demo's origin.
-    "ALLOWED_ORIGINS": "http://localhost:5173,https://aashishvanand.github.io"
+    "ALLOWED_ORIGINS": "https://corporate-taxid-checker-js.aashishvanand.me,http://localhost:5173"
   },
   // Per-IP rate limit. namespace_id is any account-unique integer string.
   "ratelimits": [
