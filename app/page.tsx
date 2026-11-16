@@ -52,24 +52,25 @@ const COUNTRY_NAMES: Record<string, string> = {
   AT: "Austria", AU: "Australia", AW: "Aruba", AZ: "Azerbaijan",
   BA: "Bosnia and Herzegovina", BB: "Barbados", BD: "Bangladesh", BE: "Belgium",
   BF: "Burkina Faso", BG: "Bulgaria", BH: "Bahrain", BJ: "Benin",
-  BO: "Bolivia", BR: "Brazil", BS: "Bahamas", BY: "Belarus", BZ: "Belize",
-  CA: "Canada", CD: "Congo (DRC)", CH: "Switzerland", CL: "Chile",
+  BN: "Brunei", BO: "Bolivia", BR: "Brazil", BS: "Bahamas", BW: "Botswana", BY: "Belarus", BZ: "Belize",
+  CA: "Canada", CD: "Congo (DRC)", CH: "Switzerland", CI: "Côte d'Ivoire", CL: "Chile",
   CM: "Cameroon", CN: "China", CO: "Colombia", CR: "Costa Rica", CU: "Cuba",
   CV: "Cape Verde", CW: "Curaçao", CY: "Cyprus", CZ: "Czech Republic",
   DE: "Germany", DK: "Denmark", DO: "Dominican Republic", DZ: "Algeria",
   EC: "Ecuador", EE: "Estonia", EG: "Egypt", ES: "Spain", ET: "Ethiopia",
   FI: "Finland", FO: "Faroe Islands", FR: "France", GB: "United Kingdom",
   GE: "Georgia", GG: "Guernsey", GH: "Ghana", GI: "Gibraltar", GN: "Guinea",
-  GR: "Greece", GT: "Guatemala", HK: "Hong Kong", HR: "Croatia", HU: "Hungary",
+  GR: "Greece", GT: "Guatemala", HK: "Hong Kong", HN: "Honduras", HR: "Croatia", HU: "Hungary",
   ID: "Indonesia", IE: "Ireland", IL: "Israel", IM: "Isle of Man", IN: "India",
-  IS: "Iceland", IT: "Italy", JM: "Jamaica", JP: "Japan", KE: "Kenya",
+  IS: "Iceland", IT: "Italy", JM: "Jamaica", JO: "Jordan", JP: "Japan", KE: "Kenya",
   KG: "Kyrgyzstan", KH: "Cambodia", KN: "Saint Kitts and Nevis",
   KR: "South Korea", KW: "Kuwait", KZ: "Kazakhstan", LA: "Laos", LB: "Lebanon",
   LI: "Liechtenstein", LK: "Sri Lanka", LT: "Lithuania", LU: "Luxembourg",
   LV: "Latvia", MA: "Morocco", MC: "Monaco", MD: "Moldova", ME: "Montenegro",
-  MH: "Marshall Islands", MK: "North Macedonia", MR: "Mauritania", MT: "Malta",
-  MU: "Mauritius", MV: "Maldives", MX: "Mexico", MY: "Malaysia",
-  NG: "Nigeria", NI: "Nicaragua", NL: "Netherlands", NO: "Norway", NP: "Nepal",
+  MH: "Marshall Islands", MK: "North Macedonia", MM: "Myanmar",
+  MN: "Mongolia", MR: "Mauritania", MT: "Malta",
+  MU: "Mauritius", MV: "Maldives", MX: "Mexico", MY: "Malaysia", MZ: "Mozambique",
+  NA: "Namibia", NG: "Nigeria", NI: "Nicaragua", NL: "Netherlands", NO: "Norway", NP: "Nepal",
   NZ: "New Zealand", OM: "Oman", PA: "Panama", PE: "Peru", PH: "Philippines",
   PK: "Pakistan", PL: "Poland", PT: "Portugal", PY: "Paraguay", QA: "Qatar",
   RO: "Romania", RS: "Serbia", RU: "Russia", RW: "Rwanda", SA: "Saudi Arabia",
@@ -79,7 +80,7 @@ const COUNTRY_NAMES: Record<string, string> = {
   TM: "Turkmenistan", TN: "Tunisia", TR: "Turkey", TT: "Trinidad and Tobago",
   TW: "Taiwan", TZ: "Tanzania", UA: "Ukraine", UG: "Uganda",
   US: "United States", UY: "Uruguay", UZ: "Uzbekistan", VE: "Venezuela",
-  VN: "Vietnam", WS: "Samoa", ZA: "South Africa", ZM: "Zambia", ZW: "Zimbabwe",
+  VN: "Vietnam", WS: "Samoa", XK: "Kosovo", ZA: "South Africa", ZM: "Zambia", ZW: "Zimbabwe",
 };
 
 function getCountryFlag(code: string): string {
@@ -166,6 +167,21 @@ export default function Home() {
       flag: getCountryFlag(code),
     }));
   }, []);
+
+  // Derive headline stats from the library so they never drift from what it supports
+  const stats = useMemo(() => {
+    let checksums = 0;
+    let onlineChecks = 0;
+    for (const { code } of countries) {
+      const info = getTaxIdInfo(code);
+      if (!Array.isArray(info)) continue;
+      for (const t of info) {
+        if (t.hasChecksum) checksums++;
+        if (t.hasOnlineCheck) onlineChecks++;
+      }
+    }
+    return { countries: countries.length, checksums, onlineChecks };
+  }, [countries]);
 
   useEffect(() => {
     if (country) {
@@ -266,7 +282,7 @@ export default function Home() {
                 Tax ID Checker
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Validate corporate tax IDs across 131 countries
+                Validate corporate tax IDs across {stats.countries} countries
               </Typography>
             </Box>
             <IconButton
@@ -582,7 +598,8 @@ export default function Home() {
               >
                 corporate-taxid-checker-js
               </Link>{" "}
-              v2 — 131 countries, 60+ checksums, 24 online checks
+              v2 — {stats.countries} countries, {stats.checksums} checksums,{" "}
+              {stats.onlineChecks} online checks
             </Typography>
             <Box sx={{ mt: 1 }}>
               <IconButton
