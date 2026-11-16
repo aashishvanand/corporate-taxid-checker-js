@@ -135,7 +135,7 @@ function validate_ro_cui(input: string, debug: boolean = false): boolean {
       return false;
   }
 
-  value = value.padStart(9, '0');
+  value = value.padStart(10, '0');
   const weights = [7, 5, 3, 2, 1, 7, 5, 3, 2];
   const checksum = value[value.length - 1];
   const rawSum = weightedSum(value.substring(0, value.length - 1), weights) * 10;

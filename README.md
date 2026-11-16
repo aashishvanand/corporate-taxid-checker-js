@@ -1,11 +1,11 @@
 # corporate-taxid-checker-js
 
-Validate corporate tax identification numbers (TINs) across **150 countries** with three levels of verification: regex format checks, checksum algorithms, and online authority lookups.
+Validate corporate tax identification numbers (TINs) across **155 countries** with three levels of verification: regex format checks, checksum algorithms, and online authority lookups.
 
 ## Features
 
-- **150 countries** with regex format validation
-- **68 countries** with checksum verification (Luhn, MOD-97, ISO 7064, weighted sums, and more)
+- **155 countries** with regex format validation
+- **72 countries** with checksum verification (Luhn, MOD-97, ISO 7064, weighted sums, and more)
 - **28 countries** with online authority lookup (EU TIN API, Australian ABR)
 - Works in Node.js and browsers (UMD bundle)
 - **Bulk validation** — validate multiple tax IDs in one call
@@ -139,7 +139,7 @@ AD | Andorra | Y | Y |
 AE | United Arab Emirates | Y |  |
 AG | Antigua and Barbuda | Y |  |
 AI | Anguilla | Y |  |
-AL | Albania | Y | Y |
+AL | Albania | Y |  |
 AM | Armenia | Y |  |
 AO | Angola | Y |  |
 AR | Argentina | Y | Y |
@@ -159,6 +159,7 @@ BN | Brunei Darussalam | Y |  |
 BO | Bolivia | Y |  |
 BR | Brazil | Y | Y |
 BS | Bahamas | Y |  |
+BW | Botswana | Y |  |
 BY | Belarus | Y | Y |
 BZ | Belize | Y | Y |
 CA | Canada | Y | Y |
@@ -177,7 +178,7 @@ CY | Cyprus | Y | Y | Y
 CZ | Czech Republic | Y | Y | Y
 DE | Germany | Y | Y | Y
 DK | Denmark | Y | Y | Y
-DO | Dominican Republic | Y |  |
+DO | Dominican Republic | Y | Y |
 DZ | Algeria | Y |  |
 EC | Ecuador | Y | Y |
 EE | Estonia | Y | Y | Y
@@ -196,6 +197,7 @@ GN | Guinea | Y | Y |
 GR | Greece | Y |  | Y
 GT | Guatemala | Y | Y |
 HK | Hong Kong | Y |  |
+HN | Honduras | Y |  |
 HR | Croatia | Y | Y | Y
 HU | Hungary | Y | Y | Y
 ID | Indonesia | Y | Y |
@@ -203,9 +205,10 @@ IE | Ireland | Y | Y | Y
 IL | Israel | Y | Y |
 IM | Isle of Man | Y |  |
 IN | India | Y | Y |
-IS | Iceland | Y |  |
+IS | Iceland | Y | Y |
 IT | Italy | Y |  | Y
 JM | Jamaica | Y |  |
+JO | Jordan | Y |  |
 JP | Japan | Y | Y |
 KE | Kenya | Y |  |
 KG | Kyrgyzstan | Y |  |
@@ -213,7 +216,7 @@ KH | Cambodia | Y |  |
 KN | St. Kitts and Nevis | Y |  |
 KR | South Korea | Y | Y |
 KW | Kuwait | Y |  |
-KZ | Kazakhstan | Y |  |
+KZ | Kazakhstan | Y | Y |
 LA | Laos | Y |  |
 LB | Lebanon | Y |  |
 LI | Liechtenstein | Y |  |
@@ -222,7 +225,7 @@ LT | Lithuania | Y |  | Y
 LU | Luxembourg | Y |  | Y
 LV | Latvia | Y |  | Y
 MA | Morocco | Y | Y |
-MC | Monaco | Y |  |
+MC | Monaco | Y | Y |
 MD | Moldova | Y |  |
 ME | Montenegro | Y | Y |
 MH | Marshall Islands | Y |  |
@@ -235,6 +238,7 @@ MU | Mauritius | Y |  |
 MV | Maldives | Y |  |
 MX | Mexico | Y | Y |
 MY | Malaysia | Y |  |
+MZ | Mozambique | Y |  |
 NA | Namibia | Y |  |
 NG | Nigeria | Y |  |
 NI | Nicaragua | Y |  |
@@ -276,12 +280,13 @@ TW | Taiwan | Y | Y |
 TZ | Tanzania | Y |  |
 UA | Ukraine | Y | Y |
 UG | Uganda | Y |  |
-US | United States | Y |  |
+US | United States | Y | Y |
 UY | Uruguay | Y | Y |
 UZ | Uzbekistan | Y |  |
 VE | Venezuela | Y | Y |
 VN | Vietnam | Y | Y |
 WS | Samoa | Y |  |
+XK | Kosovo | Y |  |
 ZA | South Africa | Y | Y |
 ZM | Zambia | Y |  |
 ZW | Zimbabwe | Y |  |
@@ -299,7 +304,7 @@ npm run build
 npm test
 ```
 
-502 tests covering all 150 supported countries plus utility functions.
+643 tests covering all 155 supported countries plus utility functions.
 
 ## Contributing
 

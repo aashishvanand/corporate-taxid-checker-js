@@ -31,24 +31,14 @@ function validate_nz_ird(ird: string, debug: boolean = false): boolean {
   const [frontV, check] = [value.slice(0, -1), value.slice(-1)];
   const front = frontV.padStart(8, '0');
 
-  // Calculate the weighted sum for the first set of weights
-  let sum = weightedSum(front, {
-    weights: [3, 2, 7, 6, 5, 4, 3, 2],
-    modulus: 11,
-  });
-
-  // Base the new sum on the result from the first calculation
-  if (11 - sum === 10) {
-    sum = weightedSum(front, {
-      weights: [7, 4, 3, 2, 5, 2, 7, 6],
-      modulus: 11,
-    });
-  } else {
-    sum = 11 - sum;
+  // Check digit = (11 - sum % 11) % 11 with the primary weights; if that gives 10,
+  // retry with the secondary weights, and a second 10 means the number is invalid
+  let expected = (11 - weightedSum(front, { weights: [3, 2, 7, 6, 5, 4, 3, 2], modulus: 11 })) % 11;
+  if (expected === 10) {
+    expected = (11 - weightedSum(front, { weights: [7, 4, 3, 2, 5, 2, 7, 6], modulus: 11 })) % 11;
   }
 
-  // Validate checksum
-  if (String(sum % 10) !== check) {
+  if (expected === 10 || String(expected) !== check) {
     if (debug) { console.log("Invalid checksum"); }
     return false;
   }

@@ -23,9 +23,10 @@ function validate_mk_edb(edb: string, debug: boolean = false): boolean {
   const front = value.substring(0, 12);
   const check = value.substring(12, 13); // Last digit
 
-  const sum = 11 - (weightedSum(front, [7, 6, 5, 4, 3, 2]) % 11);
+  const remainder = weightedSum(front, [7, 6, 5, 4, 3, 2], 11);
+  const expected = ((11 - remainder) % 11) % 10;
 
-  if (String(sum % 10) !== check) {
+  if (String(expected) !== check) {
     if (debug) { console.log("Invalid checksum"); }
     return false;
   }

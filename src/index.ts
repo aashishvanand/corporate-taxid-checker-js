@@ -237,10 +237,12 @@ async function validateTaxId(
             // Strip country code prefix for checksum validators
             // Most validators expect the numeric/payload portion without the ISO prefix
             // Exception: CH (prefix is "CHE-", not just "CH") handles its own prefix
+            // Then strip display separators (. - / whitespace): several regexes require a
+            // formatted value (e.g. BR "16.727.230/0001-97") but validators expect the bare payload
             const upperId = taxId.toUpperCase();
-            const checksumInput = (code !== 'CH' && upperId.startsWith(code))
-                ? taxId.substring(code.length)
-                : taxId;
+            const checksumInput = code === 'CH'
+                ? taxId
+                : (upperId.startsWith(code) ? taxId.substring(code.length) : taxId).replace(/[\s.\-\/]/g, '');
 
             if (checkSumCheckPresent && countryModule) {
                 try {
