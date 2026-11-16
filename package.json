@@ -79,17 +79,17 @@
     "node": ">=18.0.0"
   },
   "devDependencies": {
-    "@swc/core": "^1.16.18",
+    "@swc/core": "^1.16.22",
     "@swc/jest": "^0.2.39",
     "@types/jest": "^30.0.0",
-    "@types/node": "^26.6.5",
+    "@types/node": "^26.6.6",
     "jest": "^30.5.2",
     "path-browserify": "^1.0.1",
     "raw-loader": "^4.0.2",
     "swc-loader": "^0.2.7",
     "typescript": "^7.0.2",
-    "webpack": "^5.112.0",
-    "webpack-cli": "^7.2.3"
+    "webpack": "^5.112.2",
+    "webpack-cli": "^7.3.1"
   },
   "overrides": {
     "js-yaml": "^3.15.2",
