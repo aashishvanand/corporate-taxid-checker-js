@@ -268,7 +268,7 @@ async function validateTaxId(
 
         regexValid = true;
         checkSumCheckPresent = entry.checksum;
-        onlineCheckPresent = entry.online && getOnlineProvider(code) !== null;
+        onlineCheckPresent = !!(entry.online && getOnlineProvider(code) !== null);
         matchedType = entry.type;
         matchedLabel = entry.label;
 
@@ -467,7 +467,7 @@ function getTaxIdInfo(countryCode: string): TaxIdTypeInfo[] | string {
         label: entry.label,
         type: entry.type,
         hasChecksum: entry.checksum,
-        hasOnlineCheck: entry.online && getOnlineProvider(code) !== null
+        hasOnlineCheck: !!(entry.online && getOnlineProvider(code) !== null)
     }));
 }
 

@@ -231,6 +231,13 @@ describe('validateTaxId with online checks', () => {
         const info = getTaxIdInfo('BE') as any[];
         expect(info.find((t) => t.type === 'be_vat').hasOnlineCheck).toBe(true);
     });
+
+    test('getTaxIdInfo returns a boolean for types with no online registry', () => {
+        const xk = getTaxIdInfo('XK') as any[];
+        expect(xk[0].hasOnlineCheck).toBe(false);
+        const us = getTaxIdInfo('US') as any[];
+        expect(us.every((t) => t.hasOnlineCheck === false)).toBe(true);
+    });
 });
 
 describe('validateTaxIds concurrency', () => {
