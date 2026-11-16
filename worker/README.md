@@ -41,7 +41,12 @@ are then same-origin and need no CORS. Make sure nothing else on the site alread
 
 ## Local development
 
+Development origins (like `http://localhost:5173`) are kept out of `wrangler.jsonc` so they
+never reach production. Put them in `.dev.vars` instead. That file is gitignored, only
+`wrangler dev` reads it, and its values override `wrangler.jsonc` locally:
+
 ```bash
+cp .dev.vars.example .dev.vars
 npx wrangler dev
 curl -X POST http://localhost:8787/check -H 'Content-Type: application/json' \
   -d '{"countryCode":"BE","taxId":"BE0417497106"}'
