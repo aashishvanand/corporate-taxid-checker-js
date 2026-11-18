@@ -13,6 +13,10 @@ module.exports = {
         globalObject: 'this'
     },
     resolve: {
+        fallback: {
+            "fs": false,
+            "path": require.resolve("path-browserify")
+        },
         extensions: ['.ts', '.js', '.json']
     },
     module: {
@@ -25,12 +29,5 @@ module.exports = {
                 }
             }
         ]
-    },
-    resolve: {
-        fallback: {
-            "fs": false,
-            "path": require.resolve("path-browserify")
-         },
-        extensions: ['.ts', '.js', '.json']
     }
 };

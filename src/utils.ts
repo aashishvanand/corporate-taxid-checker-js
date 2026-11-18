@@ -75,7 +75,7 @@ export function sanitize(input: string): [string, string | null] {
     if (typeof input !== 'string') {
         return ['', 'Input must be a string'];
     }
-    const value = input.toUpperCase().replace(/[\s.\-\/]/g, '');
+    const value = input.toUpperCase().replace(/[\s./-]/g, '');
     if (!value) {
         return ['', 'Input is empty after sanitization'];
     }
@@ -90,12 +90,17 @@ export function sanitize(input: string): [string, string | null] {
  */
 export function maskTaxId(taxId: string, visibleCount: number = 4, maskChar: string = 'X'): string {
     if (typeof taxId !== 'string' || !taxId) return '';
+    // A non-integer count (NaN, Infinity, 2.5) used to leak the whole ID: the slice below
+    // silently became empty. Fall back to the documented default.
+    if (!Number.isInteger(visibleCount)) visibleCount = 4;
     if (visibleCount < 0) visibleCount = 0;
 
-    // Find all alphanumeric character positions
+    // Find all letter/digit character positions. Unicode-aware, so accented letters
+    // (Ä, Ñ, …) are masked instead of being treated as separators and left in the clear.
+    const alnumPattern = /[\p{L}\p{N}]/u;
     const alnumPositions: number[] = [];
     for (let i = 0; i < taxId.length; i++) {
-        if (/[A-Za-z0-9]/.test(taxId[i])) {
+        if (alnumPattern.test(taxId[i])) {
             alnumPositions.push(i);
         }
     }

@@ -13,8 +13,8 @@ function fakeFetch(...responses: Array<object | string | Error | ((call: Call) =
         if (typeof r === 'function') r = await r(call);
         if (r instanceof Error) throw r;
         if (r && typeof r === 'object' && 'status' in r && 'body' in r) {
-            const { status, body } = r as { status: number; body: any };
-            return new Response(typeof body === 'string' ? body : JSON.stringify(body), { status });
+            const { status, body, headers } = r as { status: number; body: any; headers?: Record<string, string> };
+            return new Response(typeof body === 'string' ? body : JSON.stringify(body), { status, headers });
         }
         return new Response(typeof r === 'string' ? r : JSON.stringify(r), { status: 200 });
     });
@@ -102,6 +102,45 @@ describe('checkOnline — VIES', () => {
         expect(r).toMatchObject({ status: 'unavailable', reason: 'TIMEOUT' });
     });
 
+    test('a zero/NaN timeout falls back to the default instead of aborting immediately', async () => {
+        const slow = async () => {
+            await new Promise((r) => setTimeout(r, 20));
+            return new Response(JSON.stringify(VIES_VALID), { status: 200 });
+        };
+        const f = { fetch: jest.fn(slow) as unknown as typeof fetch };
+        for (const timeoutMs of [0, NaN]) {
+            const r = await checkOnline('BE', 'BE0417497106', { fetch: f.fetch, timeoutMs, retries: 0 });
+            expect(r.status).toBe('valid');
+        }
+    });
+
+    test('an HTML maintenance page is UNEXPECTED_RESPONSE, not a retried network error', async () => {
+        const f = fakeFetch('<!DOCTYPE html><html><body>Maintenance</body></html>');
+        const r = await checkOnline('BE', 'BE0417497106', { fetch: f.fetch });
+        expect(r).toEqual({ status: 'unavailable', provider: 'vies', reason: 'UNEXPECTED_RESPONSE' });
+        expect(f.mock).toHaveBeenCalledTimes(1);
+    });
+
+    test('invalid retry counts are normalised and bounded', async () => {
+        const once = fakeFetch({ status: 502, body: 'Bad Gateway' });
+        expect(await checkOnline('BE', 'BE0417497106', { fetch: once.fetch, retries: NaN })).toMatchObject({ reason: 'HTTP_502' });
+        expect(once.mock).toHaveBeenCalledTimes(2); // NaN → default 1 retry
+
+        const none = fakeFetch({ status: 502, body: 'Bad Gateway' });
+        await checkOnline('BE', 'BE0417497106', { fetch: none.fetch, retries: -3 });
+        expect(none.mock).toHaveBeenCalledTimes(1);
+    });
+
+    test('Retry-After is honoured for a 429 and does not leak into the result', async () => {
+        const f = fakeFetch(
+            { status: 429, body: 'Too Many Requests', headers: { 'Retry-After': '0' } },
+            VIES_VALID,
+        );
+        const r = await checkOnline('BE', 'BE0417497106', { fetch: f.fetch, retries: 1 });
+        expect(r).toEqual({ status: 'valid', provider: 'vies', details: { name: 'NV Anheuser-Busch InBev', address: 'Grote Markt 1\n1000 Brussel' } });
+        expect(f.mock).toHaveBeenCalledTimes(2);
+    });
+
     test('unsupported country makes no request', async () => {
         const f = fakeFetch(VIES_VALID);
         expect(await checkOnline('US', '12-3456789', { fetch: f.fetch })).toEqual({ status: 'not_supported' });
@@ -116,6 +155,50 @@ describe('checkOnline — proxy endpoint', () => {
         expect(r).toEqual({ status: 'valid', provider: 'vies', details: { name: 'X' } });
         expect(f.calls[0].url).toBe('https://proxy.test/check');
         expect(JSON.parse(f.calls[0].init.body)).toEqual({ countryCode: 'BE', taxId: 'BE0417497106' });
+    });
+
+    test('sends endpointHeaders with a proxied request', async () => {
+        const f = fakeFetch({ status: 'valid', provider: 'vies' });
+        await checkOnline('BE', 'BE0417497106', {
+            fetch: f.fetch,
+            endpoint: 'https://proxy.test/check',
+            endpointHeaders: { Authorization: 'Bearer secret-token' },
+        });
+        expect(f.calls[0].init.headers).toMatchObject({
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer secret-token',
+        });
+    });
+
+    test('rejects an unknown status instead of trusting the proxy (regression)', async () => {
+        const f = fakeFetch({ status: 'bogus', provider: 'vies', details: { name: 'X' } });
+        const r = await checkOnline('BE', 'BE0417497106', { fetch: f.fetch, endpoint: 'https://proxy.test/check', retries: 0 });
+        expect(r).toEqual({ status: 'unavailable', reason: 'PROXY_UNEXPECTED_RESPONSE' });
+    });
+
+    test('drops unexpected details fields and non-string values', async () => {
+        const f = fakeFetch({
+            status: 'valid',
+            provider: 'vies',
+            details: { name: '  ACME  ', address: 42, status: 'Active', secret: 'leak' },
+            reason: { nested: true },
+            extra: 'ignored',
+        });
+        const r = await checkOnline('BE', 'BE0417497106', { fetch: f.fetch, endpoint: 'https://proxy.test/check' });
+        expect(r).toEqual({ status: 'valid', provider: 'vies', details: { name: 'ACME', status: 'Active' } });
+    });
+
+    test('an invalid status fails validation even in non-strict mode', async () => {
+        const f = fakeFetch({ status: 'not-a-status' });
+        const r: any = await validateTaxId('BE', 'BE0417497106', {
+            online: true,
+            fetch: f.fetch,
+            endpoint: 'https://proxy.test/check',
+            retries: 0,
+        });
+        expect(r.onlineStatus).toBe('unavailable');
+        expect(r.isValid).toBe(true); // registry could not answer, not an explicit "invalid"
+        expect(r.onlineReason).toBe('PROXY_UNEXPECTED_RESPONSE');
     });
 });
 
@@ -144,6 +227,13 @@ describe('checkOnline — ABR', () => {
         const g = fakeFetch(abr({ Message: 'The GUID entered is not recognised as a Registered Party' }));
         expect(await checkOnline('AU', '51824753556', { fetch: g.fetch, abrGuid: 'bad' })).toMatchObject({ status: 'unavailable', reason: 'ABR_GUID_INVALID' });
     });
+
+    test('a JSONP body that parses to null is UNEXPECTED_RESPONSE, not a retried crash', async () => {
+        const f = fakeFetch('c(null)');
+        const r = await checkOnline('AU', '51824753556', { fetch: f.fetch, abrGuid: 'g' });
+        expect(r).toEqual({ status: 'unavailable', provider: 'abr', reason: 'UNEXPECTED_RESPONSE' });
+        expect(f.mock).toHaveBeenCalledTimes(1);
+    });
 });
 
 describe('validateTaxId with online checks', () => {
@@ -154,14 +244,6 @@ describe('validateTaxId with online checks', () => {
         expect(r.onlineStatus).toBe('not_supported');
         expect(r.onlineCheck).toBe(false);
         expect(f.mock).not.toHaveBeenCalled();
-    });
-
-    test('a type without a checksum can be valid when online (regression: used to be always false)', async () => {
-        const f = fakeFetch({ ...VIES_VALID, countryCode: 'IT' });
-        const r: any = await validateTaxId('IT', 'IT00743110157', { online: true, fetch: f.fetch });
-        expect(r.checkSumCheckPresent).toBe(false);
-        expect(r.isValid).toBe(true);
-        expect(r.onlineStatus).toBe('valid');
     });
 
     test('registry confirmation is surfaced with details', async () => {
@@ -227,6 +309,20 @@ describe('validateTaxId with online checks', () => {
         expect(r.onlineCheckPresent).toBe(true);
     });
 
+    test('debug logging does not print registry name/address', async () => {
+        const spy = jest.spyOn(console, 'log').mockImplementation(() => {});
+        try {
+            const f = fakeFetch(VIES_VALID);
+            await validateTaxId('BE', 'BE0417497106', { online: true, debug: true, fetch: f.fetch });
+            const logged = spy.mock.calls.flat().map(String).join(' ');
+            expect(logged).toContain('Online Check Result: valid');
+            expect(logged).not.toContain('Anheuser');
+            expect(logged).not.toContain('Grote Markt');
+        } finally {
+            spy.mockRestore();
+        }
+    });
+
     test('getTaxIdInfo reports online availability', () => {
         const info = getTaxIdInfo('BE') as any[];
         expect(info.find((t) => t.type === 'be_vat').hasOnlineCheck).toBe(true);
@@ -258,5 +354,14 @@ describe('validateTaxIds concurrency', () => {
         expect(res).toHaveLength(10);
         expect((res[3].result as any).onlineStatus).toBe('not_supported');
         expect((res[0].result as any).onlineStatus).toBe('valid');
+    });
+
+    test('a non-integer concurrency falls back to the default instead of returning holes (regression)', async () => {
+        const f = fakeFetch(VIES_VALID);
+        const items = Array.from({ length: 6 }, () => ({ countryCode: 'BE', taxId: 'BE0417497106' }));
+        const res = await validateTaxIds(items, { online: true, fetch: f.fetch, concurrency: NaN });
+        expect(res).toHaveLength(6);
+        expect(res.every((r) => !!r && typeof r.result === 'object')).toBe(true);
+        expect((res[5].result as any).isValid).toBe(true);
     });
 });

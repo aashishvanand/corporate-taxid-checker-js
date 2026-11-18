@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [3.0.0] - 2026-11-17
 
 ### Breaking Changes
 
@@ -9,13 +9,29 @@
 ### New Features
 
 - **`onlineStatus`, `onlineDetails`, `onlineReason`** result fields. `onlineStatus` is one of `valid`, `invalid`, `unavailable`, `not_supported`, `skipped`, or `not_requested`; `onlineCheck` stays a boolean that is true only when the registry confirms.
-- **Options object** for `validateTaxId` / `validateTaxIds` — `online`, `strict`, `timeoutMs`, `retries`, `endpoint`, `fetch`, `signal`, `abrGuid`, `concurrency`. Passing `true` still works.
+- **Options object** for `validateTaxId` / `validateTaxIds` — `online`, `strict`, `timeoutMs`, `retries`, `endpoint`, `endpointHeaders`, `fetch`, `signal`, `abrGuid`, `concurrency`. Passing `true` still works.
 - **`checkOnline()`** is exported for direct registry lookups.
 - **Cloudflare Worker proxy** in [`worker/`](worker/) so browsers can use online checks (VIES and ABN Lookup send no CORS headers). Includes a CORS allowlist, per-IP rate limiting, edge caching, and input validation, and reuses `src/online.ts`.
+- **Static validator registry** — `src/validators/index.ts` lists every per-country checksum module, so bundlers and Cloudflare Workers can run the full offline validation without the dynamic `require()` that broke non-Node targets. `scripts/generate-validators-index.js` keeps it in sync and a test fails if a module is missing.
 - **5 new countries** (regex only; no published check-digit algorithm could be confirmed): Botswana (BW, `bw_tin`), Honduras (HN, `hn_rtn`), Jordan (JO, `jo_tin`), Mozambique (MZ, `mz_nuit`), and Kosovo (XK, `xk_nui`). Expanded from 150 to 155 supported countries.
 
 ### Bug Fixes
 
+- **GB bare-digit VAT numbers no longer skip the checksum** — the `eu_vat` entry accepted any 9/12-digit value before `gb_vat` and had no checksum, so `123456789` validated. It is now `XI`-only and uses the GB check digit.
+- **Overlapping ID formats prefer a checksum that passes** instead of stopping at the first regex match.
+- **Country-code stripping no longer rejects valid IDs** that happen to start with their ISO code (e.g. Indian PAN `INAPL1234C`, Mexican RFCs starting with `MX`).
+- **`maskTaxId` no longer leaks the full ID for `NaN`/non-integer `visibleCount`**, and now masks non-ASCII letters.
+- **Proxy replies are validated** — unknown `status` values and unexpected `details` fields are rejected instead of flowing into `isValid`.
+- **`validateTaxIds` validates `concurrency`** (`NaN`/non-integer falls back to 5) and survives malformed items.
+- **Input hardening** — non-string or over-64-character input returns an invalid result instead of throwing, and IDs are trimmed/upper-cased before matching.
+- **Retry handling** — bounded retries, validated timeouts, jittered/capped backoff, abort-aware waits, and `Retry-After` support.
+- **Registry parsing** — ABR `null` bodies and VIES HTML maintenance pages report `UNEXPECTED_RESPONSE` instead of a retried `NETWORK_ERROR`.
+- **US ITIN** — removed a stray comma from the character class (`9[0-2,4-9]` accepted punctuation).
+- **MX RFC** — the embedded date is now validated (month/day, leap year, future dates in strict mode).
+- **Checksums enabled** for GR, IT, LT, LU, LV, MD, and MT, each with a real ID and a corrupted-check-digit regression test.
+- **Worker** — fails closed without a rate limiter, adds `X-Content-Type-Options: nosniff`, runs the full offline validation (regex and check digit) before spending registry quota, supports an optional constant-time `API_TOKEN` for non-browser clients, and no longer caches GR and EL separately.
+- **Packaging** — the CJS bundle exports a namespace (`require(...).validateTaxId`); the dead `module.exports` overrides were removed, `esm/` no longer ships stale declarations, and `./tools` has an ESM entry point. The tarball is down to 14 files because generated ESM declarations and the internal `types/validators/` folder are no longer included.
+- **Node 22+** is required (Node 18 and 20 are end-of-life).
 - **Online checks now use VIES** — they actually confirm EU VAT registration and return the trader name/address. The previous EC TIN endpoint only checked the syntax of personal TINs and rejected VAT numbers, so the "online authority lookup" mostly returned false negatives. Greece is sent as `EL`, and HU 11-digit numbers are reduced to the 8-digit VAT core.
 - **`isValid` with online checks** — no longer `false` for countries without a registry, ID types without a checksum, or registry outages. Only an explicit `invalid` answer fails an ID; use `strict: true` for the old "must be confirmed" behaviour.
 - **Australia** — replaced the broken ABR HTML scrape (the page now returns a 302) with the official ABN Lookup JSON service (`abrGuid` / `ABR_GUID`).

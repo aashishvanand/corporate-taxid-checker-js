@@ -5,7 +5,7 @@ Validate corporate tax identification numbers (TINs) across **155 countries** wi
 ## Features
 
 - **155 countries** with regex format validation
-- **72 countries** with checksum verification (Luhn, MOD-97, ISO 7064, weighted sums, and more)
+- **79 countries** with checksum verification (Luhn, MOD-97, ISO 7064, weighted sums, and more)
 - **28 countries** with online registry lookup (EU VIES, Australian ABN Lookup) — returns the registered company name/address
 - Works in Node.js and browsers (UMD bundle)
 - **Bulk validation** — validate multiple tax IDs in one call
@@ -14,7 +14,7 @@ Validate corporate tax identification numbers (TINs) across **155 countries** wi
 
 ## Requirements
 
-- Node.js >= 18.0.0
+- Node.js >= 22.0.0
 
 ## Installation
 
@@ -27,6 +27,9 @@ npm install corporate-taxid-checker-js
 ```javascript
 const { validateTaxId, validateTaxIds, getSupportedCountries, isCountrySupported, getTaxIdInfo } = require('corporate-taxid-checker-js');
 
+// CommonJS exposes a namespace object. The default export is also available:
+// const validateTaxId = require('corporate-taxid-checker-js').default;
+
 // Basic validation (regex + checksum)
 const result = await validateTaxId('IN', '36AAGCG6803L1ZD');
 console.log(result);
@@ -36,7 +39,10 @@ console.log(result);
 //   checkSumCheckPresent: true,
 //   checkSum: true,
 //   onlineCheckPresent: false,
-//   onlineCheck: false
+//   onlineCheck: false,
+//   onlineStatus: 'not_requested',
+//   matchedType: 'in_gst',
+//   matchedLabel: 'Indian Goods and Services Tax Identification Number (GSTIN)'
 // }
 
 // With online registry check (EU VIES / Australian ABN Lookup)
@@ -50,7 +56,9 @@ console.log(result2);
 //   onlineCheckPresent: true,
 //   onlineCheck: true,
 //   onlineStatus: 'valid',
-//   onlineDetails: { name: 'NV Anheuser-Busch InBev', address: 'Grote Markt 1\n1000 Brussel' }
+//   onlineDetails: { name: 'NV Anheuser-Busch InBev', address: 'Grote Markt 1\n1000 Brussel' },
+//   matchedType: 'be_vat',
+//   matchedLabel: 'Belgian enterprise number'
 // }
 ```
 
@@ -83,7 +91,8 @@ await validateTaxId('DE', 'DE136695976', {
     timeoutMs: 10000,   // per request
     retries: 1,         // for transient VIES errors (MS_UNAVAILABLE, MS_MAX_CONCURRENT_REQ, ...)
     abrGuid: '...',     // Australian ABN Lookup GUID
-    endpoint: undefined // proxy URL — required in browsers, see below
+    endpoint: undefined, // proxy URL — required in browsers, see below
+    endpointHeaders: {}  // extra headers for the proxy (e.g. an auth token)
 });
 
 // Or call the registry directly
@@ -136,8 +145,13 @@ const info = getTaxIdInfo('IN');
 |---|---|---|---|
 | `countryCode` | string | required | ISO 3166-1 alpha-2 country code (case-insensitive) |
 | `taxId` | string | required | The tax ID to validate |
-| `options` | `boolean \| ValidateOptions` | `false` | `true` for an online registry lookup, or an options object (`online`, `strict`, `timeoutMs`, `retries`, `endpoint`, `abrGuid`, `fetch`, `signal`) |
+| `options` | `boolean \| ValidateOptions` | `false` | `true` for an online registry lookup, or an options object (`online`, `strict`, `timeoutMs`, `retries`, `endpoint`, `endpointHeaders`, `abrGuid`, `fetch`, `signal`) |
 | `debug` | boolean | `false` | Enable debug logging to console |
+
+`countryCode` and `taxId` are trimmed and upper-cased before matching, and non-string or
+over-64-character input returns an invalid result instead of throwing. Formatting
+separators are **not** removed: formats whose pattern requires them (BR CNPJ/CPF, US EIN,
+FR NIF) must be supplied in that form.
 
 Returns `TaxIdValidationResult`:
 
@@ -275,19 +289,19 @@ LA | Laos | Y |  |
 LB | Lebanon | Y |  |
 LI | Liechtenstein | Y |  |
 LK | Sri Lanka | Y |  |
-LT | Lithuania | Y |  | Y
-LU | Luxembourg | Y |  | Y
-LV | Latvia | Y |  | Y
+LT | Lithuania | Y | Y | Y
+LU | Luxembourg | Y | Y | Y
+LV | Latvia | Y | Y | Y
 MA | Morocco | Y | Y |
 MC | Monaco | Y | Y |
-MD | Moldova | Y |  |
+MD | Moldova | Y | Y |
 ME | Montenegro | Y | Y |
 MH | Marshall Islands | Y |  |
 MK | North Macedonia | Y | Y |
 MM | Myanmar | Y |  |
 MN | Mongolia | Y |  |
 MR | Mauritania | Y |  |
-MT | Malta | Y |  | Y
+MT | Malta | Y | Y | Y
 MU | Mauritius | Y |  |
 MV | Maldives | Y |  |
 MX | Mexico | Y | Y |
@@ -345,6 +359,13 @@ ZA | South Africa | Y | Y |
 ZM | Zambia | Y |  |
 ZW | Zimbabwe | Y |  |
 
+## v3.0.0 Breaking Changes
+
+- **Node.js >= 22** — Node 18 and 20 are end-of-life.
+- **`mc_tva` removed** — Monaco's legacy French NIF pattern is gone; use `mc_vat`.
+- **`isValid` with online checks** — a registry outage (`unavailable`) or an ID type with no registry no longer makes an otherwise valid ID fail. Pass `strict: true` to require registry confirmation.
+- **CommonJS shape** — `require('corporate-taxid-checker-js')` returns a namespace object; use `require('...').validateTaxId` (or destructure) rather than calling the module directly.
+
 ## v2.0.0 Breaking Changes
 
 - **`onlineCheckPresent`** — The return field was previously misspelled as `onnlineCheckPresent`. Update your code if you reference this field.
@@ -358,7 +379,7 @@ npm run build
 npm test
 ```
 
-643 tests covering all 155 supported countries plus utility functions.
+1,895 tests covering all 155 supported countries plus utility functions. Run `npm run test:coverage` to enforce the coverage thresholds.
 
 ## Contributing
 

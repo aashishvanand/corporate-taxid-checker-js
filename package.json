@@ -1,6 +1,6 @@
 {
   "name": "corporate-taxid-checker-js",
-  "version": "2.2.0",
+  "version": "3.0.0",
   "description": "Validate tax identification numbers (TIN, VAT, EIN, GST, ITIN, SSN) for 150+ countries. Regex, checksum, and online VIES/government verification. TypeScript-first with LLM tool definitions.",
   "main": "lib/index.js",
   "browser": "dist/corporate-taxid-checker.js",
@@ -9,16 +9,19 @@
   "exports": {
     ".": {
       "types": "./types/index.d.ts",
+      "browser": "./dist/corporate-taxid-checker.js",
       "import": "./esm/index.mjs",
       "require": "./lib/index.js",
       "default": "./lib/index.js"
     },
     "./tools": {
       "types": "./types/tools.d.ts",
+      "import": "./esm/tools.mjs",
       "require": "./lib/tools.js",
       "default": "./lib/tools.js"
     }
   },
+  "sideEffects": false,
   "files": [
     "lib/",
     "dist/",
@@ -57,12 +60,16 @@
   ],
   "scripts": {
     "test": "jest",
+    "test:coverage": "jest --coverage",
+    "lint": "oxlint src tests worker/src scripts",
+    "generate:validators": "node scripts/generate-validators-index.js",
     "build:lib": "webpack --config webpack.node.cjs",
     "build:dist": "webpack --config webpack.browser.cjs",
     "build:esm": "webpack --config webpack.esm.cjs",
     "build:tools": "webpack --config webpack.tools.cjs",
-    "build:types": "tsc --emitDeclarationOnly",
-    "build": "npm run build:lib && npm run build:dist && npm run build:esm && npm run build:tools && npm run build:types",
+    "build:tools:esm": "webpack --config webpack.tools.esm.cjs",
+    "build:types": "tsc --emitDeclarationOnly && node scripts/cleanTypes.js",
+    "build": "npm run build:lib && npm run build:dist && npm run build:esm && npm run build:tools && npm run build:tools:esm && npm run build:types",
     "typecheck": "tsc --noEmit"
   },
   "repository": {
@@ -76,7 +83,7 @@
   },
   "homepage": "https://github.com/aashishvanand/corporate-taxid-checker-js#readme",
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=22.0.0"
   },
   "devDependencies": {
     "@swc/core": "^1.16.22",
@@ -84,8 +91,8 @@
     "@types/jest": "^30.0.0",
     "@types/node": "^26.6.6",
     "jest": "^30.5.2",
+    "oxlint": "^1.94.0",
     "path-browserify": "^1.0.1",
-    "raw-loader": "^4.0.2",
     "swc-loader": "^0.2.7",
     "typescript": "^7.0.2",
     "webpack": "^5.112.2",

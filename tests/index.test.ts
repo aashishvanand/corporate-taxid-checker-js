@@ -71,6 +71,10 @@ test('AT valid ABN', async () => {
     const result = await validateTaxId('AT', 'ATU62123456');
     expect(result.regexValid).toBe(true);
 });
+test('AT checksum example from the docs is valid', async () => {
+    const result = await validateTaxId('AT', 'ATU12345675');
+    expect(result).toMatchObject({ isValid: true, checkSum: true });
+});
 test('AT invalid ABN', async () => {
     const result = await validateTaxId('AT', '123456');
     expect(result.isValid).toBe(false);
@@ -483,6 +487,26 @@ test('GB invalid VAT', async () => {
     const result = await validateTaxId('GB', '12345');
     expect(result.isValid).toBe(false);
 });
+test('GB bare-digit VAT runs the checksum (regression: eu_vat skipped it)', async () => {
+    const result = await validateTaxId('GB', '123456782');
+    expect(result).toMatchObject({ isValid: true, matchedType: 'gb_vat', checkSumCheckPresent: true, checkSum: true });
+});
+test('GB bare-digit VAT with a corrupted check digit is invalid', async () => {
+    const result = await validateTaxId('GB', '123456789');
+    expect(result).toMatchObject({ isValid: false, matchedType: 'gb_vat', checkSum: false });
+});
+test('GB prefixed VAT runs the checksum', async () => {
+    const valid = await validateTaxId('GB', 'GB123456782');
+    expect(valid).toMatchObject({ isValid: true, matchedType: 'gb_vat' });
+    const corrupt = await validateTaxId('GB', 'GB123456789');
+    expect(corrupt.isValid).toBe(false);
+});
+test('Northern Ireland (XI) VAT runs the GB checksum', async () => {
+    const valid = await validateTaxId('GB', 'XI123456782');
+    expect(valid).toMatchObject({ isValid: true, matchedType: 'eu_vat', checkSum: true });
+    const corrupt = await validateTaxId('GB', 'XI123456789');
+    expect(corrupt).toMatchObject({ isValid: false, matchedType: 'eu_vat', checkSum: false });
+});
 
 // ============================================================================
 // Georgia (GE)
@@ -532,8 +556,12 @@ test('GN invalid NIFP', async () => {
 // Greece (GR)
 // ============================================================================
 test('GR valid VAT', async () => {
-    const result = await validateTaxId('GR', 'EL094319905');
-    expect(result.isValid).toBe(true);
+    const result = await validateTaxId('GR', 'EL094014201');
+    expect(result).toMatchObject({ isValid: true, checkSum: true });
+});
+test('GR VAT with a corrupted check digit is invalid', async () => {
+    const result = await validateTaxId('GR', 'EL094014200');
+    expect(result).toMatchObject({ isValid: false, checkSum: false });
 });
 test('GR invalid VAT', async () => {
     const result = await validateTaxId('GR', '12345');
@@ -655,6 +683,13 @@ test('IN valid PAN', async () => {
     const result = await validateTaxId('IN', 'ABCDE1234F');
     expect(result.regexValid).toBe(true);
 });
+test('IN PAN that starts with the country code is not stripped (regression)', async () => {
+    // "INAPL1234C" is a well-formed PAN; stripping "IN" left "APL1234C" and failed the type check.
+    const valid = await validateTaxId('IN', 'INAPL1234C');
+    expect(valid).toMatchObject({ isValid: true, matchedType: 'in_pan' });
+    const corrupt = await validateTaxId('IN', 'INAXL1234C');
+    expect(corrupt).toMatchObject({ isValid: false, matchedType: 'in_pan' });
+});
 
 // ============================================================================
 // Iceland (IS)
@@ -674,6 +709,14 @@ test('IS invalid VAT', async () => {
 test('IT valid IVA', async () => {
     const result = await validateTaxId('IT', 'IT01234560012');
     expect(result.regexValid).toBe(true);
+});
+test('IT valid IVA checksum', async () => {
+    const result = await validateTaxId('IT', 'IT00743110157');
+    expect(result).toMatchObject({ isValid: true, checkSum: true });
+});
+test('IT IVA with a corrupted check digit is invalid', async () => {
+    const result = await validateTaxId('IT', 'IT00743110156');
+    expect(result).toMatchObject({ isValid: false, checkSum: false });
 });
 test('IT invalid IVA', async () => {
     const result = await validateTaxId('IT', '12345');
@@ -755,6 +798,14 @@ test('LT valid PVM', async () => {
     const result = await validateTaxId('LT', 'LT1234567890');
     expect(result.regexValid).toBe(true);
 });
+test('LT valid PVM checksum', async () => {
+    const result = await validateTaxId('LT', 'LT119511515');
+    expect(result).toMatchObject({ isValid: true, checkSumCheckPresent: true, checkSum: true });
+});
+test('LT PVM with a corrupted check digit is invalid', async () => {
+    const result = await validateTaxId('LT', 'LT119511516');
+    expect(result).toMatchObject({ isValid: false, checkSumCheckPresent: true, checkSum: false });
+});
 test('LT invalid PVM', async () => {
     const result = await validateTaxId('LT', '12345');
     expect(result.isValid).toBe(false);
@@ -767,6 +818,14 @@ test('LU valid TVA', async () => {
     const result = await validateTaxId('LU', 'LU21111111');
     expect(result.regexValid).toBe(true);
 });
+test('LU valid TVA checksum', async () => {
+    const result = await validateTaxId('LU', 'LU26375245');
+    expect(result).toMatchObject({ isValid: true, checkSumCheckPresent: true, checkSum: true });
+});
+test('LU TVA with a corrupted check digit is invalid', async () => {
+    const result = await validateTaxId('LU', 'LU26375246');
+    expect(result).toMatchObject({ isValid: false, checkSumCheckPresent: true, checkSum: false });
+});
 test('LU invalid TVA', async () => {
     const result = await validateTaxId('LU', '12345');
     expect(result.isValid).toBe(false);
@@ -778,6 +837,14 @@ test('LU invalid TVA', async () => {
 test('LV valid PVN', async () => {
     const result = await validateTaxId('LV', 'LV40000000001');
     expect(result.regexValid).toBe(true);
+});
+test('LV valid PVN checksum', async () => {
+    const result = await validateTaxId('LV', 'LV40003521600');
+    expect(result).toMatchObject({ isValid: true, checkSumCheckPresent: true, checkSum: true });
+});
+test('LV PVN with a corrupted check digit is invalid', async () => {
+    const result = await validateTaxId('LV', 'LV40003521601');
+    expect(result).toMatchObject({ isValid: false, checkSumCheckPresent: true, checkSum: false });
 });
 test('LV invalid PVN', async () => {
     const result = await validateTaxId('LV', '12345');
@@ -814,6 +881,14 @@ test('MC invalid VAT', async () => {
 test('MD valid IDNO', async () => {
     const result = await validateTaxId('MD', '1234567890123');
     expect(result.regexValid).toBe(true);
+});
+test('MD valid IDNO checksum', async () => {
+    const result = await validateTaxId('MD', '1008600038413');
+    expect(result).toMatchObject({ isValid: true, checkSumCheckPresent: true, checkSum: true });
+});
+test('MD IDNO with a corrupted check digit is invalid', async () => {
+    const result = await validateTaxId('MD', '1008600038412');
+    expect(result).toMatchObject({ isValid: false, checkSumCheckPresent: true, checkSum: false });
 });
 test('MD invalid IDNO', async () => {
     const result = await validateTaxId('MD', '12345');
@@ -875,6 +950,14 @@ test('MT valid VAT', async () => {
     const result = await validateTaxId('MT', 'MT12345678');
     expect(result.regexValid).toBe(true);
 });
+test('MT valid VAT checksum', async () => {
+    const result = await validateTaxId('MT', 'MT12894031');
+    expect(result).toMatchObject({ isValid: true, checkSumCheckPresent: true, checkSum: true });
+});
+test('MT VAT with a corrupted check digit is invalid', async () => {
+    const result = await validateTaxId('MT', 'MT12894032');
+    expect(result).toMatchObject({ isValid: false, checkSumCheckPresent: true, checkSum: false });
+});
 test('MT invalid VAT', async () => {
     const result = await validateTaxId('MT', '12345');
     expect(result.isValid).toBe(false);
@@ -886,6 +969,18 @@ test('MT invalid VAT', async () => {
 test('MX valid RFC', async () => {
     const result = await validateTaxId('MX', 'XAXX010101000');
     expect(result.regexValid).toBe(true);
+});
+test('MX RFC that starts with the country code is not stripped (regression)', async () => {
+    const valid = await validateTaxId('MX', 'MXA010203AB6');
+    expect(valid).toMatchObject({ isValid: true, matchedType: 'mx_rfc' });
+    const corrupt = await validateTaxId('MX', 'MXA010203AB9');
+    expect(corrupt).toMatchObject({ isValid: false, matchedType: 'mx_rfc' });
+});
+test('MX RFC rejects an impossible embedded date even when the check digit is right', async () => {
+    // Old placeholder accepted any YYMMDD, so these passed on checksum alone.
+    expect((await validateTaxId('MX', 'MXA011303AB4')).isValid).toBe(false); // month 13
+    expect((await validateTaxId('MX', 'MXA010233AB2')).isValid).toBe(false); // 33 February
+    expect((await validateTaxId('MX', 'MXA000229AB2')).isValid).toBe(true); // 29 February 2000
 });
 test('MX invalid RFC', async () => {
     const result = await validateTaxId('MX', '12345');
@@ -2508,6 +2603,17 @@ test('maskTaxId with empty string', () => {
     expect(maskTaxId('')).toBe('');
 });
 
+test('maskTaxId falls back to 4 for a non-integer visible count (regression: leaked the ID)', () => {
+    expect(maskTaxId('ATU62123456', NaN)).toBe('XXXXXXX3456');
+    expect(maskTaxId('ATU62123456', Infinity)).toBe('XXXXXXX3456');
+    expect(maskTaxId('ATU62123456', 2.5)).toBe('XXXXXXX3456');
+});
+
+test('maskTaxId masks non-ASCII letters', () => {
+    expect(maskTaxId('Ä123456789')).toBe('XXXXXX6789');
+    expect(maskTaxId('MNÑ1234567')).toBe('XXXXXX4567');
+});
+
 // ============================================================================
 // sanitize
 // ============================================================================
@@ -2866,5 +2972,44 @@ describe('new countries: HN, JO, BW, MZ, XK', () => {
 
     test.each(['HN', 'JO', 'BW', 'MZ', 'XK'])('%s is supported', (country) => {
         expect(isCountrySupported(country)).toBe(true);
+    });
+});
+
+// ============================================================================
+// Input hardening (audit 2026-11-16)
+// ============================================================================
+describe('input hardening', () => {
+    test('non-string input returns an invalid result instead of throwing', async () => {
+        for (const [country, id] of [[null, '123456789'], ['DE', 123456789], ['DE', null], ['DE', {}]] as any[]) {
+            const result = await validateTaxId(country, id);
+            expect(typeof result).toBe('object');
+            expect((result as any).isValid).toBe(false);
+        }
+    });
+
+    test('input help functions do not throw on non-strings', () => {
+        expect(isCountrySupported(12 as any)).toBe(false);
+        expect(getTaxIdInfo(undefined as any)).toBe('Country code not found');
+    });
+
+    test('oversized input is rejected before any expensive work', async () => {
+        const result = await validateTaxId('DE', '1'.repeat(5_000_000));
+        expect(result).toMatchObject({ isValid: false, regexValid: false });
+    });
+
+    test('lower-case, padded, and newline-terminated input is normalised', async () => {
+        const result = await validateTaxId('FR', ' fr17323579133\n');
+        expect(result).toMatchObject({ isValid: true, matchedType: 'fr_vat' });
+    });
+
+    test('bulk validation survives a null item and non-array input', async () => {
+        expect(await validateTaxIds(null as any)).toEqual([]);
+        const results = await validateTaxIds([
+            { countryCode: 'US', taxId: '12-3456789' },
+            null as any,
+        ]);
+        expect(results).toHaveLength(2);
+        expect((results[0].result as any).isValid).toBe(true);
+        expect(results[1].result).toBe('Country code not found');
     });
 });

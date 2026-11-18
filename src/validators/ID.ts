@@ -44,7 +44,7 @@ function validateNik(value: string, debug: boolean): boolean {
 function validate_id_npwp(input: string, debug: boolean = false): boolean {
   // The regex allows the dotted/dashed format ("XX.XXX.XXX.X-XXX.XXX");
   // strip the separators before checking the digit payload/checksum.
-  const value = input.replace(/[.\-]/g, '');
+  const value = input.replace(/[.-]/g, '');
 
   if (!/^\d+$/.test(value)) {
     if (debug) { console.log("Invalid Format"); }

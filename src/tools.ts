@@ -169,8 +169,3 @@ export const taxIdTools: ToolDefinition[] = [
 ];
 
 export default taxIdTools;
-
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = taxIdTools;
-    module.exports.taxIdTools = taxIdTools;
-}

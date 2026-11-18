@@ -13,12 +13,33 @@
  */
 import { checkOnline, getOnlineProvider, normalizeForVies } from '../../src/online';
 import type { OnlineCheckResult } from '../../src/online';
+import { validateTaxId } from '../../src/index';
+
+/**
+ * Full offline validation (regex + check digit) before spending VIES / ABN quota.
+ * The static validator registry in `src/validators/index.ts` lets Workers bundle the
+ * same code path as Node and browsers, so a corrupted check digit never reaches the
+ * registry.
+ */
+async function localValidationFailure(countryCode: string, taxId: string): Promise<string | null> {
+    // VIES uses `EL` for Greece; the country data uses `GR`.
+    const local = await validateTaxId(countryCode === 'EL' ? 'GR' : countryCode, taxId);
+    if (typeof local === 'string' || !local.regexValid) return 'LOCAL_FORMAT_MISMATCH';
+    if (local.checkSumCheckPresent && !local.checkSum) return 'LOCAL_CHECKSUM_MISMATCH';
+    return null;
+}
 
 export interface Env {
     /** Comma-separated list of allowed origins, or "*". */
     ALLOWED_ORIGINS?: string;
     /** ABN Lookup GUID (secret): `wrangler secret put ABR_GUID` */
     ABR_GUID?: string;
+    /**
+     * Optional shared secret. When set, requests must send it as
+     * `Authorization: Bearer <token>` or `X-API-Token: <token>`.
+     * `wrangler secret put API_TOKEN`
+     */
+    API_TOKEN?: string;
     /** Workers Rate Limiting binding (see wrangler.jsonc). Optional. */
     RATE_LIMITER?: { limit(opts: { key: string }): Promise<{ success: boolean }> };
 }
@@ -35,7 +56,7 @@ function corsHeaders(req: Request, env: Env): Record<string, string> {
     if (allow) {
         h['Access-Control-Allow-Origin'] = allow;
         h['Access-Control-Allow-Methods'] = 'POST, OPTIONS';
-        h['Access-Control-Allow-Headers'] = 'Content-Type, Accept';
+        h['Access-Control-Allow-Headers'] = 'Content-Type, Accept, Authorization, X-API-Token';
         h['Access-Control-Max-Age'] = '86400';
     }
     return h;
@@ -44,7 +65,12 @@ function corsHeaders(req: Request, env: Env): Record<string, string> {
 function json(body: unknown, status: number, headers: Record<string, string>, extra: Record<string, string> = {}): Response {
     return new Response(JSON.stringify(body), {
         status,
-        headers: { 'Content-Type': 'application/json', ...headers, ...extra },
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Content-Type-Options': 'nosniff',
+            ...headers,
+            ...extra,
+        },
     });
 }
 
@@ -82,23 +108,54 @@ async function readBodyWithLimit(req: Request, limit: number): Promise<string | 
 }
 
 function cacheKey(countryCode: string, taxId: string): Request {
+    // VIES accepts both GR and EL for Greece; they must share one cache entry.
+    const canonical = countryCode === 'EL' ? 'GR' : countryCode;
     const id = getOnlineProvider(countryCode) === 'abr' ? taxId.replace(/\D/g, '') : normalizeForVies(countryCode, taxId);
-    return new Request(`https://online-check.cache/${countryCode}/${encodeURIComponent(id)}`);
+    return new Request(`https://online-check.cache/${canonical}/${encodeURIComponent(id)}`);
+}
+
+/** Rate-limit key: Cloudflare always sets CF-Connecting-IP; fall back for other deployments. */
+function clientKey(req: Request): string {
+    const cf = req.headers.get('CF-Connecting-IP');
+    if (cf) return cf;
+    const forwarded = req.headers.get('X-Forwarded-For')?.split(',')[0]?.trim();
+    if (forwarded) return forwarded;
+    return req.headers.get('X-Real-IP')?.trim() || 'unknown';
+}
+
+function requestToken(req: Request): string {
+    const auth = req.headers.get('Authorization') || '';
+    if (auth.toLowerCase().startsWith('bearer ')) return auth.slice('bearer '.length).trim();
+    return req.headers.get('X-API-Token')?.trim() || '';
+}
+
+/** Constant-time comparison so a wrong token cannot be guessed byte by byte. */
+function tokensEqual(a: string, b: string): boolean {
+    if (a.length !== b.length) return false;
+    let diff = 0;
+    for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+    return diff === 0;
 }
 
 export async function handle(req: Request, env: Env, ctx?: { waitUntil(p: Promise<unknown>): void }): Promise<Response> {
     const cors = corsHeaders(req, env);
     const url = new URL(req.url);
 
-    if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors });
+    if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: { ...cors, 'X-Content-Type-Options': 'nosniff' } });
     // "/check" on workers.dev, "/api/check" when routed on the demo's own hostname
     if (url.pathname !== '/check' && url.pathname !== '/api/check') return json({ error: 'not_found' }, 404, cors);
     if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405, cors, { Allow: 'POST, OPTIONS' });
 
-    if (env.RATE_LIMITER) {
-        const ip = req.headers.get('CF-Connecting-IP') || 'unknown';
-        const { success } = await env.RATE_LIMITER.limit({ key: ip });
-        if (!success) return json({ status: 'unavailable', reason: 'RATE_LIMITED' }, 429, cors, { 'Retry-After': '60' });
+    // Fail closed: without the binding there is no rate limit at all.
+    if (!env.RATE_LIMITER) {
+        return json({ status: 'unavailable', reason: 'RATE_LIMITER_NOT_CONFIGURED' }, 503, cors);
+    }
+    const { success } = await env.RATE_LIMITER.limit({ key: clientKey(req) });
+    if (!success) return json({ status: 'unavailable', reason: 'RATE_LIMITED' }, 429, cors, { 'Retry-After': '60' });
+
+    // Optional shared secret, for when CORS is not enough (non-browser clients).
+    if (env.API_TOKEN && !tokensEqual(requestToken(req), env.API_TOKEN)) {
+        return json({ status: 'unavailable', reason: 'UNAUTHORIZED' } satisfies OnlineCheckResult, 401, cors);
     }
 
     const raw = await readBodyWithLimit(req, MAX_BODY);
@@ -112,11 +169,17 @@ export async function handle(req: Request, env: Env, ctx?: { waitUntil(p: Promis
 
     const countryCode = typeof body?.countryCode === 'string' ? body.countryCode.toUpperCase() : '';
     const taxId = typeof body?.taxId === 'string' ? body.taxId.trim() : '';
-    if (!/^[A-Z]{2}$/.test(countryCode) || !/^[A-Za-z0-9 .\-\/]{2,24}$/.test(taxId)) {
+    if (!/^[A-Z]{2}$/.test(countryCode) || !/^[A-Za-z0-9 . /-]{2,24}$/.test(taxId)) {
         return json({ error: 'invalid_input' }, 400, cors);
     }
     if (!getOnlineProvider(countryCode)) {
         return json({ status: 'not_supported' } satisfies OnlineCheckResult, 200, cors);
+    }
+    const failure = await localValidationFailure(countryCode, taxId);
+    if (failure) {
+        // Do not spend registry quota (or send an empty ABN) on a value that cannot be
+        // that country's ID.
+        return json({ status: 'invalid', reason: failure } satisfies OnlineCheckResult, 200, cors);
     }
 
     const cache = typeof caches !== 'undefined' ? (caches as any).default as Cache : undefined;

@@ -82,6 +82,11 @@ web_modules/
 # Production-ready build
 dist/
 lib/
+esm/
+types/
 
 # Local task list
 TODO.md
+
+# Claude Code local settings and worktrees
+.claude/

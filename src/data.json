@@ -768,8 +768,8 @@
             {
                 "label": "Northern Ireland VAT number",
                 "type": "eu_vat",
-                "regex": "^(XI)?([0-9]{9}([0-9]{3})?)$",
-                "checksum": false
+                "regex": "^XI([0-9]{9}([0-9]{3})?)$",
+                "checksum": true
             },
             {
                 "label": "United Kingdom VAT number",
@@ -847,7 +847,7 @@
                 "label": "Greek VAT number (Αριθμός Φορολογικού Μητρώου)",
                 "type": "gr_vat",
                 "regex": "^EL\\d{9}$",
-                "checksum": false,
+                "checksum": true,
                 "online": true
             }
         ]
@@ -1007,7 +1007,7 @@
                 "label": "Italy VAT number",
                 "type": "it_iva",
                 "regex": "^IT\\d{11}$",
-                "checksum": false,
+                "checksum": true,
                 "online": true
             },
             {
@@ -1218,7 +1218,7 @@
                 "label": "Lithuanian VAT number (Pridėtinės vertės mokestis mokėtojo kodas)",
                 "type": "lt_pvm",
                 "regex": "^LT\\d{9,12}$",
-                "checksum": false,
+                "checksum": true,
                 "online": true
             }
         ]
@@ -1231,7 +1231,7 @@
                 "label": "Luxembourgian VAT number (taxe sur la valeur ajoutée)",
                 "type": "lu_tva",
                 "regex": "^LU\\d{8}$",
-                "checksum": false,
+                "checksum": true,
                 "online": true
             }
         ]
@@ -1244,7 +1244,7 @@
                 "label": "Latvian VAT number",
                 "type": "lv_pvn",
                 "regex": "^LV\\d{11}$",
-                "checksum": false,
+                "checksum": true,
                 "online": true
             }
         ]
@@ -1293,7 +1293,7 @@
                 "label": "Moldavian company identification number",
                 "type": "md_idno",
                 "regex": "^\\d{13}$",
-                "checksum": false
+                "checksum": true
             },
             {
                 "label": "Moldova VAT Number",
@@ -1391,7 +1391,7 @@
                 "label": "European VAT number",
                 "type": "mt_vat",
                 "regex": "^MT\\d{8}$",
-                "checksum": false,
+                "checksum": true,
                 "online": true
             }
         ]
@@ -2029,7 +2029,7 @@
             {
                 "label": "United States ITIN",
                 "type": "us_itin",
-                "regex": "^(9\\d{2})([ \\-]?)(5\\d|6[0-5]|7\\d|8[0-8]|9[0-2,4-9])([ \\-]?)(\\d{4})$",
+                "regex": "^(9\\d{2})([ \\-]?)(5\\d|6[0-5]|7\\d|8[0-8]|9[0-24-9])([ \\-]?)(\\d{4})$",
                 "checksum": false
             }
         ]

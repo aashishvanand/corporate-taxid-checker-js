@@ -1,6 +1,8 @@
 import rawData from './data.json';
 import { sanitize, maskTaxId } from './utils';
 import { checkOnline, getOnlineProvider } from './online';
+import { validators } from './validators';
+import type { ValidatorModule } from './validators';
 import type { OnlineCheckOptions, OnlineCheckResult, OnlineDetails, OnlineStatus } from './online';
 
 export type { OnlineCheckOptions, OnlineCheckResult, OnlineDetails, OnlineStatus };
@@ -133,11 +135,23 @@ interface CountryData {
     data: CountryEntry[];
 }
 
-interface ValidatorModule {
-    [key: string]: (input: string, debug?: boolean) => boolean | Promise<boolean>;
-}
-
 const data = rawData as unknown as CountryData[];
+
+/** Reject absurd input up front: the longest supported formats are ~20 characters. */
+const MAX_TAX_ID_LENGTH = 64;
+
+/** Normal result for an unusable input (wrong type, oversized), never a thrown TypeError. */
+function invalidInputResult(onlineRequested: boolean): TaxIdValidationResult {
+    return {
+        isValid: false,
+        regexValid: false,
+        checkSumCheckPresent: false,
+        checkSum: false,
+        onlineCheckPresent: false,
+        onlineCheck: false,
+        onlineStatus: onlineRequested ? 'skipped' : 'not_requested',
+    };
+}
 
 // Territory aliasing: map overseas territories to parent country validation rules
 const territoryAliases: Record<string, string> = {
@@ -184,14 +198,59 @@ function getValidatorModule(countryCode: string): ValidatorModule | null {
     const key = countryCode.toUpperCase();
     const cached = moduleCache.get(key);
     if (cached !== undefined) return cached;
-    let mod: ValidatorModule | null;
-    try {
-        mod = require(`./validators/${key}`);
-    } catch {
-        mod = null;
-    }
+    // Static registry (see `src/validators/index.ts`) so bundlers can tree-shake and
+    // Workers/browsers can run the full offline validation without `require`.
+    const mod = validators[key] ?? null;
     moduleCache.set(key, mod);
     return mod;
+}
+
+/**
+ * Inputs a checksum validator may accept for a matched entry.
+ *
+ * Most validators expect the bare national payload, but the country regex often allows an
+ * explicit prefix (e.g. "DE136695976"). Stripping is only safe when the prefix really is
+ * part of the format: an ID such as the Indian PAN "INAPL1234C" also starts with its
+ * country code, and blindly removing "IN" turns a valid PAN into a failed one. Try the
+ * stripped value first (the historical behaviour, needed by validators that do not strip
+ * the prefix themselves) and fall back to the value as matched.
+ */
+function getChecksumCandidates(countryCode: string, taxId: string): string[] {
+    // CH handles its own "CHE-" prefix, which is not the ISO code
+    if (countryCode === 'CH') return [taxId];
+    const separators = /[\s./-]/g;
+    const full = taxId.replace(separators, '');
+    if (taxId.toUpperCase().startsWith(countryCode)) {
+        const stripped = taxId.substring(countryCode.length).replace(separators, '');
+        if (stripped && stripped !== full) return [stripped, full];
+    }
+    return [full];
+}
+
+/** Runs an entry's checksum over every candidate input; true if any candidate passes. */
+function runEntryChecksum(countryCode: string, entry: CountryEntry, taxId: string, debug: boolean): boolean {
+    const countryModule = getValidatorModule(countryCode);
+    if (!countryModule) {
+        if (debug) console.error('Error loading validator module for', countryCode);
+        return false;
+    }
+    const functionName = `validate_${entry.type}`;
+    if (typeof countryModule[functionName] !== 'function') {
+        if (debug) console.error('Checksum function not found:', functionName);
+        return false;
+    }
+    for (const candidate of getChecksumCandidates(countryCode, taxId)) {
+        try {
+            if (countryModule[functionName](candidate, debug) === true) {
+                if (debug) console.log('Checksum Validation Result:', true, candidate);
+                return true;
+            }
+        } catch (err) {
+            if (debug) console.error('Error in checksum validation', err);
+        }
+    }
+    if (debug) console.log('Checksum Validation Result:', false);
+    return false;
 }
 
 /**
@@ -211,7 +270,7 @@ function getValidatorModule(countryCode: string): ValidatorModule | null {
  * @example
  * ```typescript
  * // Basic validation (regex + checksum)
- * const result = await validateTaxId('AT', 'ATU62123456');
+ * const result = await validateTaxId('AT', 'ATU12345675');
  * console.log(result.isValid); // true
  *
  * // With online verification (VIES)
@@ -230,6 +289,15 @@ async function validateTaxId(
 ): Promise<TaxIdValidationResult | string> {
     const opts = resolveOptions(options, debug);
     debug = opts.debug ?? false;
+    if (typeof countryCode !== 'string' || typeof taxId !== 'string' || taxId.length > MAX_TAX_ID_LENGTH) {
+        if (debug) {
+            console.log('Invalid input: country code and tax ID must be strings of at most', MAX_TAX_ID_LENGTH, 'characters');
+        }
+        return invalidInputResult(!!opts.online);
+    }
+    // User input is routinely lower-case, padded, or pasted with a trailing newline.
+    // Normalise before the regex; checksum validators are case-insensitive by contract.
+    taxId = taxId.trim().toUpperCase();
     let code = countryCode.toUpperCase();
 
     // Resolve territory aliases
@@ -256,61 +324,44 @@ async function validateTaxId(
     let matchedType: string | undefined;
     let matchedLabel: string | undefined;
 
+    // Several entries can match one value (GB historically had a bare-digit eu_vat entry
+    // alongside gb_vat). Keep the first match, but prefer a later entry whose checksum
+    // passes instead of letting a checksum-less or failing entry short-circuit the loop.
+    const matches: Array<{
+        entry: CountryEntry;
+        checkSumCheckPresent: boolean;
+        checkSumValid: boolean;
+    }> = [];
     for (const entry of countryData.data) {
         const regex = getCompiledRegex(entry.regex);
         if (!regex || !regex.test(taxId)) continue;
 
+        const hasChecksum = entry.checksum;
+        const checksumPassed = hasChecksum ? runEntryChecksum(code, entry, taxId, debug) : false;
         if (debug) {
             console.log('Entity Type', entry.type);
             console.log('Regex Match:', true);
-            console.log('Checksum Validation Required:', entry.checksum);
+            console.log('Checksum Validation Required:', hasChecksum);
         }
+        matches.push({ entry, checkSumCheckPresent: hasChecksum, checkSumValid: checksumPassed });
 
+        // A passing checksum is the best possible outcome. Otherwise keep looking: an
+        // overlapping entry may carry the checksum this one lacks.
+        if (checksumPassed) break;
+    }
+
+    // Prefer a match that actually proves the check digit; then a match with no checksum
+    // to run; only then a failed checksum (which leaves the ID invalid).
+    const chosen = matches.find((m) => m.checkSumCheckPresent && m.checkSumValid)
+        ?? matches.find((m) => !m.checkSumCheckPresent)
+        ?? matches[0];
+    if (chosen) {
         regexValid = true;
-        checkSumCheckPresent = entry.checksum;
-        onlineCheckPresent = !!(entry.online && getOnlineProvider(code) !== null);
-        matchedType = entry.type;
-        matchedLabel = entry.label;
-
-        if (checkSumCheckPresent) {
-            const countryModule = getValidatorModule(code);
-            if (debug && !countryModule) {
-                console.error('Error loading validator module for', code);
-            }
-
-            // Strip country code prefix for checksum validators
-            // Most validators expect the numeric/payload portion without the ISO prefix
-            // Exception: CH (prefix is "CHE-", not just "CH") handles its own prefix
-            // Then strip display separators (. - / whitespace): several regexes require a
-            // formatted value (e.g. BR "16.727.230/0001-97") but validators expect the bare payload
-            const upperId = taxId.toUpperCase();
-            const checksumInput = code === 'CH'
-                ? taxId
-                : (upperId.startsWith(code) ? taxId.substring(code.length) : taxId).replace(/[\s.\-\/]/g, '');
-
-            if (checkSumCheckPresent && countryModule) {
-                try {
-                    const checksumFunctionName = `validate_${entry.type}`;
-                    if (typeof countryModule[checksumFunctionName] === "function") {
-                        checkSumValid = countryModule[checksumFunctionName](checksumInput) as boolean;
-                        if (debug) {
-                            console.log('Checksum Validation Result:', checkSumValid);
-                        }
-                    } else {
-                        if (debug) {
-                            console.error('Checksum function not found:', checksumFunctionName);
-                        }
-                    }
-                } catch (err) {
-                    if (debug) {
-                        console.error('Error in checksum validation', err);
-                    }
-                }
-            }
-
-        }
-
-        break;
+        checkSumCheckPresent = chosen.checkSumCheckPresent;
+        checkSumValid = chosen.checkSumValid;
+        onlineCheckPresent = !!(chosen.entry.online && getOnlineProvider(code) !== null);
+        matchedType = chosen.entry.type;
+        matchedLabel = chosen.entry.label;
     }
 
     const localValid = regexValid && (!checkSumCheckPresent || checkSumValid);
@@ -329,7 +380,8 @@ async function validateTaxId(
             online = await checkOnline(code, taxId, opts);
         }
         if (debug) {
-            console.log('Online Check Result:', online);
+            // Do not print registry details: they contain the trader's name and address.
+            console.log('Online Check Result:', online.status, online.reason ?? '');
         }
     }
 
@@ -383,16 +435,21 @@ async function validateTaxIds(
     debug: boolean = false
 ): Promise<BulkValidationResult[]> {
     const opts = resolveOptions(options, debug);
-    const run = (item: BulkValidationItem): Promise<BulkValidationResult> =>
-        validateTaxId(item.countryCode, item.taxId, opts).then((result) => ({
-            countryCode: item.countryCode,
-            taxId: item.taxId,
+    if (!Array.isArray(items)) return [];
+    const run = (item: BulkValidationItem): Promise<BulkValidationResult> => {
+        // A malformed item must not reject the whole batch.
+        const countryCode = item && typeof item.countryCode === 'string' ? item.countryCode : '';
+        const taxId = item && typeof item.taxId === 'string' ? item.taxId : '';
+        return validateTaxId(countryCode, taxId, opts).then((result) => ({
+            countryCode,
+            taxId,
             result
         }));
+    };
 
     if (!opts.online) return Promise.all(items.map(run));
 
-    const results: BulkValidationResult[] = new Array(items.length);
+    const results: BulkValidationResult[] = [];
     let next = 0;
     const worker = async () => {
         while (next < items.length) {
@@ -400,7 +457,9 @@ async function validateTaxIds(
             results[i] = await run(items[i]);
         }
     };
-    const n = Math.max(1, Math.min(opts.concurrency ?? 5, items.length));
+    const requested = opts.concurrency;
+    const limit = typeof requested === 'number' && Number.isInteger(requested) && requested > 0 ? requested : 5;
+    const n = Math.max(1, Math.min(limit, items.length));
     await Promise.all(Array.from({ length: n }, worker));
     return results;
 }
@@ -436,6 +495,7 @@ function getSupportedCountries(): string[] {
  * ```
  */
 function isCountrySupported(countryCode: string): boolean {
+    if (typeof countryCode !== 'string') return false;
     const code = countryCode.toUpperCase();
     return countryMap.has(code) || code in territoryAliases;
 }
@@ -455,6 +515,7 @@ function isCountrySupported(countryCode: string): boolean {
  * ```
  */
 function getTaxIdInfo(countryCode: string): TaxIdTypeInfo[] | string {
+    if (typeof countryCode !== 'string') return 'Country code not found';
     let code = countryCode.toUpperCase();
     if (territoryAliases[code]) {
         code = territoryAliases[code];
@@ -473,15 +534,3 @@ function getTaxIdInfo(countryCode: string): TaxIdTypeInfo[] | string {
 
 export { validateTaxId, validateTaxIds, getSupportedCountries, isCountrySupported, getTaxIdInfo, sanitize, maskTaxId, checkOnline };
 export default validateTaxId;
-
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = validateTaxId;
-    module.exports.validateTaxId = validateTaxId;
-    module.exports.validateTaxIds = validateTaxIds;
-    module.exports.getSupportedCountries = getSupportedCountries;
-    module.exports.isCountrySupported = isCountrySupported;
-    module.exports.getTaxIdInfo = getTaxIdInfo;
-    module.exports.sanitize = sanitize;
-    module.exports.maskTaxId = maskTaxId;
-    module.exports.checkOnline = checkOnline;
-}

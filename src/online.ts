@@ -53,6 +53,11 @@ export interface OnlineCheckOptions {
      * and expects an {@link OnlineCheckResult} back. Required in browsers.
      */
     endpoint?: string;
+    /**
+     * Extra headers sent to a configured proxy `endpoint`, for example an auth token
+     * (`{ Authorization: 'Bearer …' }`) when the proxy requires one.
+     */
+    endpointHeaders?: Record<string, string>;
     /** Custom fetch implementation (for testing, or runtimes without a global fetch). */
     fetch?: typeof fetch;
     /** Abort signal to cancel in-flight requests. */
@@ -71,6 +76,43 @@ const VIES_COUNTRIES: Record<string, string> = {
 
 const VIES_URL = 'https://ec.europa.eu/taxation_customs/vies/rest-api/check-vat-number';
 const ABR_URL = 'https://abr.business.gov.au/json/AbnDetails.aspx';
+
+const DEFAULT_TIMEOUT_MS = 10000;
+const MAX_RETRIES = 5;
+const RETRY_BASE_MS = 500;
+const RETRY_MAX_MS = 8000;
+
+/** Registry calls may carry a Retry-After hint alongside a transient error. */
+type AttemptResult = OnlineCheckResult & { retryAfterMs?: number };
+
+function resolveTimeout(value: number | undefined): number {
+    return typeof value === 'number' && Number.isFinite(value) && value > 0 ? value : DEFAULT_TIMEOUT_MS;
+}
+
+function resolveRetries(value: number | undefined): number {
+    if (typeof value !== 'number' || !Number.isFinite(value)) return 1;
+    return Math.max(0, Math.min(Math.floor(value), MAX_RETRIES));
+}
+
+/** Parses a Retry-After header (delay-seconds or HTTP-date) into milliseconds, capped. */
+function parseRetryAfter(value: string | null): number | undefined {
+    if (!value) return undefined;
+    const seconds = Number(value);
+    if (Number.isFinite(seconds) && seconds >= 0) {
+        return Math.min(Math.round(seconds * 1000), RETRY_MAX_MS);
+    }
+    const date = Date.parse(value);
+    if (!Number.isNaN(date)) {
+        return Math.min(Math.max(0, date - Date.now()), RETRY_MAX_MS);
+    }
+    return undefined;
+}
+
+function withRetryAfter(result: AttemptResult, header: string | null): AttemptResult {
+    const retryAfterMs = parseRetryAfter(header);
+    if (retryAfterMs !== undefined) result.retryAfterMs = retryAfterMs;
+    return result;
+}
 
 /** VIES error codes that mean "try again later", not "this number is invalid". */
 const VIES_TRANSIENT = new Set([
@@ -93,7 +135,7 @@ export function getOnlineProvider(countryCode: string): 'vies' | 'abr' | null {
 export function normalizeForVies(countryCode: string, taxId: string): string {
     const code = countryCode.toUpperCase();
     const viesCode = VIES_COUNTRIES[code] || code;
-    let v = taxId.toUpperCase().replace(/[\s.\-\/]/g, '');
+    let v = taxId.toUpperCase().replace(/[\s./-]/g, '');
     if (v.startsWith(viesCode)) v = v.substring(viesCode.length);
     else if (v.startsWith(code)) v = v.substring(code.length);
     // HU tax number "12345678-1-23": only the first 8 digits are the VAT core
@@ -121,7 +163,7 @@ async function withTimeout<T>(
 
     const controller = new AbortController();
     let timedOut = false;
-    const timer = setTimeout(() => { timedOut = true; controller.abort(); }, opts.timeoutMs ?? 10000);
+    const timer = setTimeout(() => { timedOut = true; controller.abort(); }, resolveTimeout(opts.timeoutMs));
     const onAbort = () => controller.abort();
     if (opts.signal) {
         if (opts.signal.aborted) controller.abort();
@@ -153,8 +195,18 @@ async function checkVies(countryCode: string, taxId: string, opts: OnlineCheckOp
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({ countryCode: viesCode, vatNumber }),
     }, opts, async (res) => {
-        if (!res.ok) return { status: 'unavailable', provider: 'vies', reason: `HTTP_${res.status}` };
-        const body: any = await res.json();
+        if (!res.ok) return withRetryAfter({ status: 'unavailable', provider: 'vies', reason: `HTTP_${res.status}` }, res.headers.get('retry-after'));
+        let body: any;
+        try {
+            body = await res.json();
+        } catch (err) {
+            // A 200 with an HTML maintenance page is not a network failure; an aborted
+            // body read still is, and must surface as TIMEOUT.
+            if (err instanceof SyntaxError || (err as Error)?.name === 'SyntaxError') {
+                return { status: 'unavailable', provider: 'vies', reason: 'UNEXPECTED_RESPONSE' };
+            }
+            throw err;
+        }
 
         if (body && body.actionSucceed === false) {
             const code = body.errorWrappers?.[0]?.error || 'UNKNOWN';
@@ -184,7 +236,7 @@ async function checkAbr(taxId: string, opts: OnlineCheckOptions): Promise<Online
     const abn = taxId.replace(/\D/g, '');
     const url = `${ABR_URL}?abn=${encodeURIComponent(abn)}&callback=c&guid=${encodeURIComponent(guid)}`;
     return withTimeout(url, { method: 'GET' }, opts, async (res) => {
-        if (!res.ok) return { status: 'unavailable', provider: 'abr', reason: `HTTP_${res.status}` };
+        if (!res.ok) return withRetryAfter({ status: 'unavailable', provider: 'abr', reason: `HTTP_${res.status}` }, res.headers.get('retry-after'));
 
         // Response is JSONP: c({...})
         const text = await res.text();
@@ -193,6 +245,9 @@ async function checkAbr(taxId: string, opts: OnlineCheckOptions): Promise<Online
         try {
             body = JSON.parse(json);
         } catch {
+            return { status: 'unavailable', provider: 'abr', reason: 'UNEXPECTED_RESPONSE' };
+        }
+        if (!body || typeof body !== 'object') {
             return { status: 'unavailable', provider: 'abr', reason: 'UNEXPECTED_RESPONSE' };
         }
 
@@ -212,20 +267,87 @@ async function checkAbr(taxId: string, opts: OnlineCheckOptions): Promise<Online
     });
 }
 
+const PROXY_STATUSES = new Set<OnlineStatus>(['valid', 'invalid', 'unavailable', 'not_supported']);
+
+/**
+ * Validates a proxy's JSON reply instead of trusting it.
+ *
+ * The endpoint is caller-configured, but a compromised or buggy proxy must not be able to
+ * inject an arbitrary `onlineStatus` (which flows into `isValid`) or extra `details` fields.
+ */
+function sanitizeProxyResponse(body: unknown): OnlineCheckResult {
+    if (!body || typeof body !== 'object') {
+        return { status: 'unavailable', reason: 'PROXY_UNEXPECTED_RESPONSE' };
+    }
+    const raw = body as Record<string, unknown>;
+    if (typeof raw.status !== 'string' || !PROXY_STATUSES.has(raw.status as OnlineStatus)) {
+        return { status: 'unavailable', reason: 'PROXY_UNEXPECTED_RESPONSE' };
+    }
+
+    const result: OnlineCheckResult = { status: raw.status as OnlineStatus };
+    const provider = cleanField(raw.provider);
+    if (provider) result.provider = provider;
+
+    if (raw.details && typeof raw.details === 'object') {
+        const d = raw.details as Record<string, unknown>;
+        const details: OnlineDetails = {};
+        const name = cleanField(d.name);
+        const address = cleanField(d.address);
+        const status = cleanField(d.status);
+        if (name) details.name = name;
+        if (address) details.address = address;
+        if (status) details.status = status;
+        if (Object.keys(details).length > 0) result.details = details;
+    }
+
+    const reason = cleanField(raw.reason);
+    if (reason) result.reason = reason;
+    return result;
+}
+
 async function checkViaEndpoint(countryCode: string, taxId: string, opts: OnlineCheckOptions): Promise<OnlineCheckResult> {
     return withTimeout(opts.endpoint as string, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            ...opts.endpointHeaders,
+        },
         body: JSON.stringify({ countryCode, taxId }),
     }, opts, async (res) => {
-        if (!res.ok) return { status: 'unavailable', reason: `PROXY_HTTP_${res.status}` };
-        const body: any = await res.json();
-        if (!body || typeof body.status !== 'string') return { status: 'unavailable', reason: 'PROXY_UNEXPECTED_RESPONSE' };
-        return body as OnlineCheckResult;
+        if (!res.ok) return withRetryAfter({ status: 'unavailable', reason: `PROXY_HTTP_${res.status}` }, res.headers.get('retry-after'));
+        let body: unknown;
+        try {
+            body = await res.json();
+        } catch (err) {
+            if (err instanceof SyntaxError || (err as Error)?.name === 'SyntaxError') return { status: 'unavailable', reason: 'PROXY_UNEXPECTED_RESPONSE' };
+            throw err;
+        }
+        return sanitizeProxyResponse(body);
     });
 }
 
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+const sleep = (ms: number, signal?: AbortSignal) => new Promise<void>((resolve) => {
+    if (signal?.aborted) return resolve();
+    if (!signal) {
+        setTimeout(resolve, ms);
+        return;
+    }
+    const done = () => {
+        clearTimeout(timer);
+        signal.removeEventListener('abort', done);
+        resolve();
+    };
+    const timer = setTimeout(done, ms);
+    signal.addEventListener('abort', done, { once: true });
+});
+
+/** Exponential backoff (capped) with jitter, unless the registry sent Retry-After. */
+function retryDelay(attempt: number, retryAfterMs: number | undefined): number {
+    if (retryAfterMs !== undefined) return retryAfterMs;
+    const backoff = Math.min(RETRY_MAX_MS, RETRY_BASE_MS * 2 ** (attempt - 1));
+    return Math.round(backoff * (0.5 + Math.random() * 0.5));
+}
 
 /**
  * Verifies a tax ID against the country's official registry.
@@ -246,11 +368,16 @@ export async function checkOnline(
     const provider = getOnlineProvider(code);
     if (!provider && !options.endpoint) return { status: 'not_supported' };
 
-    const retries = Math.max(0, options.retries ?? 1);
-    let last: OnlineCheckResult = { status: 'unavailable', provider: provider || undefined };
+    const retries = resolveRetries(options.retries);
+    let last: AttemptResult = { status: 'unavailable', provider: provider || undefined };
+    let retryAfterMs: number | undefined;
 
     for (let attempt = 0; attempt <= retries; attempt++) {
-        if (attempt > 0) await sleep(500 * 2 ** (attempt - 1));
+        if (attempt > 0) {
+            await sleep(retryDelay(attempt, retryAfterMs), options.signal);
+            if (options.signal?.aborted) return { status: 'unavailable', provider: provider || undefined, reason: 'ABORTED' };
+        }
+        retryAfterMs = undefined;
         try {
             if (options.endpoint) last = await checkViaEndpoint(code, taxId, options);
             else if (provider === 'vies') last = await checkVies(code, taxId, options);
@@ -263,10 +390,12 @@ export async function checkOnline(
                 reason: err instanceof TimeoutError ? 'TIMEOUT' : 'NETWORK_ERROR',
             };
         }
+        retryAfterMs = last.retryAfterMs;
         const transient = last.status === 'unavailable'
             && (last.reason === undefined || last.reason === 'TIMEOUT' || last.reason === 'NETWORK_ERROR'
-                || VIES_TRANSIENT.has(last.reason) || /^(PROXY_)?HTTP_5\d\d$/.test(last.reason));
+                || VIES_TRANSIENT.has(last.reason) || /^(PROXY_)?HTTP_(429|5\d\d)$/.test(last.reason));
         if (!transient) break;
     }
-    return last;
+    const { retryAfterMs: _retryAfterMs, ...result } = last;
+    return result;
 }

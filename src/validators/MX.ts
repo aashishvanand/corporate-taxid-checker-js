@@ -47,8 +47,26 @@ const nameBlacklist = new Set([
 const checkAlphabet = '0123456789ABCDEFGHIJKLMN&OPQRSTUVWXYZ Ñ';
 
 function isValidDateCompactYYMMDD(dateString: string, strict: boolean = false): boolean {
-  // Implement this function based on your specific requirements for date validation
-  // This is a placeholder and needs a proper implementation
+  if (!/^\d{6}$/.test(dateString)) return false;
+
+  const yy = parseInt(dateString.substring(0, 2), 10);
+  const mm = parseInt(dateString.substring(2, 4), 10);
+  const dd = parseInt(dateString.substring(4, 6), 10);
+  if (mm < 1 || mm > 12 || dd < 1) return false;
+
+  // Day 0 of the next month is the last day of this one.
+  const daysInMonth = (year: number) => new Date(Date.UTC(year, mm, 0)).getUTCDate();
+  // A two-digit year is ambiguous. Accept it in either century: the two readings differ
+  // only for 29 February (e.g. 00-02-29 is valid in 2000 but not in 1900).
+  const candidates = [1900 + yy, 2000 + yy];
+  const valid = candidates.some((year) => dd <= daysInMonth(year));
+  if (!valid) return false;
+
+  // Strict mode: the RFC date cannot be in the future.
+  if (strict) {
+    const now = Date.now();
+    return candidates.some((year) => Date.UTC(year, mm - 1, dd) <= now);
+  }
   return true;
 }
 

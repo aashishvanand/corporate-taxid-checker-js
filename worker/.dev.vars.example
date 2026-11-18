@@ -2,3 +2,4 @@
 # and its values override the vars in wrangler.jsonc locally.
 ALLOWED_ORIGINS=http://localhost:5173
 # ABR_GUID=your-abn-lookup-guid
+# API_TOKEN=optional-shared-secret

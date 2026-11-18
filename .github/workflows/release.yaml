@@ -6,7 +6,8 @@ on:
       - release
   workflow_dispatch:
 
-permissions: read-all
+permissions:
+  contents: read
 
 jobs:
   build:
@@ -14,11 +15,13 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [20.x, 22.x, 24.x]
+        node-version: [22.x, 24.x]
 
     steps:
     - name: Checkout code
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
 
     - name: Setup Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v6
@@ -45,6 +48,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
 
     - name: Setup Node.js
       uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v6
@@ -81,14 +86,14 @@ jobs:
 
     - name: Create GitHub Release
       if: steps.check-version.outputs.should-publish == 'true'
-      uses: actions/create-release@0cb9c9b65d5d1901c1f53e5e66eaf4afd303e70e # v1
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: v${{ steps.check-version.outputs.package-version }}
-        release_name: Release v${{ steps.check-version.outputs.package-version }}
-        draft: false
-        prerelease: false
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        VERSION="${{ steps.check-version.outputs.package-version }}"
+        NOTES=$(awk "/^## \\[$VERSION\\]/{flag=1;next}/^## \\[/{flag=0}flag" CHANGELOG.md)
+        gh release create "v$VERSION" \
+          --title "Release v$VERSION" \
+          --notes "${NOTES:-Release v$VERSION}"
 
     - name: Skip publish (version unchanged)
       if: steps.check-version.outputs.should-publish == 'false'

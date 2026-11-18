@@ -22,5 +22,7 @@
       "simple": { "limit": 20, "period": 60 }
     }
   ]
-  // Secret (not committed): npx wrangler secret put ABR_GUID
+  // Secrets (not committed):
+  //   npx wrangler secret put ABR_GUID
+  //   npx wrangler secret put API_TOKEN
 }

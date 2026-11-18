@@ -1,5 +1,5 @@
 
-function validate_in_gst(gst: string, debug: boolean = false): boolean {
+function validate_in_gst(gst: string, _debug: boolean = false): boolean {
   const chars = [...'0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'];
   const values = [...gst.toUpperCase()];
   const lastChar = values.pop();
@@ -16,7 +16,7 @@ function validate_in_gst(gst: string, debug: boolean = false): boolean {
   return isValid;
 }
 
-function validate_in_pan(pan: string, debug: boolean = false): boolean {
+function validate_in_pan(pan: string, _debug: boolean = false): boolean {
   // Define the valid types for the fourth character
   const validTypes = ['A', 'B', 'C', 'F', 'G', 'H', 'L', 'J', 'P', 'T', 'E'];
 
