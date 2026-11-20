@@ -76,4 +76,11 @@ function validate_gb_vat(input: string, debug: boolean = false): boolean {
     return true;
 }
 
-export { validate_gb_vat };
+function validate_eu_vat(input: string, debug: boolean = false): boolean {
+    // Northern Ireland VAT numbers are UK VAT numbers with an "XI" prefix. The checksum
+    // covers the 9/12-digit payload, so drop the prefix and reuse the GB algorithm.
+    const value = input.toUpperCase().startsWith('XI') ? input.substring(2) : input;
+    return validate_gb_vat(value, debug);
+}
+
+export { validate_gb_vat, validate_eu_vat };

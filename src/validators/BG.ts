@@ -1,8 +1,7 @@
 import { weightedSum } from '../utils';
-import axios from 'axios';
 
 function validate_bg_vat(vat: string, debug: boolean = false): boolean {
-    if (!['0', '1', '2', '3', '9'].includes(vat[0])) {
+    if (!/^\d{9,10}$/.test(vat)) {
         if (debug) {
             console.log("Invalid format");
         }
@@ -21,10 +20,10 @@ function checkLegal(vat: string, debug: boolean = false): boolean {
     const front = vat.slice(0, -1);
     const check = vat.slice(-1);
 
-    let sum = weightedSum(front, weights);
+    let sum = weightedSum(front, weights, 11);
 
     if (sum === 10) {
-        sum = weightedSum(front, [3, 4, 5, 6, 7, 8, 9, 10]);
+        sum = weightedSum(front, [3, 4, 5, 6, 7, 8, 9, 10], 11);
     }
 
     if (String(sum % 10) !== check) {
@@ -39,7 +38,6 @@ function checkLegal(vat: string, debug: boolean = false): boolean {
 
 function checkPhysicalPerson(value: string): boolean {
     // Validate date component (positions 0-5: YYMMDD)
-    const yy = parseInt(value.slice(0, 2), 10);
     const mm = parseInt(value.slice(2, 4), 10);
     const dd = parseInt(value.slice(4, 6), 10);
 
@@ -97,42 +95,4 @@ function checkOther(value: string): boolean {
     return checkPhysicalPerson(value) || checkForeigner(value) || checkMisc(value);
 }
 
-async function online_check(tin: string, debug: boolean = false): Promise<boolean> {
-    // Extract the relevant portion of the TIN (excluding the msCode)
-    const processedTin = tin.substring(2);
-
-    try {
-        const response = await axios.post('https://ec.europa.eu/taxation_customs/tin/rest-api/tinRequest', {
-            msCode: 'BG',
-            tinNumber: processedTin
-        });
-
-        if (response.status !== 200) {
-            if (debug) console.log(`Request failed with status: ${response.status}`);
-            return false;
-        }
-
-        const data = response.data;
-        if (data.result.structureValid === true && data.result.syntaxValid === true) {
-            return true;
-        }
-
-        if (data.result.userError !== "0" || data.result.error === true || data.result.structureValid === false || data.result.syntaxValid === false) {
-            if (debug) {
-                console.log('Response Data:', data.result);
-                if (data.result.userError !== "0") console.log(`User Error with code: ${data.result.userError}`);
-                if (data.result.error === true) console.log('Error flag set to true in response');
-                if (data.result.structureValid === false) console.log('Structure validity check failed');
-                if (data.result.syntaxValid === false) console.log('Syntax validity check failed');
-            }
-            return false;
-        }
-    } catch (error) {
-        if (debug) console.log('Axios request error:', error);
-        console.error(error);
-        return false;
-    }
-    return false;
-}
-
-export { validate_bg_vat, online_check };
+export { validate_bg_vat };

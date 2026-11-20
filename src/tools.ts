@@ -63,7 +63,7 @@ export const taxIdTools: ToolDefinition[] = [
                 },
                 onlineCheckRequired: {
                     type: 'boolean',
-                    description: 'When true, also verifies the tax ID against the country\'s online government endpoint. This is slower and requires network access. Default: false.',
+                    description: 'When true, also checks the official registry (EU VIES, Australian ABN Lookup) that the tax ID is actually registered, returning onlineStatus ("valid", "invalid", "unavailable", "not_supported", "skipped") and the registered name/address when available. Slower and requires network access. A registry outage reports "unavailable" and does not make isValid false. Default: false.',
                     default: false
                 }
             },
@@ -83,7 +83,7 @@ export const taxIdTools: ToolDefinition[] = [
                 },
                 onlineCheckRequired: {
                     type: 'boolean',
-                    description: 'When true, also performs online verification for all items. Default: false.',
+                    description: 'When true, also performs online registry verification for all items (at most 5 lookups at a time). Default: false.',
                     default: false
                 }
             },
@@ -169,8 +169,3 @@ export const taxIdTools: ToolDefinition[] = [
 ];
 
 export default taxIdTools;
-
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = taxIdTools;
-    module.exports.taxIdTools = taxIdTools;
-}

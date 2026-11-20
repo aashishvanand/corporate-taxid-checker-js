@@ -42,11 +42,11 @@ function validate_jp_cn(input: string, debug: boolean = false): boolean {
   const sum = weightedSum(rest, {
     modulus: 9,
     reverse: true,
-    weights: [2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1],
+    weights: [1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2],
   });
 
   // Validate checksum
-  if (String((9 - sum) % 9) !== check) {
+  if (String(9 - sum) !== check) {
     if (debug) {
       console.log("Invalid checksum");
     }

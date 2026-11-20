@@ -6,10 +6,12 @@ const OTHER_UEN_ENTITY_TYPES = [
 ];
 
 function weightedSum(input: string, config: { weights: number[]; modulus: number; alphabet?: string }): number {
-    const { weights, modulus } = config;
+    const { weights, modulus, alphabet } = config;
     let sum = 0;
     for (let i = 0; i < input.length; i++) {
-      sum += parseInt(input[i], 10) * weights[i];
+      // Entity UENs mix letters and digits: use each character's index in the alphabet
+      const value = alphabet ? alphabet.indexOf(input[i]) : parseInt(input[i], 10);
+      sum += value * weights[i];
     }
     return sum % modulus;
 }
@@ -17,7 +19,7 @@ function weightedSum(input: string, config: { weights: number[]; modulus: number
 function validate_sg_uen(uen: string, debug: boolean = false): boolean {
 
     // Clean the input
-    const value = uen.replace(/\s+/g, '');
+    const value = uen.replace(/\s+/g, '').toUpperCase();
 
     if (value.length !== 9 && value.length !== 10) {
         if (debug) {

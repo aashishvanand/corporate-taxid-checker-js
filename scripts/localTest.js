@@ -1,4 +1,4 @@
-const validateTaxId = require('../lib/index.js');
+const { validateTaxId } = require('../lib/index.js');
 
 async function testValidation(countryCode, taxId, onlineCheck = false) {
     console.log(`Testing ${taxId} from ${countryCode}`);

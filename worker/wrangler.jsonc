@@ -1,0 +1,28 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "taxid-online-check",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-01",
+  "observability": { "enabled": true },
+  // Optional: serve on the demo's own hostname (zone is on Cloudflare) so calls are
+  // same-origin and need no CORS. The demo then uses endpoint: '/api/check'.
+  // "routes": [
+  //   { "pattern": "corporate-taxid-checker-js.aashishvanand.me/api/check", "zone_name": "aashishvanand.me" }
+  // ],
+  "vars": {
+    // Comma-separated origins allowed to call the Worker from a browser. Production only —
+    // for local testing, put dev origins in .dev.vars (gitignored, never deployed).
+    "ALLOWED_ORIGINS": "https://corporate-taxid-checker-js.aashishvanand.me"
+  },
+  // Per-IP rate limit. namespace_id is any account-unique integer string.
+  "ratelimits": [
+    {
+      "name": "RATE_LIMITER",
+      "namespace_id": "4401",
+      "simple": { "limit": 20, "period": 60 }
+    }
+  ]
+  // Secrets (not committed):
+  //   npx wrangler secret put ABR_GUID
+  //   npx wrangler secret put API_TOKEN
+}
