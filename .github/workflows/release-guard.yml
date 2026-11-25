@@ -1,0 +1,43 @@
+name: Release Guard
+
+# Enforces the release flow: release only ever receives PRs from main, and
+# release must never contain commits that main does not have.
+
+on:
+  pull_request:
+    branches:
+      - release
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+    - name: PR must come from main
+      env:
+        HEAD_REF: ${{ github.head_ref }}
+        HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+        BASE_REPO: ${{ github.repository }}
+      run: |
+        if [ "$HEAD_REF" != "main" ] || [ "$HEAD_REPO" != "$BASE_REPO" ]; then
+          echo "::error::PRs into release must come from main in this repository (got $HEAD_REPO:$HEAD_REF)."
+          exit 1
+        fi
+
+    - name: Checkout code
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        fetch-depth: 0
+        persist-credentials: false
+
+    - name: release must not be ahead of main
+      run: |
+        ahead=$(git rev-list --no-merges origin/main..origin/release)
+        if [ -n "$ahead" ]; then
+          echo "::error::release has commits that main does not. Merge release back into main first."
+          git log --oneline --no-merges origin/main..origin/release
+          exit 1
+        fi
+        echo "release is not ahead of main."
